@@ -530,6 +530,35 @@
     padding: 0 16px;
   }
 
+  /* ---------- 备份 ---------- */
+  .backup-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .bbtn {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: rgba(255, 255, 255, .75);
+    border: 1px solid var(--gray-200);
+    padding: 8px 14px;
+    min-height: 40px;
+    border-radius: 999px;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+
+  .bbtn:hover { background: #fff; color: var(--gray-800); border-color: var(--gray-300); }
+
+  .bmsg { font-size: 12px; color: var(--gray-500); }
+  .bmsg.err { color: var(--red-600); }
+
+  #import-file { display: none; }
+
   /* ---------- modal ---------- */
   .backdrop {
     position: fixed;
@@ -685,6 +714,13 @@
     </section>
 
     <p id="total" class="total">共 0 个任务</p>
+
+    <div class="backup-row">
+      <button id="export-btn" class="bbtn" type="button">⬇ 导出备份</button>
+      <button id="import-btn" class="bbtn" type="button">⬆ 导入备份</button>
+      <input type="file" id="import-file" accept=".json,application/json">
+      <span id="backup-msg" class="bmsg"></span>
+    </div>
   </div>
 
   <div id="modal" class="backdrop" hidden>
@@ -786,6 +822,10 @@
   const clearDoneBtn = $('clear-done');
   const clearAllBtn = $('clear-all');
   const total = $('total');
+  const exportBtn = $('export-btn');
+  const importBtn = $('import-btn');
+  const importFile = $('import-file');
+  const backupMsgEl = $('backup-msg');
   const modal = $('modal');
   const modalTitle = $('modal-title');
   const modalText = $('modal-text');
@@ -1328,6 +1368,83 @@
     confirmAction = null;
   }
 
+  // ---------- 备份：导出 / 导入 JSON ----------
+  function backupMsg(text, isErr) {
+    backupMsgEl.textContent = text;
+    backupMsgEl.classList.toggle('err', !!isErr);
+  }
+
+  function exportBackup() {
+    if (!tasks.length) {
+      backupMsg('还没有任务可导出', true);
+      return;
+    }
+    const data = { app: 'todo-list', version: 1, exportedAt: new Date().toISOString(), tasks };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '待办备份-' + dayKey(Date.now()) + '.json';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    backupMsg('已导出 ' + tasks.length + ' 条任务');
+  }
+
+  function normalizeImported(raw) {
+    const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.tasks) ? raw.tasks : null);
+    if (!list) return null;
+
+    const seen = new Set();
+    const out = [];
+    for (const t of list) {
+      if (!t || typeof t.text !== 'string' || !t.text.trim()) continue;
+      let id = typeof t.id === 'string' && t.id ? t.id : uid();
+      if (seen.has(id)) id = uid();
+      seen.add(id);
+      out.push({
+        id,
+        text: t.text.trim(),
+        priority: LEVELS[t.priority] ? t.priority : 'mid',
+        due: /^\d{4}-\d{2}-\d{2}$/.test(t.due || '') ? t.due : '',
+        done: !!t.done,
+        completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
+        createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
+      });
+    }
+    return out;
+  }
+
+  function importBackup(file) {
+    backupMsg('');
+    const reader = new FileReader();
+    reader.onerror = () => backupMsg('读取文件失败', true);
+    reader.onload = () => {
+      let parsed;
+      try {
+        parsed = JSON.parse(reader.result);
+      } catch {
+        backupMsg('这个文件不是有效的 JSON 备份', true);
+        return;
+      }
+      const incoming = normalizeImported(parsed);
+      if (!incoming) {
+        backupMsg('文件里没有找到任务列表', true);
+        return;
+      }
+      if (!incoming.length) {
+        backupMsg('文件里的任务列表是空的', true);
+        return;
+      }
+      askConfirm('导入备份', '将用备份里的 ' + incoming.length + ' 条任务覆盖当前 ' + tasks.length + ' 条，此操作无法撤销。', () => {
+        tasks = incoming;
+        editingId = null;
+        backupMsg('已导入 ' + incoming.length + ' 条任务');
+      });
+    };
+    reader.readAsText(file);
+  }
+
   function submitTask() {
     const text = input.value.trim();
     if (!text) return;
@@ -1370,6 +1487,16 @@
     prefs.historyOpen = !prefs.historyOpen;
     save();
     render();
+  });
+
+  exportBtn.addEventListener('click', exportBackup);
+
+  importBtn.addEventListener('click', () => importFile.click());
+
+  importFile.addEventListener('change', () => {
+    const file = importFile.files[0];
+    if (file) importBackup(file);
+    importFile.value = '';
   });
 
   $('new-due-clear').addEventListener('click', () => {
