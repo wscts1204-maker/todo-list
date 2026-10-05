@@ -152,6 +152,31 @@
 
   .pbtn .txt { display: none; }
 
+  .due-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .date-input {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    padding: 8px 12px;
+    min-height: 44px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+  }
+
+  .date-input:focus { box-shadow: 0 0 0 2px var(--blue-500); border-color: transparent; }
+
+  .due-clear { font-size: 13px; color: var(--gray-500); padding: 8px; min-height: 44px; }
+  .due-clear:hover { color: var(--gray-700); }
+
   /* ---------- toolbar ---------- */
   .toolbar {
     display: flex;
@@ -216,6 +241,36 @@
   /* ---------- list ---------- */
   .list-card { overflow: hidden; }
 
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 12px 0;
+  }
+
+  .filter-bar[hidden] { display: none; }
+
+  .filter-label { font-size: 13px; color: var(--gray-500); margin-right: 2px; }
+
+  .fbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    padding: 6px 12px;
+    min-height: 36px;
+    border-radius: 999px;
+    transition: background .2s, color .2s;
+  }
+
+  .fbtn:hover { background: var(--gray-200); }
+  .fbtn.on { background: var(--blue-500); color: #fff; }
+  .fbtn .n { font-size: 12px; opacity: .8; }
+
   #list { list-style: none; }
 
   #list > li + li > .row { border-top: 1px solid var(--gray-100); }
@@ -236,6 +291,23 @@
   .row.p-low { border-left-color: var(--green-500); background: var(--green-50); }
   .row.p-high:hover, .row.p-mid:hover, .row.p-low:hover { background: var(--gray-50); }
   .row.done { border-left-color: transparent; background: var(--gray-50); }
+
+  .grip {
+    color: var(--gray-300);
+    width: 24px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: -8px;
+    cursor: grab;
+    touch-action: none;
+    transition: color .2s;
+  }
+
+  .grip:hover { color: var(--gray-500); }
+  li.dragging .grip { cursor: grabbing; }
 
   .tick {
     color: var(--blue-500);
@@ -284,6 +356,33 @@
   .badge.high { background: var(--red-100); color: var(--red-800); }
   .badge.mid { background: var(--yellow-100); color: var(--yellow-800); }
   .badge.low { background: var(--green-100); color: var(--green-800); }
+
+  .due {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    align-self: flex-start;
+    font-size: 12px;
+    color: var(--gray-500);
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--gray-100);
+  }
+
+  .due.soon { background: var(--blue-50); color: var(--blue-600); }
+  .due.over { background: var(--red-100); color: var(--red-800); font-weight: 500; }
+
+  li.dragging { opacity: .5; }
+  li.dragging > .row { background: var(--blue-50); }
+  li.drop-above { box-shadow: inset 0 3px 0 0 var(--blue-500); }
+  li.drop-below { box-shadow: inset 0 -3px 0 0 var(--blue-500); }
+
+  .list-empty {
+    padding: 24px 16px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--gray-500);
+  }
 
   .acts { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
 
@@ -492,6 +591,9 @@
     #add { min-height: 44px; }
     .prio-btns { gap: 8px; }
     .pbtn .txt { display: inline; }
+    .date-input { font-size: 16px; }
+    .filter-bar { padding: 16px 16px 0; }
+    .grip { width: 32px; margin-left: -12px; }
     .toolbar { flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .stats { gap: 16px; width: auto; }
     .stat { padding: 16px; }
@@ -533,6 +635,12 @@
         <span class="prio-label">优先级：</span>
         <div class="prio-btns" id="prio-btns"></div>
       </div>
+      <div class="due-row">
+        <span class="prio-label">到期日：</span>
+        <input type="date" id="new-due" class="date-input">
+        <button type="button" id="new-due-clear" class="due-clear">清除</button>
+        <span class="prio-label" style="margin-left:auto">提示：拖动左侧把手可排序</span>
+      </div>
     </section>
 
     <section class="toolbar">
@@ -548,6 +656,7 @@
     </section>
 
     <section class="card list-card">
+      <div id="filters" class="filter-bar"></div>
       <ul id="list"></ul>
       <div id="empty" class="empty">
         <span class="ring" id="empty-ico"></span>
@@ -643,6 +752,8 @@
     chevronUp: '<path d="m18 15-6-6-6 6"/>',
     chevronDown: '<path d="m6 9 6 6 6-6"/>',
     alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+    grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
+    calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
   };
 
   function icon(name, size) {
@@ -659,6 +770,8 @@
   const form = $('form');
   const input = $('new-task');
   const prioBox = $('prio-btns');
+  const newDue = $('new-due');
+  const filters = $('filters');
   const list = $('list');
   const empty = $('empty');
   const history = $('history');
@@ -684,6 +797,15 @@
   let newPriority = 'mid';
   let editingId = null;
   let confirmAction = null;
+  let dragging = null;
+
+  const FILTERS = [
+    { key: 'all', label: '全部' },
+    { key: 'overdue', label: '已逾期' },
+    { key: 'today', label: '今天到期' },
+    { key: 'week', label: '未来 7 天' },
+    { key: 'nodate', label: '无日期' },
+  ];
 
   function load() {
     let raw;
@@ -692,14 +814,15 @@
     } catch {
       return [];
     }
-    return raw.map(t => ({ priority: 'mid', completedAt: null, ...t }));
+    return raw.map(t => ({ priority: 'mid', completedAt: null, due: '', ...t }));
   }
 
   function loadPrefs() {
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all' };
     try {
-      return { hideCompleted: false, historyOpen: true, dateFilter: '', ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
+      return { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
     } catch {
-      return { hideCompleted: false, historyOpen: true, dateFilter: '' };
+      return fallback;
     }
   }
 
@@ -730,6 +853,7 @@
         id: uid(),
         text: item.text,
         priority: item.priority,
+        due: '',
         done: false,
         completedAt: null,
         createdAt: Date.now(),
@@ -755,6 +879,48 @@
     return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
   }
 
+  // 把 'YYYY-MM-DD' 当本地日期解析，避免 UTC 偏移导致差一天
+  function parseDay(s) {
+    const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    if (!p) return null;
+    return new Date(Number(p[1]), Number(p[2]) - 1, Number(p[3]));
+  }
+
+  // 距今天多少天：负数=已逾期，0=今天
+  function dueInDays(task) {
+    const due = parseDay(task.due);
+    if (!due) return null;
+    const today = parseDay(dayKey(Date.now()));
+    return Math.round((due - today) / 86400000);
+  }
+
+  function matchFilter(task) {
+    const f = prefs.listFilter;
+    if (f === 'all') return true;
+    if (f === 'nodate') return !task.due;
+    const d = dueInDays(task);
+    if (d === null) return false;
+    if (f === 'today') return d === 0;
+    if (f === 'week') return d >= 0 && d <= 6;
+    if (f === 'overdue') return d < 0 && !task.done;
+    return true;
+  }
+
+  function visibleTasks() {
+    const base = prefs.hideCompleted ? tasks.filter(t => !t.done) : tasks;
+    return base.filter(matchFilter);
+  }
+
+  function dueText(task) {
+    const d = dueInDays(task);
+    if (d === null) return '';
+    if (d < 0) return '逾期 ' + (-d) + ' 天';
+    if (d === 0) return '今天到期';
+    if (d === 1) return '明天到期';
+    if (d <= 6) return d + ' 天后到期';
+    return task.due.slice(5).replace('-', '/') + ' 到期';
+  }
+
   function renderPrioPicker() {
     prioBox.textContent = '';
     for (const [key, lv] of Object.entries(LEVELS)) {
@@ -771,23 +937,74 @@
     }
   }
 
+  function renderFilters() {
+    filters.hidden = tasks.length === 0;
+    filters.textContent = '';
+    if (!tasks.length) return;
+
+    const label = document.createElement('span');
+    label.className = 'filter-label';
+    label.textContent = '按日期筛选：';
+    filters.append(label);
+
+    for (const f of FILTERS) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'fbtn' + (prefs.listFilter === f.key ? ' on' : '');
+      b.textContent = f.label;
+      const shown = (prefs.hideCompleted ? tasks.filter(t => !t.done) : tasks).filter(t => {
+        if (f.key === 'all') return true;
+        if (f.key === 'nodate') return !t.due;
+        const d = dueInDays(t);
+        if (d === null) return false;
+        if (f.key === 'today') return d === 0;
+        if (f.key === 'week') return d >= 0 && d <= 6;
+        if (f.key === 'overdue') return d < 0 && !t.done;
+        return true;
+      }).length;
+      if (f.key !== 'all') {
+        const num = document.createElement('span');
+        num.className = 'n';
+        num.textContent = shown;
+        b.append(num);
+      }
+      b.setAttribute('aria-pressed', String(prefs.listFilter === f.key));
+      b.addEventListener('click', () => {
+        prefs.listFilter = f.key;
+        save();
+        render();
+      });
+      filters.append(b);
+    }
+  }
+
   function render() {
     list.textContent = '';
 
     const done = tasks.filter(t => t.done);
-    const shown = prefs.hideCompleted ? tasks.filter(t => !t.done) : tasks;
+    const shown = visibleTasks();
 
     for (const task of shown) {
       list.append(renderRow(task));
     }
 
+    if (tasks.length && !shown.length) {
+      const none = document.createElement('li');
+      none.className = 'list-empty';
+      none.textContent = prefs.listFilter === 'all'
+        ? '没有可显示的任务'
+        : '当前筛选条件下没有任务（' + FILTERS.find(f => f.key === prefs.listFilter).label + '）';
+      list.append(none);
+    }
+
     empty.hidden = tasks.length > 0;
 
+    renderFilters();
     renderHistory(done);
 
     pendingCount.textContent = tasks.length - done.length;
     doneCount.textContent = done.length;
-    total.textContent = '共 ' + tasks.length + ' 个任务';
+    total.textContent = '共 ' + tasks.length + ' 个任务' + (shown.length !== tasks.length ? '（当前显示 ' + shown.length + ' 个）' : '');
     toggleHiddenBtn.textContent = prefs.hideCompleted ? '显示已完成任务' : '隐藏已完成任务';
     statDone.classList.toggle('active', prefs.hideCompleted);
     clearDoneBtn.hidden = done.length === 0;
@@ -795,8 +1012,17 @@
 
   function renderRow(task) {
     const li = document.createElement('li');
+    li.dataset.id = task.id;
     const row = document.createElement('div');
     row.className = 'row p-' + level(task) + (task.done ? ' done' : '');
+
+    const grip = document.createElement('span');
+    grip.className = 'grip';
+    grip.innerHTML = icon('grip', 18);
+    grip.setAttribute('aria-label', '拖动排序');
+    if (task.id === editingId) grip.style.visibility = 'hidden';
+    else grip.addEventListener('pointerdown', (e) => startDrag(e, li, task.id));
+    row.append(grip);
 
     const tick = document.createElement('button');
     tick.type = 'button';
@@ -826,6 +1052,15 @@
       badge.innerHTML = icon(LEVELS[level(task)].icon, 12) + LEVELS[level(task)].label;
 
       line.append(txt, badge);
+
+      const d = dueInDays(task);
+      if (d !== null) {
+        const due = document.createElement('span');
+        due.className = 'due' + (d < 0 ? ' over' : d <= 1 ? ' soon' : '');
+        due.innerHTML = icon('calendar', 12) + dueText(task);
+        line.append(due);
+      }
+
       body.append(line);
       row.append(body);
 
@@ -866,11 +1101,19 @@
     box.className = 'edit-input';
     box.maxLength = 200;
     box.value = task.text;
+    const dueBox = document.createElement('input');
+    dueBox.type = 'date';
+    dueBox.className = 'date-input';
+    dueBox.value = task.due || '';
+    dueBox.setAttribute('aria-label', '到期日');
+
+    const commit = () => commitEdit(task.id, box.value, dueBox.value);
+
     box.addEventListener('keydown', (e) => {
       if (e.isComposing) return;
       if (e.key === 'Enter') {
         e.preventDefault();
-        commitEdit(task.id, box.value);
+        commit();
       } else if (e.key === 'Escape') {
         e.preventDefault();
         cancelEdit();
@@ -882,7 +1125,7 @@
     ok.className = 'ibtn ok';
     ok.innerHTML = icon('check', 18);
     ok.setAttribute('aria-label', '保存');
-    ok.addEventListener('click', () => commitEdit(task.id, box.value));
+    ok.addEventListener('click', commit);
 
     const no = document.createElement('button');
     no.type = 'button';
@@ -891,7 +1134,7 @@
     no.setAttribute('aria-label', '取消编辑');
     no.addEventListener('click', cancelEdit);
 
-    wrap.append(box, ok, no);
+    wrap.append(box, dueBox, ok, no);
     return [wrap];
   }
 
@@ -946,8 +1189,84 @@
     }
   }
 
-  function add(text, priority) {
-    tasks.push({ id: uid(), text, priority, done: false, completedAt: null, createdAt: Date.now() });
+  // ---------- 拖拽排序（pointer 事件，鼠标与触摸通用） ----------
+  function startDrag(ev, li, id) {
+    if (dragging || (ev.button !== undefined && ev.button !== 0)) return;
+    ev.preventDefault();
+
+    const els = [...list.children].filter(el => el.dataset.id);
+    const from = els.indexOf(li);
+    if (from < 0) return;
+
+    const rects = els.map(el => el.getBoundingClientRect());
+    const startY = ev.clientY;
+    let to = from;
+    let moved = false;
+
+    const mark = () => {
+      for (const el of els) el.classList.remove('drop-above', 'drop-below');
+      if (to === from) return;
+      els[to].classList.add(to < from ? 'drop-above' : 'drop-below');
+    };
+
+    const onMove = (e) => {
+      const dy = e.clientY - startY;
+      if (!moved && Math.abs(dy) < 5) return;
+      if (!moved) {
+        moved = true;
+        dragging = true;
+        li.classList.add('dragging');
+      }
+      li.style.transform = 'translateY(' + dy + 'px)';
+      let next = els.length - 1;
+      for (let i = 0; i < rects.length; i++) {
+        if (e.clientY < rects[i].top + rects[i].height / 2) {
+          next = i;
+          break;
+        }
+      }
+      to = next;
+      mark();
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      li.classList.remove('dragging');
+      li.style.transform = '';
+      for (const el of els) el.classList.remove('drop-above', 'drop-below');
+      dragging = null;
+      if (moved && to !== from) {
+        reorder(els.map(el => el.dataset.id), from, to);
+        save();
+      }
+      render();
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
+  }
+
+  // 在当前显示的序列里把第 from 项挪到 to；被筛选隐藏的项留在原槽位不动
+  function reorder(visibleIds, from, to) {
+    const ids = visibleIds.slice();
+    const moved = ids.splice(from, 1);
+    ids.splice(to > from ? to - 1 : to, 0, moved[0]);
+
+    const vis = new Set(visibleIds);
+    const slots = [];
+    tasks.forEach((t, i) => { if (vis.has(t.id)) slots.push(i); });
+    const byId = new Map(tasks.map(t => [t.id, t]));
+
+    const next = tasks.slice();
+    slots.forEach((slot, k) => { next[slot] = byId.get(ids[k]); });
+    tasks = next;
+  }
+
+  function add(text, priority, due) {
+    tasks.push({ id: uid(), text, priority, due: due || '', done: false, completedAt: null, createdAt: Date.now() });
     save();
     render();
   }
@@ -971,10 +1290,13 @@
     }
   }
 
-  function commitEdit(id, value) {
+  function commitEdit(id, value, due) {
     const task = tasks.find(t => t.id === id);
     const text = value.trim();
-    if (task && text) task.text = text;
+    if (task && text) {
+      task.text = text;
+      task.due = due || '';
+    }
     editingId = null;
     save();
     render();
@@ -1009,8 +1331,9 @@
   function submitTask() {
     const text = input.value.trim();
     if (!text) return;
-    add(text, newPriority);
+    add(text, newPriority, newDue.value);
     input.value = '';
+    newDue.value = '';
     input.focus();
   }
 
@@ -1047,6 +1370,11 @@
     prefs.historyOpen = !prefs.historyOpen;
     save();
     render();
+  });
+
+  $('new-due-clear').addEventListener('click', () => {
+    newDue.value = '';
+    input.focus();
   });
 
   histDate.addEventListener('change', () => {
