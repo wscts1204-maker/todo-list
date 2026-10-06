@@ -177,6 +177,24 @@
   .due-clear { font-size: 13px; color: var(--gray-500); padding: 8px; min-height: 44px; }
   .due-clear:hover { color: var(--gray-700); }
 
+  .tag-input {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    width: 160px;
+    max-width: 100%;
+    padding: 8px 12px;
+    min-height: 44px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+  }
+
+  .tag-input:focus { box-shadow: 0 0 0 2px var(--blue-500); border-color: transparent; }
+
+  .tag-hint { font-size: 12px; color: var(--gray-400); }
+
   /* ---------- toolbar ---------- */
   .toolbar {
     display: flex;
@@ -250,6 +268,8 @@
   }
 
   .filter-bar[hidden] { display: none; }
+
+  .filter-bar + .filter-bar { margin-top: 8px; }
 
   .filter-label { font-size: 13px; color: var(--gray-500); margin-right: 2px; }
 
@@ -372,6 +392,21 @@
   .due.soon { background: var(--blue-50); color: var(--blue-600); }
   .due.over { background: var(--red-100); color: var(--red-800); font-weight: 500; }
 
+  .tg {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    align-self: flex-start;
+    font-size: 12px;
+    color: var(--gray-600);
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--gray-200);
+  }
+
+  .done .tg { color: var(--gray-400); }
+
   li.dragging { opacity: .5; }
   li.dragging > .row { background: var(--blue-50); }
   li.drop-above { box-shadow: inset 0 3px 0 0 var(--blue-500); }
@@ -407,7 +442,7 @@
   .ibtn.no:hover { color: var(--gray-800); }
 
   .edit-input {
-    flex: 1;
+    flex: 1 1 100%;
     min-width: 0;
     font-size: 14px;
     font-family: inherit;
@@ -420,7 +455,9 @@
 
   .edit-input:focus { box-shadow: 0 0 0 2px var(--blue-500); border-color: transparent; }
 
-  .edit-wrap { display: flex; align-items: center; gap: 8px; }
+  .edit-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+  .edit-wrap .tag-input { flex: 1 1 120px; width: auto; }
 
   /* ---------- empty state ---------- */
   .empty {
@@ -634,7 +671,8 @@
     .tick { margin-right: 6px; }
     .txt { font-size: 16px; }
     .text-line { flex-direction: row; align-items: center; }
-    .edit-input { font-size: 16px; }
+    .edit-input { font-size: 16px; flex: 1 1 220px; }
+    .edit-wrap .tag-input { flex: 0 0 140px; width: 140px; }
     .empty { padding: 56px 24px; }
     .empty > p { font-size: 16px; }
     .hist-card { padding: 24px; }
@@ -670,6 +708,12 @@
         <button type="button" id="new-due-clear" class="due-clear">清除</button>
         <span class="prio-label" style="margin-left:auto">提示：拖动左侧把手可排序</span>
       </div>
+      <div class="due-row">
+        <span class="prio-label">分类：</span>
+        <input type="text" id="new-tag" class="tag-input" list="tag-list" maxlength="12" placeholder="学习 / 生活">
+        <datalist id="tag-list"></datalist>
+        <span class="tag-hint">输入新名字即可新建分类</span>
+      </div>
     </section>
 
     <section class="toolbar">
@@ -686,6 +730,7 @@
 
     <section class="card list-card">
       <div id="filters" class="filter-bar"></div>
+      <div id="tag-filters" class="filter-bar"></div>
       <ul id="list"></ul>
       <div id="empty" class="empty">
         <span class="ring" id="empty-ico"></span>
@@ -790,6 +835,7 @@
     alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
     grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
     calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+    tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 4H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
   };
 
   function icon(name, size) {
@@ -807,7 +853,10 @@
   const input = $('new-task');
   const prioBox = $('prio-btns');
   const newDue = $('new-due');
+  const newTag = $('new-tag');
+  const tagList = $('tag-list');
   const filters = $('filters');
+  const tagFilters = $('tag-filters');
   const list = $('list');
   const empty = $('empty');
   const history = $('history');
@@ -854,11 +903,11 @@
     } catch {
       return [];
     }
-    return raw.map(t => ({ priority: 'mid', completedAt: null, due: '', ...t }));
+    return raw.map(t => ({ priority: 'mid', completedAt: null, due: '', tag: '', ...t }));
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all' };
     try {
       return { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
     } catch {
@@ -894,6 +943,7 @@
         text: item.text,
         priority: item.priority,
         due: '',
+        tag: '',
         done: false,
         completedAt: null,
         createdAt: Date.now(),
@@ -934,21 +984,40 @@
     return Math.round((due - today) / 86400000);
   }
 
-  function matchFilter(task) {
-    const f = prefs.listFilter;
-    if (f === 'all') return true;
-    if (f === 'nodate') return !task.due;
+  // 日期筛选：all / overdue / today / week / nodate
+  function matchDate(task, key) {
+    if (key === 'all') return true;
+    if (key === 'nodate') return !task.due;
     const d = dueInDays(task);
     if (d === null) return false;
-    if (f === 'today') return d === 0;
-    if (f === 'week') return d >= 0 && d <= 6;
-    if (f === 'overdue') return d < 0 && !task.done;
+    if (key === 'today') return d === 0;
+    if (key === 'week') return d >= 0 && d <= 6;
+    if (key === 'overdue') return d < 0 && !task.done;
     return true;
   }
 
+  // 分类筛选：all / ''（未分类）/ 分类名
+  function matchTag(task, key) {
+    if (key === 'all') return true;
+    return (task.tag || '') === key;
+  }
+
+  function matchFilter(task) {
+    return matchDate(task, prefs.listFilter) && matchTag(task, prefs.tagFilter);
+  }
+
+  function activeTasks() {
+    return prefs.hideCompleted ? tasks.filter(t => !t.done) : tasks;
+  }
+
   function visibleTasks() {
-    const base = prefs.hideCompleted ? tasks.filter(t => !t.done) : tasks;
-    return base.filter(matchFilter);
+    return activeTasks().filter(matchFilter);
+  }
+
+  function usedTags() {
+    const set = new Set();
+    for (const t of tasks) if (t.tag) set.add(t.tag);
+    return [...set].sort((a, b) => a.localeCompare(b, 'zh'));
   }
 
   function dueText(task) {
@@ -987,25 +1056,16 @@
     label.textContent = '按日期筛选：';
     filters.append(label);
 
+    const base = activeTasks();
     for (const f of FILTERS) {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'fbtn' + (prefs.listFilter === f.key ? ' on' : '');
       b.textContent = f.label;
-      const shown = (prefs.hideCompleted ? tasks.filter(t => !t.done) : tasks).filter(t => {
-        if (f.key === 'all') return true;
-        if (f.key === 'nodate') return !t.due;
-        const d = dueInDays(t);
-        if (d === null) return false;
-        if (f.key === 'today') return d === 0;
-        if (f.key === 'week') return d >= 0 && d <= 6;
-        if (f.key === 'overdue') return d < 0 && !t.done;
-        return true;
-      }).length;
       if (f.key !== 'all') {
         const num = document.createElement('span');
         num.className = 'n';
-        num.textContent = shown;
+        num.textContent = base.filter(t => matchDate(t, f.key) && matchTag(t, prefs.tagFilter)).length;
         b.append(num);
       }
       b.setAttribute('aria-pressed', String(prefs.listFilter === f.key));
@@ -1018,8 +1078,59 @@
     }
   }
 
+  function renderTagFilters() {
+    const tags = usedTags();
+    tagFilters.hidden = tags.length === 0;
+    tagFilters.textContent = '';
+    if (!tags.length) return;
+
+    const label = document.createElement('span');
+    label.className = 'filter-label';
+    label.textContent = '按分类筛选：';
+    tagFilters.append(label);
+
+    const base = activeTasks();
+    const items = [{ key: 'all', label: '全部分类' }, ...tags.map(t => ({ key: t, label: t }))];
+    if (base.some(t => !t.tag)) items.push({ key: '', label: '未分类' });
+
+    for (const it of items) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'fbtn' + (prefs.tagFilter === it.key ? ' on' : '');
+      b.textContent = it.label;
+      if (it.key !== 'all') {
+        const num = document.createElement('span');
+        num.className = 'n';
+        num.textContent = base.filter(t => matchTag(t, it.key) && matchDate(t, prefs.listFilter)).length;
+        b.append(num);
+      }
+      b.setAttribute('aria-pressed', String(prefs.tagFilter === it.key));
+      b.addEventListener('click', () => {
+        prefs.tagFilter = it.key;
+        if (it.key) newTag.value = it.key;
+        save();
+        render();
+      });
+      tagFilters.append(b);
+    }
+  }
+
+  function renderTagOptions() {
+    tagList.textContent = '';
+    for (const t of usedTags()) {
+      const opt = document.createElement('option');
+      opt.value = t;
+      tagList.append(opt);
+    }
+  }
+
   function render() {
     list.textContent = '';
+
+    if (prefs.tagFilter !== 'all' && prefs.tagFilter !== '' && !usedTags().includes(prefs.tagFilter)) {
+      prefs.tagFilter = 'all';
+      save();
+    }
 
     const done = tasks.filter(t => t.done);
     const shown = visibleTasks();
@@ -1029,17 +1140,22 @@
     }
 
     if (tasks.length && !shown.length) {
+      const conds = [];
+      if (prefs.listFilter !== 'all') conds.push(FILTERS.find(f => f.key === prefs.listFilter).label);
+      if (prefs.tagFilter !== 'all') conds.push(prefs.tagFilter ? '分类「' + prefs.tagFilter + '」' : '未分类');
       const none = document.createElement('li');
       none.className = 'list-empty';
-      none.textContent = prefs.listFilter === 'all'
-        ? '没有可显示的任务'
-        : '当前筛选条件下没有任务（' + FILTERS.find(f => f.key === prefs.listFilter).label + '）';
+      none.textContent = conds.length
+        ? '当前筛选条件下没有任务（' + conds.join(' · ') + '）'
+        : '没有可显示的任务';
       list.append(none);
     }
 
     empty.hidden = tasks.length > 0;
 
     renderFilters();
+    renderTagFilters();
+    renderTagOptions();
     renderHistory(done);
 
     pendingCount.textContent = tasks.length - done.length;
@@ -1101,6 +1217,14 @@
         line.append(due);
       }
 
+      if (task.tag) {
+        const tg = document.createElement('span');
+        tg.className = 'tg';
+        tg.innerHTML = icon('tag', 12);
+        tg.append(task.tag);
+        line.append(tg);
+      }
+
       body.append(line);
       row.append(body);
 
@@ -1147,9 +1271,29 @@
     dueBox.value = task.due || '';
     dueBox.setAttribute('aria-label', '到期日');
 
-    const commit = () => commitEdit(task.id, box.value, dueBox.value);
+    const tagBox = document.createElement('input');
+    tagBox.type = 'text';
+    tagBox.className = 'tag-input';
+    tagBox.maxLength = 12;
+    tagBox.list = 'tag-list';
+    tagBox.value = task.tag || '';
+    tagBox.placeholder = '分类';
+    tagBox.setAttribute('aria-label', '分类');
+
+    const commit = () => commitEdit(task.id, box.value, dueBox.value, tagBox.value);
 
     box.addEventListener('keydown', (e) => {
+      if (e.isComposing) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        cancelEdit();
+      }
+    });
+
+    tagBox.addEventListener('keydown', (e) => {
       if (e.isComposing) return;
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1174,7 +1318,7 @@
     no.setAttribute('aria-label', '取消编辑');
     no.addEventListener('click', cancelEdit);
 
-    wrap.append(box, dueBox, ok, no);
+    wrap.append(box, dueBox, tagBox, ok, no);
     return [wrap];
   }
 
@@ -1305,8 +1449,8 @@
     tasks = next;
   }
 
-  function add(text, priority, due) {
-    tasks.push({ id: uid(), text, priority, due: due || '', done: false, completedAt: null, createdAt: Date.now() });
+  function add(text, priority, due, tag) {
+    tasks.push({ id: uid(), text, priority, due: due || '', tag: tag || '', done: false, completedAt: null, createdAt: Date.now() });
     save();
     render();
   }
@@ -1330,12 +1474,13 @@
     }
   }
 
-  function commitEdit(id, value, due) {
+  function commitEdit(id, value, due, tag) {
     const task = tasks.find(t => t.id === id);
     const text = value.trim();
     if (task && text) {
       task.text = text;
       task.due = due || '';
+      task.tag = tag.trim();
     }
     editingId = null;
     save();
@@ -1407,6 +1552,7 @@
         text: t.text.trim(),
         priority: LEVELS[t.priority] ? t.priority : 'mid',
         due: /^\d{4}-\d{2}-\d{2}$/.test(t.due || '') ? t.due : '',
+        tag: typeof t.tag === 'string' ? t.tag.trim().slice(0, 12) : '',
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
         createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
@@ -1448,7 +1594,7 @@
   function submitTask() {
     const text = input.value.trim();
     if (!text) return;
-    add(text, newPriority, newDue.value);
+    add(text, newPriority, newDue.value, newTag.value.trim());
     input.value = '';
     newDue.value = '';
     input.focus();
