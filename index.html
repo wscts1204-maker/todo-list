@@ -514,6 +514,86 @@
   .chev { color: var(--gray-500); padding: 4px; display: flex; transition: color .2s; }
   .chev:hover { color: var(--gray-700); }
 
+  /* ---------- stats panel ---------- */
+  .st-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .st-cell {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+
+  .st-cell b { display: block; font-size: 22px; line-height: 1.2; color: var(--gray-800); }
+  .st-cell span { font-size: 12px; color: var(--gray-500); }
+  .st-cell.warn b { color: var(--red-600); }
+
+  .st-sec { margin-top: 16px; }
+
+  .st-sec h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+
+  .st-row { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+
+  .st-name {
+    flex: 0 0 76px;
+    font-size: 13px;
+    color: var(--gray-700);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .st-track {
+    flex: 1;
+    height: 8px;
+    background: var(--gray-100);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .st-fill { display: block; height: 100%; border-radius: 999px; background: var(--blue-500); transition: width .3s; }
+  .st-fill.green { background: var(--green-600); }
+  .st-fill.red { background: var(--red-500); }
+  .st-fill.yellow { background: var(--yellow-500); }
+  .st-fill.gray { background: var(--gray-400); }
+
+  .st-num {
+    flex: 0 0 52px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--gray-500);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .st-trend { display: flex; align-items: flex-end; gap: 6px; height: 96px; }
+
+  .st-col {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .st-col .v { font-size: 11px; color: var(--gray-600); min-height: 14px; }
+  .st-col .bar { width: 100%; max-width: 32px; border-radius: 6px 6px 2px 2px; background: var(--blue-500); }
+  .st-col .bar.zero { background: var(--gray-200); min-height: 3px; }
+  .st-col .d { font-size: 11px; color: var(--gray-500); }
+  .st-col.today .bar:not(.zero) { background: var(--green-600); }
+
+  .st-hint { font-size: 12px; color: var(--gray-400); margin-top: 14px; }
+
   .hist-filter {
     display: flex;
     align-items: center;
@@ -676,6 +756,7 @@
     .empty { padding: 56px 24px; }
     .empty > p { font-size: 16px; }
     .hist-card { padding: 24px; }
+    .st-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .hist-item .t { font-size: 16px; }
     .dialog p { font-size: 16px; }
     .dbtn { font-size: 16px; }
@@ -742,6 +823,14 @@
           <div class="step"><b>3</b><span>点击添加</span></div>
         </div>
       </div>
+    </section>
+
+    <section id="stats" class="card hist-card">
+      <div class="hist-head">
+        <h3>数据统计</h3>
+        <button id="stats-toggle" class="chev" type="button" title="展开/收起"></button>
+      </div>
+      <div id="stats-body"></div>
     </section>
 
     <section id="history" class="card hist-card">
@@ -864,6 +953,9 @@
   const histList = $('hist-list');
   const histDate = $('hist-date');
   const histToggle = $('hist-toggle');
+  const statsCard = $('stats');
+  const statsBody = $('stats-body');
+  const statsToggle = $('stats-toggle');
   const pendingCount = $('pending-count');
   const doneCount = $('done-count');
   const statDone = $('stat-done');
@@ -907,7 +999,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true };
     try {
       return { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
     } catch {
@@ -1162,6 +1254,7 @@
     renderTagFilters();
     renderTagOptions();
     renderHistory(done);
+    renderStats(done);
 
     pendingCount.textContent = tasks.length - done.length;
     doneCount.textContent = done.length;
@@ -1325,6 +1418,138 @@
 
     wrap.append(box, dueBox, tagBox, ok, no);
     return [wrap];
+  }
+
+  function stSection(title) {
+    const sec = document.createElement('div');
+    sec.className = 'st-sec';
+    const h = document.createElement('h4');
+    h.textContent = title;
+    sec.append(h);
+    return sec;
+  }
+
+  function statRow(label, doneN, totalN, tone) {
+    const row = document.createElement('div');
+    row.className = 'st-row';
+
+    const name = document.createElement('span');
+    name.className = 'st-name';
+    name.title = label;
+    name.textContent = label;
+
+    const track = document.createElement('span');
+    track.className = 'st-track';
+    const fill = document.createElement('span');
+    fill.className = 'st-fill' + (tone ? ' ' + tone : '');
+    fill.style.width = (totalN ? Math.round((doneN / totalN) * 100) : 0) + '%';
+    track.append(fill);
+
+    const num = document.createElement('span');
+    num.className = 'st-num';
+    num.textContent = doneN + '/' + totalN;
+
+    row.append(name, track, num);
+    return row;
+  }
+
+  function statCell(label, value, warn) {
+    const cell = document.createElement('div');
+    cell.className = 'st-cell' + (warn ? ' warn' : '');
+    const b = document.createElement('b');
+    b.textContent = value;
+    const s = document.createElement('span');
+    s.textContent = label;
+    cell.append(b, s);
+    return cell;
+  }
+
+  function renderStats(done) {
+    statsCard.hidden = tasks.length === 0;
+    statsBody.hidden = !prefs.statsOpen;
+    statsToggle.innerHTML = icon(prefs.statsOpen ? 'chevronUp' : 'chevronDown', 20);
+    if (!tasks.length) return;
+
+    statsBody.textContent = '';
+
+    const count = fn => tasks.filter(fn).length;
+    const grid = document.createElement('div');
+    grid.className = 'st-grid';
+    grid.append(
+      statCell('完成率', Math.round((done.length / tasks.length) * 100) + '%'),
+      statCell('已逾期', count(t => !t.done && dueInDays(t) !== null && dueInDays(t) < 0), count(t => !t.done && dueInDays(t) !== null && dueInDays(t) < 0) > 0),
+      statCell('今天到期', count(t => !t.done && dueInDays(t) === 0)),
+      statCell('未来 7 天', count(t => { const d = dueInDays(t); return !t.done && d !== null && d > 0 && d <= 6; })),
+    );
+    statsBody.append(grid);
+
+    const overall = stSection('总进度');
+    overall.append(statRow('已完成', done.length, tasks.length, 'green'));
+    statsBody.append(overall);
+
+    const tags = usedTags();
+    if (tags.length) {
+      const sec = stSection('按分类完成率');
+      for (const tag of tags) {
+        const g = tasks.filter(t => t.tag === tag);
+        sec.append(statRow(tag, g.filter(t => t.done).length, g.length));
+      }
+      const none = tasks.filter(t => !t.tag);
+      if (none.length) sec.append(statRow('未分类', none.filter(t => t.done).length, none.length, 'gray'));
+      statsBody.append(sec);
+    }
+
+    const psec = stSection('按优先级完成率');
+    const tone = { high: 'red', mid: 'yellow', low: 'green' };
+    for (const key of Object.keys(LEVELS)) {
+      const g = tasks.filter(t => level(t) === key);
+      if (!g.length) continue;
+      psec.append(statRow(LEVELS[key].label + '优先级', g.filter(t => t.done).length, g.length, tone[key]));
+    }
+    statsBody.append(psec);
+
+    const tsec = stSection('近 7 天完成');
+    const base = parseDay(dayKey(Date.now()));
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() - i);
+      days.push({ key: dayKey(d.getTime()), label: (d.getMonth() + 1) + '/' + d.getDate(), n: 0, today: i === 0 });
+    }
+    const byKey = new Map(days.map(d => [d.key, d]));
+    for (const t of done) {
+      const hit = byKey.get(dayKey(t.completedAt || 0));
+      if (hit) hit.n++;
+    }
+    const max = Math.max(1, ...days.map(d => d.n));
+    const trend = document.createElement('div');
+    trend.className = 'st-trend';
+    for (const d of days) {
+      const col = document.createElement('div');
+      col.className = 'st-col' + (d.today ? ' today' : '');
+
+      const v = document.createElement('span');
+      v.className = 'v';
+      v.textContent = d.n ? String(d.n) : '';
+
+      const bar = document.createElement('span');
+      bar.className = 'bar' + (d.n ? '' : ' zero');
+      if (d.n) bar.style.height = Math.max(8, Math.round((d.n / max) * 58)) + 'px';
+      bar.title = d.label + '：完成 ' + d.n + ' 个';
+
+      const lab = document.createElement('span');
+      lab.className = 'd';
+      lab.textContent = d.label;
+
+      col.append(v, bar, lab);
+      trend.append(col);
+    }
+    tsec.append(trend);
+
+    const note = document.createElement('p');
+    note.className = 'st-hint';
+    note.textContent = '近 7 天共完成 ' + days.reduce((s, d) => s + d.n, 0) + ' 个 · 统计的是全部任务，不受上方筛选影响';
+    tsec.append(note);
+    statsBody.append(tsec);
   }
 
   function renderHistory(done) {
@@ -1636,6 +1861,12 @@
 
   histToggle.addEventListener('click', () => {
     prefs.historyOpen = !prefs.historyOpen;
+    save();
+    render();
+  });
+
+  statsToggle.addEventListener('click', () => {
+    prefs.statsOpen = !prefs.statsOpen;
     save();
     render();
   });
