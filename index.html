@@ -788,35 +788,35 @@
 
   // ---------- 手写清单初始化数据（首次打开自动导入，按文本去重） ----------
   const SEED_KEY = 'todo.seed';
-  const SEED_VERSION = 1;
+  const SEED_VERSION = 2;
   const SEED_TASKS = [
-    { text: '开通流量主 / 养号', priority: 'high' },
-    { text: '今日头条', priority: 'high' },
-    { text: '学习英语', priority: 'mid' },
-    { text: '登录 team', priority: 'mid' },
-    { text: 'deepseek + 小红书', priority: 'high' },
-    { text: '安装 Codex', priority: 'mid' },
-    { text: '闲鱼自动化', priority: 'mid' },
-    { text: '写代码网页', priority: 'mid' },
-    { text: '整理 C / D 盘', priority: 'low' },
-    { text: '完善“健身 app”/“厨房小程序”', priority: 'mid' },
-    { text: '学习 workbuddy（每日一个知识点 + AI 总结）', priority: 'mid' },
-    { text: '建个人知识库', priority: 'high' },
-    { text: '研究提示词', priority: 'high' },
-    { text: '规范化健身（每日训练）', priority: 'high' },
-    { text: '完善每日饮食', priority: 'mid' },
-    { text: '学习穿搭搭配 / 护肤', priority: 'low' },
-    { text: '考公 / 开店准备', priority: 'high' },
-    { text: 'A 股股票知识点（每日 1-3 个）', priority: 'mid' },
-    { text: '低压电工证 / 仪表证', priority: 'mid' },
-    { text: '理财（定投 / 周度复盘）', priority: 'mid' },
-    { text: 'AI + markdown 排版学习', priority: 'low' },
-    { text: '薅羊毛', priority: 'low' },
-    { text: '练字', priority: 'low' },
-    { text: 'AI + 剪辑（打通 / 熟练使用）', priority: 'mid' },
-    { text: '学习做家常小炒（一周 3-4 道）', priority: 'low' },
-    { text: 'AI 仿生人学习（知识体系）', priority: 'mid' },
-    { text: '智能体 / skill / RAG 学习', priority: 'high' },
+    { text: '开通流量主 / 养号', priority: 'high', tag: '自媒体' },
+    { text: '今日头条', priority: 'high', tag: '自媒体' },
+    { text: '学习英语', priority: 'mid', tag: '考证备考' },
+    { text: '登录 team', priority: 'mid', tag: 'AI工具' },
+    { text: 'deepseek + 小红书', priority: 'high', tag: '自媒体' },
+    { text: '安装 Codex', priority: 'mid', tag: 'AI工具' },
+    { text: '闲鱼自动化', priority: 'mid', tag: '项目开发' },
+    { text: '写代码网页', priority: 'mid', tag: '项目开发' },
+    { text: '整理 C / D 盘', priority: 'low', tag: '生活杂事' },
+    { text: '完善“健身 app”/“厨房小程序”', priority: 'mid', tag: '项目开发' },
+    { text: '学习 workbuddy（每日一个知识点 + AI 总结）', priority: 'mid', tag: 'AI工具' },
+    { text: '建个人知识库', priority: 'high', tag: '项目开发' },
+    { text: '研究提示词', priority: 'high', tag: 'AI工具' },
+    { text: '规范化健身（每日训练）', priority: 'high', tag: '健康形象' },
+    { text: '完善每日饮食', priority: 'mid', tag: '健康形象' },
+    { text: '学习穿搭搭配 / 护肤', priority: 'low', tag: '健康形象' },
+    { text: '考公 / 开店准备', priority: 'high', tag: '考证备考' },
+    { text: 'A 股股票知识点（每日 1-3 个）', priority: 'mid', tag: '理财赚钱' },
+    { text: '低压电工证 / 仪表证', priority: 'mid', tag: '考证备考' },
+    { text: '理财（定投 / 周度复盘）', priority: 'mid', tag: '理财赚钱' },
+    { text: 'AI + markdown 排版学习', priority: 'low', tag: 'AI工具' },
+    { text: '薅羊毛', priority: 'low', tag: '理财赚钱' },
+    { text: '练字', priority: 'low', tag: '生活杂事' },
+    { text: 'AI + 剪辑（打通 / 熟练使用）', priority: 'mid', tag: 'AI工具' },
+    { text: '学习做家常小炒（一周 3-4 道）', priority: 'low', tag: '健康形象' },
+    { text: 'AI 仿生人学习（知识体系）', priority: 'mid', tag: 'AI工具' },
+    { text: '智能体 / skill / RAG 学习', priority: 'high', tag: 'AI工具' },
   ];
 
   const PATHS = {
@@ -935,6 +935,11 @@
     }
     if (applied >= SEED_VERSION) return;
 
+    // 已经存在于本机清单里的同名任务：只补空分类，用户自己填过的不动
+    const seedTag = new Map();
+    for (const item of SEED_TASKS) if (item.tag) seedTag.set(item.text, item.tag);
+    for (const t of tasks) if (!t.tag && seedTag.has(t.text)) t.tag = seedTag.get(t.text);
+
     const existing = new Set(tasks.map(t => t.text));
     for (const item of SEED_TASKS) {
       if (existing.has(item.text)) continue;
@@ -943,7 +948,7 @@
         text: item.text,
         priority: item.priority,
         due: '',
-        tag: '',
+        tag: item.tag || '',
         done: false,
         completedAt: null,
         createdAt: Date.now(),
