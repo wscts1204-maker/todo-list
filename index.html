@@ -6,6 +6,7 @@
 <title>我的待办清单</title>
 <style>
   :root {
+    color-scheme: light;
     --gray-800: #1f2937;
     --gray-700: #374151;
     --gray-600: #4b5563;
@@ -36,6 +37,66 @@
     --yellow-500: #d97706;
     --yellow-100: #fef3c7;
     --yellow-50: #fffbeb;
+
+    /* 语义层：色板变量在深色模式下整体反向，这一段负责真正的表面与投影 */
+    --surface: #fff;
+    --surface-glass: rgba(255, 255, 255, .75);
+    --card-border: #dcebe7;
+    --page-bg: linear-gradient(160deg, #f1f8f7 0%, #e0efec 55%, #cbe4df 100%);
+    --on-accent: #fff;
+    --shadow-card: 0 10px 15px -3px rgba(13, 61, 58, .08), 0 4px 6px -4px rgba(13, 61, 58, .06);
+    --shadow-sm: 0 4px 6px -1px rgba(13, 61, 58, .1);
+    --shadow-sm-hover: 0 10px 15px -3px rgba(13, 61, 58, .14);
+    --shadow-btn: 0 4px 6px -1px rgba(13, 61, 58, .18);
+    --shadow-btn-hover: 0 10px 15px -3px rgba(13, 61, 58, .22);
+    --shadow-dialog: 0 25px 50px -12px rgba(15, 23, 42, .35);
+    --scrim: rgba(15, 23, 42, .45);
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --gray-800: #e8f1ef;
+    --gray-700: #cfe0dd;
+    --gray-600: #aec5c0;
+    --gray-500: #94aea9;
+    --gray-400: #7e9b96;
+    --gray-300: #435956;
+    --gray-200: #2c403d;
+    --gray-100: #233532;
+    --gray-50: #1d2c29;
+    --teal-600: #2dd4bf;
+    --teal-700: #5eead4;
+    --teal-50: #12312e;
+    --teal-800: #99f6e4;
+    --green-800: #bbf7d0;
+    --green-600: #4ade80;
+    --green-500: #34d399;
+    --green-100: #1d3a26;
+    --green-50: #16281c;
+    --red-800: #fecdd3;
+    --red-700: #fda4af;
+    --red-600: #fb7185;
+    --red-500: #f43f5e;
+    --red-400: #fb7185;
+    --red-100: #4c1d27;
+    --red-50: #2c1620;
+    --yellow-800: #fde68a;
+    --yellow-600: #fbbf24;
+    --yellow-500: #f59e0b;
+    --yellow-100: #4a3616;
+    --yellow-50: #2e2413;
+    --surface: #172422;
+    --surface-glass: rgba(255, 255, 255, .05);
+    --card-border: #2b3f3c;
+    --page-bg: linear-gradient(160deg, #0c1614 0%, #101c1a 55%, #14231f 100%);
+    --on-accent: #04211f;
+    --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, .5), 0 4px 6px -4px rgba(0, 0, 0, .45);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, .45);
+    --shadow-sm-hover: 0 10px 15px -3px rgba(0, 0, 0, .55);
+    --shadow-btn: 0 4px 6px -1px rgba(0, 0, 0, .45);
+    --shadow-btn-hover: 0 10px 15px -3px rgba(0, 0, 0, .55);
+    --shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, .7);
+    --scrim: rgba(0, 0, 0, .7);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,7 +104,8 @@
   body {
     font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     min-height: 100vh;
-    background: linear-gradient(160deg, #f1f8f7 0%, #e0efec 55%, #cbe4df 100%);
+    background: var(--page-bg);
+    background-attachment: fixed;
     color: var(--gray-800);
     padding: 24px 12px 48px;
   }
@@ -53,14 +115,14 @@
   .wrap { width: 100%; max-width: 672px; margin: 0 auto; }
 
   .card {
-    background: #fff;
-    border: 1px solid #dcebe7;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
     border-radius: 16px;
-    box-shadow: 0 10px 15px -3px rgba(13, 61, 58, .08), 0 4px 6px -4px rgba(13, 61, 58, .06);
+    box-shadow: var(--shadow-card);
   }
 
   /* ---------- header ---------- */
-  .head { text-align: center; margin-bottom: 24px; padding-top: 12px; }
+  .head { position: relative; text-align: center; margin-bottom: 24px; padding-top: 12px; }
 
   .head-top {
     display: flex;
@@ -92,7 +154,7 @@
     transition: box-shadow .2s, border-color .2s;
   }
 
-  #new-task::placeholder { color: var(--gray-400); }
+  #new-task::placeholder { color: var(--gray-500); }
 
   #new-task:focus {
     border-color: transparent;
@@ -106,18 +168,18 @@
     gap: 8px;
     font-size: 16px;
     font-weight: 500;
-    color: #fff;
+    color: var(--on-accent);
     padding: 12px 24px;
     min-height: 48px;
     border-radius: 12px;
     background: var(--teal-700);
-    box-shadow: 0 4px 6px -1px rgba(13, 61, 58, .18);
+    box-shadow: var(--shadow-btn);
     transition: background .2s, box-shadow .2s;
   }
 
   #add:hover {
     background: var(--teal-800);
-    box-shadow: 0 10px 15px -3px rgba(13, 61, 58, .22);
+    box-shadow: var(--shadow-btn-hover);
   }
 
   .prio-row {
@@ -172,7 +234,7 @@
     border: 1px solid var(--gray-300);
     border-radius: 8px;
     outline: none;
-    background: #fff;
+    background: var(--surface);
   }
 
   .date-input:focus { box-shadow: 0 0 0 2px var(--teal-600); border-color: transparent; }
@@ -191,12 +253,12 @@
     border: 1px solid var(--gray-300);
     border-radius: 8px;
     outline: none;
-    background: #fff;
+    background: var(--surface);
   }
 
   .tag-input:focus { box-shadow: 0 0 0 2px var(--teal-600); border-color: transparent; }
 
-  .tag-hint { font-size: 12px; color: var(--gray-400); }
+  .tag-hint { font-size: 12px; color: var(--gray-500); }
 
   /* ---------- toolbar ---------- */
   .toolbar {
@@ -214,9 +276,9 @@
   }
 
   .stat {
-    background: #fff;
+    background: var(--surface);
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(13, 61, 58, .1);
+    box-shadow: var(--shadow-sm);
     padding: 12px;
     text-align: center;
     min-height: 44px;
@@ -245,15 +307,15 @@
   .tbtn {
     font-size: 14px;
     font-weight: 500;
-    color: #fff;
+    color: var(--on-accent);
     padding: 12px 16px;
     min-height: 44px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(13, 61, 58, .1);
+    box-shadow: var(--shadow-sm);
     transition: background .2s, box-shadow .2s;
   }
 
-  .tbtn:hover { box-shadow: 0 10px 15px -3px rgba(13, 61, 58, .14); }
+  .tbtn:hover { box-shadow: var(--shadow-sm-hover); }
   .tbtn.red { background: var(--red-600); }
   .tbtn.red:hover { background: var(--red-700); }
   .tbtn.gray { background: var(--gray-500); }
@@ -291,7 +353,7 @@
   }
 
   .fbtn:hover { background: var(--gray-200); }
-  .fbtn.on { background: var(--teal-600); color: #fff; }
+  .fbtn.on { background: var(--teal-700); color: var(--on-accent); }
   .fbtn .n { font-size: 12px; opacity: .8; }
 
   #list { list-style: none; }
@@ -316,7 +378,7 @@
   .row.done { border-left-color: transparent; background: var(--gray-50); }
 
   .grip {
-    color: var(--gray-300);
+    color: var(--gray-500);
     width: 24px;
     height: 44px;
     display: flex;
@@ -329,7 +391,7 @@
     transition: color .2s;
   }
 
-  .grip:hover { color: var(--gray-500); }
+  .grip:hover { color: var(--gray-700); }
   li.dragging .grip { cursor: grabbing; }
 
   .tick {
@@ -361,7 +423,7 @@
   }
 
   .done .txt {
-    color: var(--gray-400);
+    color: var(--gray-500);
     text-decoration: line-through;
   }
 
@@ -386,7 +448,7 @@
     gap: 4px;
     align-self: flex-start;
     font-size: 12px;
-    color: var(--gray-500);
+    color: var(--gray-600);
     padding: 4px 8px;
     border-radius: 999px;
     background: var(--gray-100);
@@ -404,11 +466,11 @@
     color: var(--gray-600);
     padding: 3px 8px;
     border-radius: 999px;
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--gray-200);
   }
 
-  .done .tg { color: var(--gray-400); }
+  .done .tg { color: var(--gray-500); }
 
   li.dragging { opacity: .5; }
   li.dragging > .row { background: var(--teal-50); }
@@ -437,7 +499,7 @@
 
   .ibtn.edit { color: var(--teal-600); }
   .ibtn.edit:hover { color: var(--teal-700); background: var(--teal-50); }
-  .ibtn.del { color: var(--red-400); }
+  .ibtn.del { color: var(--red-500); }
   .ibtn.del:hover { color: var(--red-600); background: var(--red-50); }
   .ibtn.ok { color: var(--green-600); }
   .ibtn.ok:hover { color: var(--green-800); }
@@ -595,7 +657,7 @@
   .st-col .d { font-size: 11px; color: var(--gray-500); }
   .st-col.today .bar:not(.zero) { background: var(--green-600); }
 
-  .st-hint { font-size: 12px; color: var(--gray-400); margin-top: 14px; }
+  .st-hint { font-size: 12px; color: var(--gray-500); margin-top: 14px; }
 
   .hist-filter {
     display: flex;
@@ -646,7 +708,7 @@
     margin-top: 16px;
     text-align: center;
     font-size: 12px;
-    color: var(--gray-500);
+    color: var(--gray-600);
     padding: 0 16px;
   }
 
@@ -664,7 +726,7 @@
     font-size: 13px;
     font-weight: 500;
     color: var(--gray-600);
-    background: rgba(255, 255, 255, .75);
+    background: var(--surface-glass);
     border: 1px solid var(--gray-200);
     padding: 8px 14px;
     min-height: 40px;
@@ -672,7 +734,7 @@
     transition: background .2s, color .2s, border-color .2s;
   }
 
-  .bbtn:hover { background: #fff; color: var(--gray-800); border-color: var(--gray-300); }
+  .bbtn:hover { background: var(--surface); color: var(--gray-800); border-color: var(--gray-300); }
 
   .bmsg { font-size: 12px; color: var(--gray-500); }
   .bmsg.err { color: var(--red-600); }
@@ -683,7 +745,7 @@
   .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, .45);
+    background: var(--scrim);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -694,12 +756,12 @@
   .backdrop[hidden] { display: none; }
 
   .dialog {
-    background: #fff;
+    background: var(--surface);
     border-radius: 16px;
     padding: 24px;
     width: 100%;
     max-width: 384px;
-    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, .35);
+    box-shadow: var(--shadow-dialog);
   }
 
   .dialog-head {
@@ -727,8 +789,107 @@
 
   .dbtn.plain { color: var(--gray-600); }
   .dbtn.plain:hover { color: var(--gray-800); }
-  .dbtn.danger { background: var(--red-600); color: #fff; }
+  .dbtn.danger { background: var(--red-600); color: var(--on-accent); }
   .dbtn.danger:hover { background: var(--red-700); }
+
+  /* ---------- 主题切换 ---------- */
+  .theme-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    color: var(--gray-600);
+    box-shadow: var(--shadow-sm);
+    transition: color .2s;
+  }
+
+  .theme-btn:hover { color: var(--teal-700); }
+
+  /* 窄屏上标题会伸到主题按钮底下，给它让出位置 */
+  @media (max-width: 360px) {
+    .head-top { padding-right: 44px; }
+  }
+
+  @media (max-width: 320px) {
+    .head h1 { font-size: 28px; }
+  }
+
+  /* ---------- 搜索 ---------- */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 12px 0;
+  }
+
+  .search-bar[hidden] { display: none; }
+
+  .search-field { position: relative; flex: 1; min-width: 0; }
+
+  .search-field .s-ico {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-500);
+    display: flex;
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+    padding: 8px 14px 8px 38px;
+    min-height: 44px;
+    outline: none;
+    transition: box-shadow .2s, border-color .2s;
+  }
+
+  .search-input::placeholder { color: var(--gray-500); }
+  .search-input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+  .search-input::-webkit-search-cancel-button { display: none; }
+
+  .s-clear {
+    font-size: 13px;
+    color: var(--gray-500);
+    padding: 8px;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+
+  .s-clear:hover { color: var(--red-600); }
+
+  /* ---------- 重复任务 ---------- */
+  .rbtn.on { background: var(--teal-700); color: var(--on-accent); }
+  .rbtn.on:hover { background: var(--teal-800); }
+
+  .rp { background: var(--teal-50); color: var(--teal-700); border-color: transparent; }
+
+  .sel-input {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 44px;
+    outline: none;
+  }
+
+  .sel-input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
 
   @media (min-width: 640px) {
     body { padding: 40px 24px 64px; }
@@ -742,6 +903,8 @@
     .pbtn .txt { display: inline; }
     .date-input { font-size: 16px; }
     .filter-bar { padding: 16px 16px 0; }
+    .search-bar { padding: 16px 16px 0; }
+    .search-input { font-size: 16px; }
     .grip { width: 32px; margin-left: -12px; }
     .toolbar { flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .stats { gap: 16px; width: auto; }
@@ -766,6 +929,17 @@
     .total { font-size: 14px; margin-top: 24px; }
   }
 </style>
+<script>
+  // 先定主题再渲染，否则深色模式下每次打开都会闪一下白底
+  try {
+    var saved = (JSON.parse(localStorage.getItem('todo.prefs')) || {}).theme;
+    document.documentElement.dataset.theme =
+      saved === 'light' || saved === 'dark' ? saved
+        : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  } catch (e) {
+    document.documentElement.dataset.theme = 'light';
+  }
+</script>
 </head>
 <body>
   <div class="wrap">
@@ -775,6 +949,7 @@
         <h1>我的待办清单</h1>
       </div>
       <p>管理您的日常任务</p>
+      <button id="theme-btn" class="theme-btn" type="button" aria-label="切换深色或浅色主题"></button>
     </header>
 
     <section class="card input-card">
@@ -798,6 +973,11 @@
         <datalist id="tag-list"></datalist>
         <span class="tag-hint">输入新名字即可新建分类</span>
       </div>
+      <div class="prio-row">
+        <span class="prio-label">重复：</span>
+        <div class="prio-btns" id="rep-btns"></div>
+        <span class="tag-hint">勾选完成后自动排下一次</span>
+      </div>
     </section>
 
     <section class="toolbar">
@@ -813,6 +993,13 @@
     </section>
 
     <section class="card list-card">
+      <div id="search-bar" class="search-bar" hidden>
+        <div class="search-field">
+          <span class="s-ico" id="search-ico"></span>
+          <input id="search" type="search" class="search-input" placeholder="搜索任务或分类…" maxlength="60" aria-label="搜索任务或分类">
+        </div>
+        <button id="search-clear" class="s-clear" type="button" hidden>清除</button>
+      </div>
       <div id="filters" class="filter-bar"></div>
       <div id="tag-filters" class="filter-bar"></div>
       <ul id="list"></ul>
@@ -928,6 +1115,11 @@
     grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
     calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
     tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 4H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    repeat: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+    moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+    monitor: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
   };
 
   function icon(name, size) {
@@ -940,6 +1132,16 @@
     low: { label: '低', icon: 'feather' },
   };
 
+  const REPEATS = [
+    { key: '', label: '不重复' },
+    { key: 'daily', label: '每天' },
+    { key: 'weekly', label: '每周' },
+    { key: 'monthly', label: '每月' },
+  ];
+
+  const REPEAT_LABEL = {};
+  for (const r of REPEATS) REPEAT_LABEL[r.key] = r.label;
+
   const $ = (id) => document.getElementById(id);
   const form = $('form');
   const input = $('new-task');
@@ -947,6 +1149,11 @@
   const newDue = $('new-due');
   const newTag = $('new-tag');
   const tagList = $('tag-list');
+  const repBox = $('rep-btns');
+  const searchBar = $('search-bar');
+  const searchInput = $('search');
+  const searchClear = $('search-clear');
+  const themeBtn = $('theme-btn');
   const filters = $('filters');
   const tagFilters = $('tag-filters');
   const list = $('list');
@@ -979,6 +1186,8 @@
   let tasks = load();
   let prefs = loadPrefs();
   let newPriority = 'mid';
+  let newRepeat = '';
+  let query = '';
   let editingId = null;
   let confirmAction = null;
   let dragging = null;
@@ -998,11 +1207,15 @@
     } catch {
       return [];
     }
-    return raw.map(t => ({ priority: 'mid', completedAt: null, due: '', tag: '', ...t }));
+    return raw.map(t => {
+      const o = { priority: 'mid', completedAt: null, due: '', tag: '', repeat: '', ...t };
+      if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
+      return o;
+    });
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '' };
     try {
       return { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
     } catch {
@@ -1044,6 +1257,7 @@
         priority: item.priority,
         due: '',
         tag: item.tag || '',
+        repeat: item.repeat || '',
         done: false,
         completedAt: null,
         createdAt: Date.now(),
@@ -1102,8 +1316,15 @@
     return (task.tag || '') === key;
   }
 
+  // 搜索：任务文字与分类名都算命中，不区分大小写
+  function matchQuery(task) {
+    if (!query) return true;
+    const q = query.toLowerCase();
+    return task.text.toLowerCase().includes(q) || (task.tag || '').toLowerCase().includes(q);
+  }
+
   function matchFilter(task) {
-    return matchDate(task, prefs.listFilter) && matchTag(task, prefs.tagFilter);
+    return matchDate(task, prefs.listFilter) && matchTag(task, prefs.tagFilter) && matchQuery(task);
   }
 
   function activeTasks() {
@@ -1146,9 +1367,24 @@
     }
   }
 
+  function renderRepPicker() {
+    repBox.textContent = '';
+    for (const r of REPEATS) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pbtn rbtn' + (newRepeat === r.key ? ' on' : '');
+      b.textContent = r.label;
+      b.setAttribute('aria-pressed', String(newRepeat === r.key));
+      b.addEventListener('click', () => {
+        newRepeat = r.key;
+        renderRepPicker();
+      });
+      repBox.append(b);
+    }
+  }
+
   function renderFilters() {
-    filters.hidden = tasks.length === 0;
-    filters.textContent = '';
+    filters.hidden = tasks.length === 0;    filters.textContent = '';
     if (!tasks.length) return;
 
     const label = document.createElement('span');
@@ -1165,7 +1401,7 @@
       if (f.key !== 'all') {
         const num = document.createElement('span');
         num.className = 'n';
-        num.textContent = base.filter(t => matchDate(t, f.key) && matchTag(t, prefs.tagFilter)).length;
+        num.textContent = base.filter(t => matchDate(t, f.key) && matchTag(t, prefs.tagFilter) && matchQuery(t)).length;
         b.append(num);
       }
       b.setAttribute('aria-pressed', String(prefs.listFilter === f.key));
@@ -1201,13 +1437,13 @@
       if (it.key !== 'all') {
         const num = document.createElement('span');
         num.className = 'n';
-        num.textContent = base.filter(t => matchTag(t, it.key) && matchDate(t, prefs.listFilter)).length;
+        num.textContent = base.filter(t => matchTag(t, it.key) && matchDate(t, prefs.listFilter) && matchQuery(t)).length;
         b.append(num);
       }
       b.setAttribute('aria-pressed', String(prefs.tagFilter === it.key));
       b.addEventListener('click', () => {
         prefs.tagFilter = it.key;
-        if (it.key) newTag.value = it.key;
+        if (it.key !== 'all' && it.key !== '') newTag.value = it.key;   // 只有真分类名才预填进输入框
         save();
         render();
       });
@@ -1243,6 +1479,7 @@
       const conds = [];
       if (prefs.listFilter !== 'all') conds.push(FILTERS.find(f => f.key === prefs.listFilter).label);
       if (prefs.tagFilter !== 'all') conds.push(prefs.tagFilter ? '分类「' + prefs.tagFilter + '」' : '未分类');
+      if (query) conds.push('搜索「' + query + '」');
       const none = document.createElement('li');
       none.className = 'list-empty';
       none.textContent = conds.length
@@ -1252,6 +1489,9 @@
     }
 
     empty.hidden = tasks.length > 0;
+
+    searchBar.hidden = tasks.length === 0;
+    searchClear.hidden = !query;
 
     renderFilters();
     renderTagFilters();
@@ -1326,6 +1566,15 @@
         line.append(tg);
       }
 
+      if (task.repeat) {
+        const rp = document.createElement('span');
+        rp.className = 'tg rp';
+        rp.innerHTML = icon('repeat', 12);
+        rp.append(REPEAT_LABEL[task.repeat]);
+        rp.title = '重复' + REPEAT_LABEL[task.repeat] + '：完成后自动排下一次';
+        line.append(rp);
+      }
+
       body.append(line);
       row.append(body);
 
@@ -1381,7 +1630,18 @@
     tagBox.placeholder = '分类';
     tagBox.setAttribute('aria-label', '分类');
 
-    const commit = () => commitEdit(task.id, box.value, dueBox.value, tagBox.value);
+    const repSel = document.createElement('select');
+    repSel.className = 'sel-input';
+    repSel.setAttribute('aria-label', '重复');
+    for (const r of REPEATS) {
+      const opt = document.createElement('option');
+      opt.value = r.key;
+      opt.textContent = r.key ? r.label + '重复' : r.label;
+      repSel.append(opt);
+    }
+    repSel.value = task.repeat || '';
+
+    const commit = () => commitEdit(task.id, box.value, dueBox.value, tagBox.value, repSel.value);
 
     box.addEventListener('keydown', (e) => {
       if (e.isComposing) return;
@@ -1419,7 +1679,7 @@
     no.setAttribute('aria-label', '取消编辑');
     no.addEventListener('click', cancelEdit);
 
-    wrap.append(box, dueBox, tagBox, ok, no);
+    wrap.append(box, dueBox, tagBox, repSel, ok, no);
     return [wrap];
   }
 
@@ -1682,10 +1942,28 @@
     tasks = next;
   }
 
-  function add(text, priority, due, tag) {
-    tasks.push({ id: uid(), text, priority, due: due || '', tag: tag || '', done: false, completedAt: null, createdAt: Date.now() });
+  function add(text, priority, due, tag, repeat) {
+    tasks.push({ id: uid(), text, priority, due: due || '', tag: tag || '', repeat: repeat || '', done: false, completedAt: null, createdAt: Date.now() });
     save();
     render();
+  }
+
+  // 下一次到期日：已经逾期的从今天往后推，不背旧账
+  function nextDue(task) {
+    const d = parseDay(task.due);
+    if (!d) return '';
+    const today = parseDay(dayKey(Date.now()));
+    const from = d > today ? d : today;
+    const y = from.getFullYear();
+    const m = from.getMonth();
+    const day = from.getDate();
+    if (task.repeat === 'daily') return dayKey(new Date(y, m, day + 1).getTime());
+    if (task.repeat === 'weekly') return dayKey(new Date(y, m, day + 7).getTime());
+    if (task.repeat === 'monthly') {
+      const last = new Date(y, m + 2, 0).getDate();
+      return dayKey(new Date(y, m + 1, Math.min(day, last)).getTime());
+    }
+    return '';
   }
 
   function toggle(id) {
@@ -1693,6 +1971,20 @@
     if (!task) return;
     task.done = !task.done;
     task.completedAt = task.done ? Date.now() : null;
+    // 重复任务：完成的那条留在历史里（统计要用），紧跟着排出一条新的
+    if (task.done && task.repeat) {
+      tasks.splice(tasks.indexOf(task) + 1, 0, {
+        id: uid(),
+        text: task.text,
+        priority: task.priority,
+        due: nextDue(task),
+        tag: task.tag,
+        repeat: task.repeat,
+        done: false,
+        completedAt: null,
+        createdAt: Date.now(),
+      });
+    }
     save();
     render();
   }
@@ -1707,13 +1999,14 @@
     }
   }
 
-  function commitEdit(id, value, due, tag) {
+  function commitEdit(id, value, due, tag, rep) {
     const task = tasks.find(t => t.id === id);
     const text = value.trim();
     if (task && text) {
       task.text = text;
       task.due = due || '';
       task.tag = tag.trim();
+      task.repeat = rep && rep in REPEAT_LABEL ? rep : '';
     }
     editingId = null;
     save();
@@ -1786,6 +2079,7 @@
         priority: LEVELS[t.priority] ? t.priority : 'mid',
         due: /^\d{4}-\d{2}-\d{2}$/.test(t.due || '') ? t.due : '',
         tag: typeof t.tag === 'string' ? t.tag.trim().slice(0, 12) : '',
+        repeat: typeof t.repeat === 'string' && t.repeat in REPEAT_LABEL ? t.repeat : '',
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
         createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
@@ -1827,15 +2121,39 @@
   function submitTask() {
     const text = input.value.trim();
     if (!text) return;
-    add(text, newPriority, newDue.value, newTag.value.trim());
+    add(text, newPriority, newDue.value, newTag.value.trim(), newRepeat);
     input.value = '';
     newDue.value = '';
     input.focus();
   }
 
+  // ---------- 主题：跟随系统 / 浅色 / 深色 三态循环 ----------
+  const darkMq = matchMedia('(prefers-color-scheme: dark)');
+  const THEME = {
+    '': { label: '跟随系统', icon: 'monitor' },
+    light: { label: '浅色', icon: 'sun' },
+    dark: { label: '深色', icon: 'moon' },
+  };
+
+  function applyTheme() {
+    const mode = prefs.theme === 'light' || prefs.theme === 'dark' ? prefs.theme : (darkMq.matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = mode;
+    const cur = THEME[prefs.theme] || THEME[''];
+    themeBtn.innerHTML = icon(cur.icon, 20);
+    themeBtn.title = '主题：' + cur.label + '（当前' + (mode === 'dark' ? '深色' : '浅色') + '，点击切换）';
+  }
+
+  function cycleTheme() {
+    prefs.theme = prefs.theme === '' ? 'light' : prefs.theme === 'light' ? 'dark' : '';
+    save();
+    applyTheme();
+  }
+
   $('head-ico').innerHTML = icon('listTodo', 28);
   $('empty-ico').innerHTML = icon('circle', 56);
   $('modal-ico').innerHTML = icon('alert', 24);
+  $('search-ico').innerHTML = icon('search', 18);
+  applyTheme();
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1848,6 +2166,33 @@
       e.preventDefault();
       submitTask();
     }
+  });
+
+  function clearSearch() {
+    query = '';
+    searchInput.value = '';
+    render();
+    searchInput.focus();
+  }
+
+  searchInput.addEventListener('input', () => {
+    query = searchInput.value.trim();
+    render();
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !e.isComposing) {
+      e.preventDefault();
+      clearSearch();
+    }
+  });
+
+  searchClear.addEventListener('click', clearSearch);
+
+  themeBtn.addEventListener('click', cycleTheme);
+
+  darkMq.addEventListener('change', () => {
+    if (prefs.theme === '') applyTheme();
   });
 
   statDone.addEventListener('click', () => {
@@ -1925,6 +2270,7 @@
   });
 
   renderPrioPicker();
+  renderRepPicker();
   seed();
   render();
 </script>
