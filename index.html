@@ -702,6 +702,9 @@
 
   .hist-item .badge { flex-shrink: 0; }
 
+  .hist-item .hist-back { color: var(--teal-600); flex-shrink: 0; }
+  .hist-item .hist-back:hover { color: var(--teal-700); background: var(--teal-50); }
+
   .hist-empty { font-size: 14px; color: var(--gray-500); text-align: center; padding: 16px; }
 
   .total {
@@ -891,6 +894,228 @@
 
   .sel-input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
 
+  /* ---------- 一句话快速添加 ---------- */
+  .quick-hint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--gray-600);
+  }
+
+  .quick-hint .qh {
+    background: var(--teal-50);
+    color: var(--teal-800);
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  /* ---------- 今日专注 ---------- */
+  .today-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 12px 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--teal-50);
+    color: var(--teal-800);
+    font-size: 13px;
+  }
+
+  .today-strip[hidden] { display: none; }
+
+  .today-strip b { font-size: 15px; }
+
+  .today-strip .st-fire { display: inline-flex; color: var(--yellow-600); }
+
+  .today-strip .ts-btn {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal-800);
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    padding: 8px 12px;
+    min-height: 44px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .today-strip .ts-btn:hover { background: var(--gray-100); }
+  .today-strip .ts-btn.on { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+  .today-strip .ts-btn.on:hover { background: var(--teal-800); }
+
+  /* ---------- 备注 / 子任务 ---------- */
+  .ibtn.more { color: var(--gray-600); }
+  .ibtn.more:hover { color: var(--gray-800); background: var(--gray-100); }
+
+  .detail {
+    padding: 0 12px 14px;
+    border-top: 1px dashed var(--gray-200);
+    margin: 0 12px;
+  }
+
+  li.dragging .detail { display: none; }
+
+  .detail .d-label {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin: 12px 0 6px;
+    display: block;
+  }
+
+  .note-input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 64px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .note-input::placeholder { color: var(--gray-500); }
+  .note-input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .sub {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sub-tick {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--teal-600);
+    flex-shrink: 0;
+  }
+
+  .sub-tick:hover { color: var(--teal-700); }
+
+  .sub-txt {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-800);
+    word-break: break-word;
+  }
+
+  .sub.done .sub-txt { color: var(--gray-500); text-decoration: line-through; }
+
+  .sub-del {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--red-500);
+    flex-shrink: 0;
+  }
+
+  .sub-del:hover { color: var(--red-600); }
+
+  .sub-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .sub-add input {
+    flex: 1;
+    min-width: 0;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 44px;
+    outline: none;
+  }
+
+  .sub-add input::placeholder { color: var(--gray-500); }
+  .sub-add input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .sub-add button {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    padding: 8px 12px;
+    min-height: 44px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  .sub-add button:hover { background: var(--gray-100); color: var(--teal-800); }
+
+  .sb { background: var(--teal-50); color: var(--teal-700); border-color: transparent; }
+
+  .note-flag { color: var(--gray-600); display: inline-flex; }
+
+  /* ---------- 撤销条 ---------- */
+  .undo-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: calc(100% - 32px);
+    padding: 10px 12px 10px 16px;
+    border-radius: 999px;
+    background: var(--gray-800);
+    color: var(--gray-50);
+    box-shadow: var(--shadow-card);
+    font-size: 14px;
+    z-index: 40;
+  }
+
+  .undo-bar[hidden] { display: none; }
+
+  .undo-bar .u-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .undo-bar .u-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: var(--surface);
+    padding: 8px 14px;
+    min-height: 44px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  .undo-bar .u-btn:hover { background: var(--gray-100); }
+
+  @media (min-width: 640px) {
+    .detail { padding-left: 60px; margin: 0 16px; }
+    .today-strip { margin: 16px 16px 0; font-size: 14px; }
+    .quick-hint { font-size: 14px; }
+    .note-input { font-size: 14px; }
+    .undo-bar { font-size: 15px; }
+    .undo-bar .u-btn { font-size: 15px; }
+  }
+
   @media (min-width: 640px) {
     body { padding: 40px 24px 64px; }
     .head { margin-bottom: 32px; padding-top: 20px; }
@@ -957,6 +1182,7 @@
         <input id="new-task" type="text" placeholder="今天要做什么？" maxlength="200">
         <button id="add" type="submit">➕ 添加任务</button>
       </form>
+      <div id="quick-hint" class="quick-hint" role="status" aria-live="polite"></div>
       <div class="prio-row">
         <span class="prio-label">优先级：</span>
         <div class="prio-btns" id="prio-btns"></div>
@@ -1000,6 +1226,7 @@
         </div>
         <button id="search-clear" class="s-clear" type="button" hidden>清除</button>
       </div>
+      <div id="today-strip" class="today-strip" hidden></div>
       <div id="filters" class="filter-bar"></div>
       <div id="tag-filters" class="filter-bar"></div>
       <ul id="list"></ul>
@@ -1045,6 +1272,11 @@
       <input type="file" id="import-file" accept=".json,application/json">
       <span id="backup-msg" class="bmsg"></span>
     </div>
+  </div>
+
+  <div id="undo-bar" class="undo-bar" hidden>
+    <span class="u-text" id="undo-text"></span>
+    <button id="undo-btn" class="u-btn" type="button">撤销</button>
   </div>
 
   <div id="modal" class="backdrop" hidden>
@@ -1120,6 +1352,10 @@
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
     moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
     monitor: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+    note: '<path d="M15 12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1z"/><path d="M4 18h16"/><path d="M4 21h10"/><path d="M12 12v.01"/>',
+    listChecks: '<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+    undo: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    reply: '<path d="M9 17 4 12l5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
   };
 
   function icon(name, size) {
@@ -1182,6 +1418,11 @@
   const modalText = $('modal-text');
   const modalOk = $('modal-ok');
   const modalCancel = $('modal-cancel');
+  const quickHint = $('quick-hint');
+  const todayStrip = $('today-strip');
+  const undoBar = $('undo-bar');
+  const undoText = $('undo-text');
+  const undoBtn = $('undo-btn');
 
   let tasks = load();
   let prefs = loadPrefs();
@@ -1191,6 +1432,9 @@
   let editingId = null;
   let confirmAction = null;
   let dragging = null;
+  const expanded = new Set();   // 哪些任务展开了备注/子任务面板（不跨会话保存）
+  let undoSnap = null;
+  let undoTimer = null;
 
   const FILTERS = [
     { key: 'all', label: '全部' },
@@ -1208,14 +1452,18 @@
       return [];
     }
     return raw.map(t => {
-      const o = { priority: 'mid', completedAt: null, due: '', tag: '', repeat: '', ...t };
+      const o = { priority: 'mid', completedAt: null, due: '', tag: '', repeat: '', note: '', subs: [], ...t };
       if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
+      if (typeof o.note !== 'string') o.note = '';
+      o.subs = (Array.isArray(o.subs) ? o.subs : [])
+        .filter(s => s && typeof s.text === 'string' && s.text.trim())
+        .map(s => ({ id: s.id || uid(), text: s.text, done: !!s.done }));
       return o;
     });
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', focusToday: false };
     try {
       return { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
     } catch {
@@ -1258,6 +1506,8 @@
         due: '',
         tag: item.tag || '',
         repeat: item.repeat || '',
+        note: '',
+        subs: [],
         done: false,
         completedAt: null,
         createdAt: Date.now(),
@@ -1288,6 +1538,12 @@
     const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
     if (!p) return null;
     return new Date(Number(p[1]), Number(p[2]) - 1, Number(p[3]));
+  }
+
+  // 形状对不上下文的脏日期（如 2026-13-45）会被 Date 顺延，这里直接挡掉
+  function isDay(s) {
+    const d = parseDay(s);
+    return !!d && dayKey(d.getTime()) === s;
   }
 
   // 距今天多少天：负数=已逾期，0=今天
@@ -1324,6 +1580,7 @@
   }
 
   function matchFilter(task) {
+    if (prefs.focusToday && !isTodayTask(task)) return false;
     return matchDate(task, prefs.listFilter) && matchTag(task, prefs.tagFilter) && matchQuery(task);
   }
 
@@ -1349,6 +1606,163 @@
     if (d === 1) return '明天到期';
     if (d <= 6) return d + ' 天后到期';
     return task.due.slice(5).replace('-', '/') + ' 到期';
+  }
+
+  // ---------- 今日专注 + 连续打卡 ----------
+  function isTodayTask(task) {
+    if (task.done) return false;
+    const d = dueInDays(task);
+    return d !== null && d <= 0;
+  }
+
+  // 从今天往前数，每天至少完成过一项任务才算连着
+  function streakDays() {
+    const days = new Set();
+    for (const t of tasks) if (t.done && t.completedAt) days.add(dayKey(t.completedAt));
+    if (!days.size) return 0;
+
+    const cur = new Date();
+    if (!days.has(dayKey(cur.getTime()))) {
+      cur.setDate(cur.getDate() - 1);
+      if (!days.has(dayKey(cur.getTime()))) return 0;
+    }
+    let n = 0;
+    while (days.has(dayKey(cur.getTime()))) {
+      n++;
+      cur.setDate(cur.getDate() - 1);
+    }
+    return n;
+  }
+
+  function renderToday() {
+    todayStrip.hidden = tasks.length === 0;
+    if (!tasks.length) return;
+    todayStrip.textContent = '';
+
+    const fire = document.createElement('span');
+    fire.className = 'st-fire';
+    fire.innerHTML = icon('flame', 16);
+    const streak = document.createElement('span');
+    const days = streakDays();
+    streak.append(fire, document.createTextNode(' ' + (days ? '连续打卡 ' + days + ' 天' : '今天完成 1 项就能开始连续打卡')));
+    streak.title = '连续打卡：每天至少完成一项任务就能续上一天';
+
+    const n = tasks.filter(isTodayTask).length;
+    const info = document.createElement('span');
+    info.textContent = n ? '今天要做 ' + n + ' 项' : '今天没有到期的任务';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ts-btn' + (prefs.focusToday ? ' on' : '');
+    btn.textContent = prefs.focusToday ? '退出今日专注' : '只看今日';
+    btn.setAttribute('aria-pressed', String(prefs.focusToday));
+    btn.addEventListener('click', () => {
+      prefs.focusToday = !prefs.focusToday;
+      if (prefs.focusToday) prefs.listFilter = 'all';
+      save();
+      render();
+    });
+
+    todayStrip.append(streak, info, btn);
+  }
+
+  // ---------- 一句话快速添加：#分类 !高 @明天 ~每周 ----------
+  const QUICK_PRIO = { '高': 'high', '中': 'mid', '低': 'low', '高优先': 'high', '中优先': 'mid', '低优先': 'low' };
+  const QUICK_REPEAT = { '每天': 'daily', '每日': 'daily', '每周': 'weekly', '每星期': 'weekly', '每两周': 'weekly', '每月': 'monthly' };
+  const QUICK_DAYWORDS = ['今天', '明天', '后天', '大后天'];
+  const WEEK_NUM = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '日': 0, '天': 0 };
+
+  function shiftDays(n) {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  }
+
+  function nextWeekday(w) {
+    const now = new Date();
+    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let delta = (w - base.getDay() + 7) % 7;
+    if (delta === 0) delta = 7;   // 「周五」在今天就是周五时，按下一周算
+    return new Date(base.getFullYear(), base.getMonth(), base.getDate() + delta);
+  }
+
+  function fromMD(mm, dd) {
+    const now = new Date();
+    let d = new Date(now.getFullYear(), mm - 1, dd);
+    if (d < new Date(now.getFullYear(), now.getMonth(), now.getDate())) d = new Date(now.getFullYear() + 1, mm - 1, dd);
+    return d;
+  }
+
+  // 把「明天 / 周五 / 下周一 / 10-20 / 2026-10-20」这类词换成真实日期，认不出来返回 null
+  function quickDate(tok) {
+    if (!tok) return null;
+    if (QUICK_DAYWORDS.includes(tok)) return shiftDays(QUICK_DAYWORDS.indexOf(tok));
+    let m = /^(?:下)?(?:周|星期)([一二三四五六日天])$/.exec(tok);
+    if (m) return nextWeekday(WEEK_NUM[m[1]]);
+    m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(tok);
+    if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    m = /^(\d{1,2})[-/](\d{1,2})$/.exec(tok);
+    if (m) {
+      const mm = Number(m[1]), dd = Number(m[2]);
+      if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) return fromMD(mm, dd);
+    }
+    return null;
+  }
+
+  function parseQuickAdd(raw) {
+    // 中文输入法下 !＃＠～ 常常是全角，先统一
+    let s = String(raw || '').replace(/[！＃＠～]/g, ch => ({ '！': '!', '＃': '#', '＠': '@', '～': '~' })[ch]);
+    const parsed = [];
+    let priority = '', due = '', tag = '', repeat = '';
+
+    s = s.replace(/~(每天|每日|每周|每星期|每两周|每月)(?![一二三四五六日天])/g, (all, w) => {
+      if (!repeat) { repeat = QUICK_REPEAT[w]; parsed.push('重复 ' + REPEAT_LABEL[repeat]); }
+      return ' ';
+    });
+    s = s.replace(/!(高|中|低)(?:优先)?/g, (all, w) => {
+      if (!priority) { priority = QUICK_PRIO[w]; parsed.push('优先级 ' + w); }
+      return ' ';
+    });
+    s = s.replace(/#([^\s#＠@!~～]{1,12})/g, (all, w) => {
+      if (!tag) { tag = w; parsed.push('分类 ' + w); }
+      return ' ';
+    });
+    s = s.replace(/@(今天|明天|后天|大后天|下周[一二三四五六日天]|下星期[一二三四五六日天]|周[一二三四五六日天]|星期[一二三四五六日天]|\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[-/]\d{1,2})/g, (all, w) => {
+      const d = quickDate(w);
+      if (d && !due) { due = dayKey(d.getTime()); parsed.push('到期 ' + (d.getMonth() + 1) + '/' + d.getDate()); }
+      return d ? ' ' : all;
+    });
+
+    // 空格隔开的自然词也认（「明天 交周报」），但不切开词内部：「明天见」不会被认成日期
+    const words = s.split(/\s+/).filter(Boolean);
+    const kept = [];
+    for (const w of words) {
+      if (!repeat && QUICK_REPEAT[w]) { repeat = QUICK_REPEAT[w]; parsed.push('重复 ' + REPEAT_LABEL[repeat]); continue; }
+      if (!priority && QUICK_PRIO[w]) { priority = QUICK_PRIO[w]; parsed.push('优先级 ' + w); continue; }
+      if (!due && quickDate(w)) { due = dayKey(quickDate(w).getTime()); parsed.push('到期 ' + (quickDate(w).getMonth() + 1) + '/' + quickDate(w).getDate()); continue; }
+      kept.push(w);
+    }
+
+    return { text: kept.join(' ').trim(), priority, due, tag, repeat, parsed };
+  }
+
+  function renderQuickHint() {
+    const v = input.value.trim();
+    const hit = v ? parseQuickAdd(v) : null;
+    quickHint.textContent = '';
+    const tip = document.createElement('span');
+    if (!hit || !hit.parsed.length || !hit.text) {
+      tip.textContent = '快速添加：#分类 !高/中/低 @明天/周五/10-20 ~每周，例：写周报 #工作 !高 @周五';
+      quickHint.append(tip);
+      return;
+    }
+    for (const label of hit.parsed) {
+      const chip = document.createElement('span');
+      chip.className = 'qh';
+      chip.textContent = label;
+      quickHint.append(chip);
+    }
+    tip.textContent = '已识别，点「添加任务」生效';
+    quickHint.append(tip);
   }
 
   function renderPrioPicker() {
@@ -1407,6 +1821,7 @@
       b.setAttribute('aria-pressed', String(prefs.listFilter === f.key));
       b.addEventListener('click', () => {
         prefs.listFilter = f.key;
+        prefs.focusToday = false;
         save();
         render();
       });
@@ -1477,6 +1892,7 @@
 
     if (tasks.length && !shown.length) {
       const conds = [];
+      if (prefs.focusToday) conds.push('今日专注');
       if (prefs.listFilter !== 'all') conds.push(FILTERS.find(f => f.key === prefs.listFilter).label);
       if (prefs.tagFilter !== 'all') conds.push(prefs.tagFilter ? '分类「' + prefs.tagFilter + '」' : '未分类');
       if (query) conds.push('搜索「' + query + '」');
@@ -1496,6 +1912,7 @@
     renderFilters();
     renderTagFilters();
     renderTagOptions();
+    renderToday();
     renderHistory(done);
     renderStats(done);
 
@@ -1575,6 +1992,24 @@
         line.append(rp);
       }
 
+      const subs = task.subs || [];
+      if (subs.length) {
+        const sb = document.createElement('span');
+        sb.className = 'tg sb';
+        sb.innerHTML = icon('listChecks', 12);
+        sb.append(subs.filter(s => s.done).length + '/' + subs.length);
+        sb.title = '子任务已完成 ' + subs.filter(s => s.done).length + ' / ' + subs.length;
+        line.append(sb);
+      }
+
+      if (task.note) {
+        const nf = document.createElement('span');
+        nf.className = 'note-flag';
+        nf.innerHTML = icon('note', 14);
+        nf.title = '备注：' + task.note.slice(0, 60);
+        line.append(nf);
+      }
+
       body.append(line);
       row.append(body);
 
@@ -1595,15 +2030,127 @@
       del.setAttribute('aria-label', '删除任务');
       del.addEventListener('click', () => remove(task.id));
 
-      acts.append(edit, del);
+      const open = expanded.has(task.id);
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'ibtn more';
+      more.innerHTML = icon('chevron' + (open ? 'Up' : 'Down'), 18);
+      more.title = '备注与子任务';
+      more.setAttribute('aria-label', open ? '收起备注与子任务' : '展开备注与子任务');
+      more.setAttribute('aria-expanded', open ? 'true' : 'false');
+      more.addEventListener('click', () => toggleExpanded(task.id));
+
+      acts.append(more, edit, del);
       row.append(acts);
       li.append(row);
+      if (open) li.append(detailPanel(task));
       return li;
     }
 
     row.append(body);
     li.append(row);
     return li;
+  }
+
+  function toggleExpanded(id) {
+    if (expanded.has(id)) expanded.delete(id);
+    else expanded.add(id);
+    render();
+  }
+
+  // ---------- 备注 + 子任务面板 ----------
+  function detailPanel(task) {
+    const box = document.createElement('div');
+    box.className = 'detail';
+
+    const noteLabel = document.createElement('span');
+    noteLabel.className = 'd-label';
+    noteLabel.textContent = '备注';
+    const note = document.createElement('textarea');
+    note.className = 'note-input';
+    note.rows = 3;
+    note.maxLength = 500;
+    note.placeholder = '补充说明、链接、注意事项…';
+    note.setAttribute('aria-label', '备注');
+    note.value = task.note || '';
+    // 边写边存但不重渲染，否则光标会跳走
+    note.addEventListener('input', () => {
+      task.note = note.value;
+      save();
+      const flag = note.closest('li').querySelector('.note-flag');
+      if (flag) flag.title = '备注：' + task.note.slice(0, 60);
+    });
+
+    const subLabel = document.createElement('span');
+    subLabel.className = 'd-label';
+    subLabel.textContent = '子任务';
+
+    box.append(noteLabel, note, subLabel);
+
+    for (const s of task.subs || []) box.append(subRow(task, s));
+
+    const addRow = document.createElement('div');
+    addRow.className = 'sub-add';
+    const si = document.createElement('input');
+    si.type = 'text';
+    si.maxLength = 120;
+    si.placeholder = '添加子任务，回车即可';
+    si.setAttribute('aria-label', '新子任务');
+    const sb = document.createElement('button');
+    sb.type = 'button';
+    sb.textContent = '添加';
+    const commit = () => {
+      const text = si.value.trim();
+      if (!text) return;
+      if (!Array.isArray(task.subs)) task.subs = [];
+      task.subs.push({ id: uid(), text, done: false });
+      save();
+      render();
+    };
+    sb.addEventListener('click', commit);
+    si.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.isComposing) {
+        e.preventDefault();
+        commit();
+      }
+    });
+    addRow.append(si, sb);
+    box.append(addRow);
+    return box;
+  }
+
+  function subRow(task, sub) {
+    const row = document.createElement('div');
+    row.className = 'sub' + (sub.done ? ' done' : '');
+
+    const tick = document.createElement('button');
+    tick.type = 'button';
+    tick.className = 'sub-tick';
+    tick.innerHTML = icon(sub.done ? 'checkCircle' : 'circle', 20);
+    tick.setAttribute('aria-label', sub.done ? '标记子任务未完成' : '标记子任务完成');
+    tick.addEventListener('click', () => {
+      sub.done = !sub.done;
+      save();
+      render();
+    });
+
+    const txt = document.createElement('span');
+    txt.className = 'sub-txt';
+    txt.textContent = sub.text;
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'sub-del';
+    del.innerHTML = icon('trash', 18);
+    del.setAttribute('aria-label', '删除子任务');
+    del.addEventListener('click', () => {
+      task.subs = (task.subs || []).filter(s => s.id !== sub.id);
+      save();
+      render();
+    });
+
+    row.append(tick, txt, del);
+    return row;
   }
 
   function editControls(task) {
@@ -1861,9 +2408,28 @@
       badge.className = 'badge ' + level(task);
       badge.innerHTML = icon(LEVELS[level(task)].icon, 12) + LEVELS[level(task)].label;
 
-      item.append(ico, info, badge);
+      const back = document.createElement('button');
+      back.type = 'button';
+      back.className = 'ibtn hist-back';
+      back.title = '放回未完成';
+      back.setAttribute('aria-label', '放回未完成');
+      back.innerHTML = icon('reply', 18);
+      back.addEventListener('click', () => reopenTask(task.id));
+
+      item.append(ico, info, badge, back);
       histList.append(item);
     }
+  }
+
+  function reopenTask(id) {
+    const t = tasks.find(x => x.id === id);
+    if (!t) return;
+    t.done = false;
+    t.completedAt = null;
+    // 历史面板常带日期筛选，不清掉的话放回的任务会「消失」
+    prefs.dateFilter = '';
+    save();
+    render();
   }
 
   // ---------- 拖拽排序（pointer 事件，鼠标与触摸通用） ----------
@@ -1943,7 +2509,7 @@
   }
 
   function add(text, priority, due, tag, repeat) {
-    tasks.push({ id: uid(), text, priority, due: due || '', tag: tag || '', repeat: repeat || '', done: false, completedAt: null, createdAt: Date.now() });
+    tasks.push({ id: uid(), text, priority, due: due || '', tag: tag || '', repeat: repeat || '', note: '', subs: [], done: false, completedAt: null, createdAt: Date.now() });
     save();
     render();
   }
@@ -1980,6 +2546,8 @@
         due: nextDue(task),
         tag: task.tag,
         repeat: task.repeat,
+        note: task.note || '',
+        subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
         done: false,
         completedAt: null,
         createdAt: Date.now(),
@@ -2019,11 +2587,45 @@
   }
 
   function remove(id) {
+    const gone = tasks.find(t => t.id === id);
+    if (gone) snapshot('已删除「' + clip(gone.text) + '」', tasks);
     tasks = tasks.filter(t => t.id !== id);
     if (editingId === id) editingId = null;
+    expanded.delete(id);
     save();
     render();
   }
+
+  // ---------- 误删可撤销：删除前留一份全量快照，6 秒内可回滚 ----------
+  function clip(text) {
+    const t = String(text || '');
+    return t.length > 18 ? t.slice(0, 18) + '…' : t;
+  }
+
+  function closeUndo() {
+    clearTimeout(undoTimer);
+    undoTimer = null;
+    undoSnap = null;
+    undoBar.hidden = true;
+  }
+
+  function snapshot(label, snap) {
+    undoSnap = JSON.parse(JSON.stringify(snap));
+    undoText.textContent = label;
+    undoBar.hidden = false;
+    clearTimeout(undoTimer);
+    undoTimer = setTimeout(closeUndo, 6000);
+  }
+
+  function restoreUndo() {
+    if (!undoSnap) return;
+    tasks = undoSnap;
+    closeUndo();
+    save();
+    render();
+  }
+
+  undoBtn.addEventListener('click', restoreUndo);
 
   function askConfirm(title, text, action) {
     modalTitle.textContent = title;
@@ -2077,9 +2679,14 @@
         id,
         text: t.text.trim(),
         priority: LEVELS[t.priority] ? t.priority : 'mid',
-        due: /^\d{4}-\d{2}-\d{2}$/.test(t.due || '') ? t.due : '',
+        due: isDay(t.due) ? t.due : '',
         tag: typeof t.tag === 'string' ? t.tag.trim().slice(0, 12) : '',
         repeat: typeof t.repeat === 'string' && t.repeat in REPEAT_LABEL ? t.repeat : '',
+        note: typeof t.note === 'string' ? t.note.slice(0, 500) : '',
+        subs: (Array.isArray(t.subs) ? t.subs : [])
+          .filter(s => s && typeof s.text === 'string' && s.text.trim())
+          .slice(0, 50)
+          .map(s => ({ id: typeof s.id === 'string' && s.id ? s.id : uid(), text: s.text.trim().slice(0, 120), done: !!s.done })),
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
         createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
@@ -2109,9 +2716,11 @@
         backupMsg('文件里的任务列表是空的', true);
         return;
       }
-      askConfirm('导入备份', '将用备份里的 ' + incoming.length + ' 条任务覆盖当前 ' + tasks.length + ' 条，此操作无法撤销。', () => {
+      askConfirm('导入备份', '将用备份里的 ' + incoming.length + ' 条任务覆盖当前 ' + tasks.length + ' 条，导入后 6 秒内可以撤销。', () => {
+        snapshot('已导入备份，覆盖了原来 ' + tasks.length + ' 条任务', tasks);
         tasks = incoming;
         editingId = null;
+        expanded.clear();
         backupMsg('已导入 ' + incoming.length + ' 条任务');
       });
     };
@@ -2119,11 +2728,19 @@
   }
 
   function submitTask() {
-    const text = input.value.trim();
-    if (!text) return;
-    add(text, newPriority, newDue.value, newTag.value.trim(), newRepeat);
+    const raw = input.value.trim();
+    if (!raw) return;
+    const hit = parseQuickAdd(raw);
+    // 识别出来的语法优先，认不出来就照原样收进任务名
+    const text = hit.text || raw;
+    add(text,
+      hit.priority || newPriority,
+      hit.due || newDue.value,
+      hit.tag || newTag.value.trim(),
+      hit.repeat || newRepeat);
     input.value = '';
     newDue.value = '';
+    renderQuickHint();
     input.focus();
   }
 
@@ -2153,6 +2770,7 @@
   $('empty-ico').innerHTML = icon('circle', 56);
   $('modal-ico').innerHTML = icon('alert', 24);
   $('search-ico').innerHTML = icon('search', 18);
+  undoBtn.innerHTML = icon('undo', 16) + '撤销';
   applyTheme();
 
   form.addEventListener('submit', (e) => {
@@ -2167,6 +2785,8 @@
       submitTask();
     }
   });
+
+  input.addEventListener('input', renderQuickHint);
 
   function clearSearch() {
     query = '';
@@ -2242,16 +2862,19 @@
 
   clearDoneBtn.addEventListener('click', () => {
     const n = tasks.filter(t => t.done).length;
-    askConfirm('清空已完成', '确定删除 ' + n + ' 条已完成的任务吗？此操作无法撤销。', () => {
+    askConfirm('清空已完成', '确定删除 ' + n + ' 条已完成的任务吗？删除后 6 秒内可以撤销。', () => {
+      snapshot('已清空 ' + n + ' 条已完成任务', tasks);
       tasks = tasks.filter(t => !t.done);
     });
   });
 
   clearAllBtn.addEventListener('click', () => {
     if (!tasks.length) return;
-    askConfirm('确认清空', '确定要清空所有任务吗？此操作无法撤销。', () => {
+    askConfirm('确认清空', '确定要清空所有任务吗？删除后 6 秒内可以撤销。', () => {
+      snapshot('已清空全部 ' + tasks.length + ' 条任务', tasks);
       tasks = [];
       editingId = null;
+      expanded.clear();
     });
   });
 
@@ -2271,6 +2894,7 @@
 
   renderPrioPicker();
   renderRepPicker();
+  renderQuickHint();
   seed();
   render();
 </script>
