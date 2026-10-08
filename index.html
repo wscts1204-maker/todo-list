@@ -42,7 +42,13 @@
     --surface: #fff;
     --surface-glass: rgba(255, 255, 255, .75);
     --card-border: #dcebe7;
-    --page-bg: linear-gradient(160deg, #f1f8f7 0%, #e0efec 55%, #cbe4df 100%);
+    --page-bg: var(--bgl);
+    /* 背景配色：--bgl 浅色版、--bgd 深色版，由 [data-bg] 整对切换 */
+    --bgl: linear-gradient(160deg, #f1f8f7 0%, #e0efec 55%, #cbe4df 100%);
+    --bgd: linear-gradient(160deg, #0c1614 0%, #101c1a 55%, #14231f 100%);
+    /* 自定义背景图上盖的一层遮罩，保证压在图上的文字仍读得清 */
+    --bg-wash: rgba(255, 255, 255, .8);
+    --bg-img: none;
     --on-accent: #fff;
     --shadow-card: 0 10px 15px -3px rgba(13, 61, 58, .08), 0 4px 6px -4px rgba(13, 61, 58, .06);
     --shadow-sm: 0 4px 6px -1px rgba(13, 61, 58, .1);
@@ -88,7 +94,8 @@
     --surface: #172422;
     --surface-glass: rgba(255, 255, 255, .05);
     --card-border: #2b3f3c;
-    --page-bg: linear-gradient(160deg, #0c1614 0%, #101c1a 55%, #14231f 100%);
+    --page-bg: var(--bgd);
+    --bg-wash: rgba(8, 14, 13, .8);
     --on-accent: #04211f;
     --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, .5), 0 4px 6px -4px rgba(0, 0, 0, .45);
     --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, .45);
@@ -97,6 +104,25 @@
     --shadow-btn-hover: 0 10px 15px -3px rgba(0, 0, 0, .55);
     --shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, .7);
     --scrim: rgba(0, 0, 0, .7);
+  }
+
+  /* ---------- 背景配色：每套配浅色 / 深色列两个版本，跟随主题走 ---------- */
+  [data-bg="mint"]  { --bgl: linear-gradient(160deg, #f1f8f7 0%, #e0efec 55%, #cbe4df 100%); --bgd: linear-gradient(160deg, #0c1614 0%, #101c1a 55%, #14231f 100%); }
+  [data-bg="mist"]  { --bgl: linear-gradient(160deg, #f1f6fb 0%, #e2ecf7 55%, #cfe0f0 100%); --bgd: linear-gradient(160deg, #0b131c 0%, #0f1a26 55%, #142230 100%); }
+  [data-bg="peach"] { --bgl: linear-gradient(160deg, #fdf5ef 0%, #fbe9db 55%, #f6d9c4 100%); --bgd: linear-gradient(160deg, #1a120c 0%, #241811 55%, #2d1f16 100%); }
+  [data-bg="leaf"]  { --bgl: linear-gradient(160deg, #f4f9ef 0%, #e7f2dd 55%, #d6e9c9 100%); --bgd: linear-gradient(160deg, #0e160c 0%, #141f11 55%, #1b2917 100%); }
+  [data-bg="lilac"] { --bgl: linear-gradient(160deg, #f7f5fd 0%, #eae6f8 55%, #dcd6f0 100%); --bgd: linear-gradient(160deg, #12101c 0%, #1a1728 55%, #221d33 100%); }
+  [data-bg="rose"]  { --bgl: linear-gradient(160deg, #fdf4f6 0%, #f9e4e9 55%, #f2d2da 100%); --bgd: linear-gradient(160deg, #190f13 0%, #241419 55%, #2e1a21 100%); }
+  [data-bg="sand"]  { --bgl: linear-gradient(160deg, #faf8f2 0%, #f1ecdf 55%, #e4dccb 100%); --bgd: linear-gradient(160deg, #15130e 0%, #1e1b14 55%, #272319 100%); }
+  [data-bg="slate"] { --bgl: linear-gradient(160deg, #f5f6f7 0%, #e9ebee 55%, #d8dce1 100%); --bgd: linear-gradient(160deg, #101214 0%, #171a1e 55%, #1e2228 100%); }
+
+  /* 自定义背景图：铺一层图 + 一层主题色遮罩，压暗/压亮到文字仍达 WCAG AA */
+  html[data-bgimg="1"] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(var(--bg-wash), var(--bg-wash)), var(--bg-img) center / cover no-repeat;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -130,7 +156,7 @@
     justify-content: center;
     gap: 8px;
     margin-bottom: 8px;
-    color: var(--teal-600);
+    color: var(--teal-700);
   }
 
   .head h1 { font-size: 30px; font-weight: 700; color: var(--gray-800); }
@@ -739,7 +765,7 @@
 
   .bbtn:hover { background: var(--surface); color: var(--gray-800); border-color: var(--gray-300); }
 
-  .bmsg { font-size: 12px; color: var(--gray-500); }
+  .bmsg { font-size: 12px; color: var(--gray-600); }
   .bmsg.err { color: var(--red-600); }
 
   #import-file { display: none; }
@@ -795,11 +821,16 @@
   .dbtn.danger { background: var(--red-600); color: var(--on-accent); }
   .dbtn.danger:hover { background: var(--red-700); }
 
-  /* ---------- 主题切换 ---------- */
-  .theme-btn {
+  /* ---------- 主题与背景 ---------- */
+  .head-tools {
     position: absolute;
     top: 0;
     right: 0;
+    display: flex;
+    gap: 8px;
+  }
+
+  .hbtn {
     width: 44px;
     height: 44px;
     display: flex;
@@ -813,11 +844,74 @@
     transition: color .2s;
   }
 
-  .theme-btn:hover { color: var(--teal-700); }
+  .hbtn:hover { color: var(--teal-700); }
 
-  /* 窄屏上标题会伸到主题按钮底下，给它让出位置 */
-  @media (max-width: 360px) {
-    .head-top { padding-right: 44px; }
+  .hbtn[aria-expanded="true"] { color: var(--teal-700); border-color: var(--teal-600); }
+
+  .bg-panel {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    z-index: 40;
+    /* 定位包含块是只有两个按钮宽的 .head-tools，所以宽度按视口算，不能写 max-width:100% */
+    width: min(268px, calc(100vw - 32px));
+    padding: 14px;
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-dialog);
+  }
+
+  .bg-panel[hidden] { display: none; }
+
+  .bp-title { font-size: 12px; font-weight: 600; color: var(--gray-500); margin-bottom: 8px; }
+
+  .bp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+
+  .sw {
+    border: 1px solid var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .sw .sw-c { display: block; height: 34px; background: var(--bgl); }
+
+  [data-theme="dark"] .sw .sw-c { background: var(--bgd); }
+
+  .sw .sw-t { display: block; font-size: 11px; color: var(--gray-600); padding: 3px 0; }
+
+  .sw:hover { border-color: var(--teal-600); }
+
+  .sw[aria-pressed="true"] { border-color: var(--teal-600); box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .bp-actions { display: flex; gap: 8px; }
+
+  .bp-btn {
+    flex: 1;
+    min-height: 44px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-800);
+    background: var(--gray-50);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+  }
+
+  .bp-btn:hover { background: var(--gray-100); }
+
+  .bp-btn:disabled { color: var(--gray-400); cursor: default; background: var(--gray-50); }
+
+  .bp-note { font-size: 11px; line-height: 1.5; color: var(--gray-600); margin-top: 10px; }
+
+  .bp-note.err { color: var(--red-600); }
+
+  #bg-file { display: none; }
+
+  /* 窄屏上标题会伸到右上角按钮底下，给它们让出位置 */
+  @media (max-width: 431px) {
+    .head-top { padding-right: 96px; }
   }
 
   @media (max-width: 320px) {
@@ -1155,12 +1249,19 @@
   }
 </style>
 <script>
-  // 先定主题再渲染，否则深色模式下每次打开都会闪一下白底
+  // 先定主题和背景再渲染，否则深色模式下每次打开都会闪一下白底
   try {
-    var saved = (JSON.parse(localStorage.getItem('todo.prefs')) || {}).theme;
-    document.documentElement.dataset.theme =
-      saved === 'light' || saved === 'dark' ? saved
-        : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var st = JSON.parse(localStorage.getItem('todo.prefs')) || {};
+    var de = document.documentElement;
+    de.dataset.theme = st.theme === 'light' || st.theme === 'dark' ? st.theme
+      : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    de.dataset.bg = st.bg || 'mint';
+    // 只认自己写进去的 base64 图片，避免把别处塞进 localStorage 的内容当样式解析
+    var bg = localStorage.getItem('todo.bgimg');
+    if (bg && /^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(bg)) {
+      de.style.setProperty('--bg-img', 'url("' + bg + '")');
+      de.dataset.bgimg = '1';
+    }
   } catch (e) {
     document.documentElement.dataset.theme = 'light';
   }
@@ -1174,7 +1275,21 @@
         <h1>我的待办清单</h1>
       </div>
       <p>管理您的日常任务</p>
-      <button id="theme-btn" class="theme-btn" type="button" aria-label="切换深色或浅色主题"></button>
+      <div class="head-tools">
+        <button id="bg-btn" class="hbtn" type="button" aria-label="更换背景" aria-expanded="false" aria-controls="bg-panel"></button>
+        <button id="theme-btn" class="hbtn" type="button" aria-label="切换深色或浅色主题"></button>
+        <div id="bg-panel" class="bg-panel" hidden>
+          <p class="bp-title">背景配色</p>
+          <div class="bp-grid" id="bg-swatches"></div>
+          <p class="bp-title">背景图片</p>
+          <div class="bp-actions">
+            <button type="button" class="bp-btn" id="bg-pick">上传图片</button>
+            <button type="button" class="bp-btn" id="bg-clear">清除图片</button>
+          </div>
+          <p class="bp-note" id="bg-note">图片只存在这台设备的浏览器里，不会上传到任何服务器。</p>
+          <input type="file" id="bg-file" accept="image/*">
+        </div>
+      </div>
     </header>
 
     <section class="card input-card">
@@ -1296,6 +1411,8 @@
 <script>
   const KEY = 'todo.tasks';
   const PREF = 'todo.prefs';
+  // 背景图单独存一个键：它可能有几百 KB，混进 prefs 会让每次写盘都重抄一遍
+  const BGIMG = 'todo.bgimg';
 
   // ---------- 手写清单初始化数据（首次打开自动导入，按文本去重） ----------
   const SEED_KEY = 'todo.seed';
@@ -1356,6 +1473,7 @@
     listChecks: '<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
     undo: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
     reply: '<path d="M9 17 4 12l5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+    image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
   };
 
   function icon(name, size) {
@@ -1390,6 +1508,13 @@
   const searchInput = $('search');
   const searchClear = $('search-clear');
   const themeBtn = $('theme-btn');
+  const bgBtn = $('bg-btn');
+  const bgPanel = $('bg-panel');
+  const bgSwatches = $('bg-swatches');
+  const bgPick = $('bg-pick');
+  const bgClear = $('bg-clear');
+  const bgFile = $('bg-file');
+  const bgNote = $('bg-note');
   const filters = $('filters');
   const tagFilters = $('tag-filters');
   const list = $('list');
@@ -1463,7 +1588,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', focusToday: false };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false };
     try {
       return { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
     } catch {
@@ -2766,12 +2891,157 @@
     applyTheme();
   }
 
+  // ---------- 背景：预设配色 + 自己的图片 ----------
+  const BGS = [
+    { key: 'mint', label: '青绿' },
+    { key: 'mist', label: '雾蓝' },
+    { key: 'peach', label: '晨橙' },
+    { key: 'leaf', label: '抹茶' },
+    { key: 'lilac', label: '紫雾' },
+    { key: 'rose', label: '玫瑰' },
+    { key: 'sand', label: '米砂' },
+    { key: 'slate', label: '石墨' },
+  ];
+  let bgImg = '';
+
+  function applyBg() {
+    const cur = prefs.bg || 'mint';
+    document.documentElement.dataset.bg = cur;
+    for (const el of bgSwatches.children) el.setAttribute('aria-pressed', String(el.dataset.bg === cur));
+    const label = (BGS.find(b => b.key === cur) || BGS[0]).label;
+    bgBtn.title = '换背景（当前：' + label + (bgImg ? ' + 自己的图片' : '') + '）';
+  }
+
+  function applyBgImg() {
+    const de = document.documentElement;
+    if (bgImg) {
+      de.style.setProperty('--bg-img', 'url("' + bgImg + '")');
+      de.dataset.bgimg = '1';
+    } else {
+      de.style.removeProperty('--bg-img');
+      delete de.dataset.bgimg;
+    }
+    bgClear.disabled = !bgImg;
+    applyBg();
+  }
+
+  function bgMsg(text, isErr) {
+    bgNote.textContent = text;
+    bgNote.classList.toggle('err', !!isErr);
+  }
+
+  // 原图直接塞 localStorage 会撑爆配额，先等比缩小再用 canvas 压一遍
+  async function shrinkToDataUrl(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image();
+      await new Promise((ok, bad) => {
+        img.onload = ok;
+        img.onerror = () => bad(new Error('这张图片读不出来，换一张试试'));
+        img.src = url;
+      });
+      let scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      for (let i = 0; i < 4; i++) {
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.naturalWidth * scale));
+        c.height = Math.max(1, Math.round(img.naturalHeight * scale));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        const data = c.toDataURL('image/webp', 0.8 - i * 0.08);
+        if (data.length < 1400000) return data;
+        scale *= 0.7;
+      }
+      throw new Error('这张图片压缩后还是太大，换一张小一点的');
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  for (const b of BGS) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sw';
+    btn.dataset.bg = b.key;
+    btn.title = '背景配色：' + b.label;
+    btn.innerHTML = '<span class="sw-c"></span><span class="sw-t">' + b.label + '</span>';
+    btn.addEventListener('click', () => {
+      prefs.bg = b.key;
+      save();
+      applyBg();
+    });
+    bgSwatches.append(btn);
+  }
+
+  bgPick.addEventListener('click', () => bgFile.click());
+
+  bgFile.addEventListener('change', async () => {
+    const file = bgFile.files && bgFile.files[0];
+    bgFile.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      bgMsg('只能选图片文件（jpg / png / webp）', true);
+      return;
+    }
+    try {
+      const data = await shrinkToDataUrl(file);
+      try {
+        localStorage.setItem(BGIMG, data);
+      } catch {
+        bgMsg('浏览器存储空间不够，这张图放不下', true);
+        return;
+      }
+      bgImg = data;
+      applyBgImg();
+      bgMsg('已换上这张背景图');
+    } catch (err) {
+      bgMsg(err.message || '这张图片用不了', true);
+    }
+  });
+
+  bgClear.addEventListener('click', () => {
+    try {
+      localStorage.removeItem(BGIMG);
+    } catch {
+      /* 存不下也就没什么可删 */
+    }
+    bgImg = '';
+    applyBgImg();
+    bgMsg('图片背景已清除');
+  });
+
+  function openBgPanel(open) {
+    bgPanel.hidden = !open;
+    bgBtn.setAttribute('aria-expanded', String(open));
+    if (open) bgSwatches.querySelector('.sw[aria-pressed="true"]').focus();
+  }
+
+  bgBtn.addEventListener('click', () => openBgPanel(bgPanel.hidden));
+
+  document.addEventListener('click', (e) => {
+    if (!bgPanel.hidden && !bgPanel.contains(e.target) && !bgBtn.contains(e.target)) openBgPanel(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !bgPanel.hidden) {
+      e.preventDefault();
+      openBgPanel(false);
+      bgBtn.focus();
+    }
+  });
+
   $('head-ico').innerHTML = icon('listTodo', 28);
   $('empty-ico').innerHTML = icon('circle', 56);
   $('modal-ico').innerHTML = icon('alert', 24);
   $('search-ico').innerHTML = icon('search', 18);
   undoBtn.innerHTML = icon('undo', 16) + '撤销';
+  bgBtn.innerHTML = icon('image', 20);
+  try {
+    const stored = localStorage.getItem(BGIMG);
+    if (stored && /^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(stored)) bgImg = stored;
+  } catch {
+    bgImg = '';
+  }
   applyTheme();
+  applyBgImg();
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
