@@ -859,53 +859,144 @@
     text-align: left;
     background: var(--surface);
     border: 1px solid var(--card-border);
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow: var(--shadow-dialog);
+    transform-origin: top right;
+    animation: bp-in .16s ease-out;
   }
 
   .bg-panel[hidden] { display: none; }
 
-  .bp-title { font-size: 12px; font-weight: 600; color: var(--gray-500); margin-bottom: 8px; }
-
-  .bp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
-
-  .sw {
-    border: 1px solid var(--gray-300);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: border-color .2s, box-shadow .2s;
+  @keyframes bp-in {
+    from { opacity: 0; transform: translateY(-6px) scale(.97); }
   }
 
-  .sw .sw-c { display: block; height: 34px; background: var(--bgl); }
+  .bp-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+  }
 
-  [data-theme="dark"] .sw .sw-c { background: var(--bgd); }
+  .bp-head-ic { display: flex; color: var(--teal-600); }
 
-  .sw .sw-t { display: block; font-size: 11px; color: var(--gray-600); padding: 3px 0; }
+  .bp-head-t { flex: 1; font-size: 13px; font-weight: 700; color: var(--gray-700); }
 
-  .sw:hover { border-color: var(--teal-600); }
+  .bp-x {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: -6px -6px -6px 0;
+    color: var(--gray-500);
+    border-radius: 8px;
+    transition: background .15s, color .15s;
+  }
 
-  .sw[aria-pressed="true"] { border-color: var(--teal-600); box-shadow: 0 0 0 2px var(--teal-600); }
+  .bp-x:hover { background: var(--gray-100); color: var(--gray-700); }
+
+  .bp-title { font-size: 11px; font-weight: 600; color: var(--gray-500); margin-bottom: 8px; }
+
+  .bp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px; margin-bottom: 14px; }
+
+  .sw { padding: 0; background: none; border: 0; border-radius: 10px; cursor: pointer; }
+
+  .sw:focus-visible { outline: none; }
+
+  .sw .sw-c {
+    position: relative;
+    display: block;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bgl);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), var(--shadow-sm);
+    transition: transform .15s, box-shadow .15s;
+  }
+
+  [data-theme="dark"] .sw .sw-c { background: var(--bgd); box-shadow: inset 0 0 0 1px rgba(255,255,255,.09), var(--shadow-sm); }
+
+  .sw:hover .sw-c { transform: translateY(-1px); }
+
+  .sw:active .sw-c { transform: scale(.94); }
+
+  .sw:focus-visible .sw-c,
+  .sw[aria-pressed="true"] .sw-c { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 2px var(--teal-600); }
+
+  [data-theme="dark"] .sw:focus-visible .sw-c,
+  [data-theme="dark"] .sw[aria-pressed="true"] .sw-c { box-shadow: inset 0 0 0 1px rgba(255,255,255,.09), 0 0 0 2px var(--teal-600); }
+
+  .sw[aria-pressed="true"] .sw-c::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    /* 固定深青底：white 勾选图形在深浅两套主题里都够对比 */
+    background: #0f766e url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 9px 9px no-repeat;
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+
+  .sw .sw-t {
+    display: block;
+    font-size: 11px;
+    color: var(--gray-500);
+    padding: 5px 0 0;
+    text-align: center;
+    transition: color .15s;
+  }
+
+  .sw[aria-pressed="true"] .sw-t { color: var(--teal-700); font-weight: 600; }
 
   .bp-actions { display: flex; gap: 8px; }
 
   .bp-btn {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     min-height: 44px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--teal-800);
-    background: var(--gray-50);
-    border: 1px solid var(--card-border);
+    color: var(--gray-600);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
     border-radius: 10px;
+    transition: background .15s, color .15s, border-color .15s;
   }
 
-  .bp-btn:hover { background: var(--gray-100); }
+  .bp-btn:hover { background: var(--gray-50); color: var(--gray-700); }
 
-  .bp-btn:disabled { color: var(--gray-400); cursor: default; background: var(--gray-50); }
+  .bp-btn:disabled { color: var(--gray-400); cursor: default; background: var(--gray-50); border-color: var(--card-border); }
 
-  .bp-note { font-size: 11px; line-height: 1.5; color: var(--gray-600); margin-top: 10px; }
+  .bp-btn-main { color: #fff; background: var(--teal-700); border-color: var(--teal-700); }
 
-  .bp-note.err { color: var(--red-600); }
+  .bp-btn-main:hover { color: #fff; background: var(--teal-800); border-color: var(--teal-800); }
+
+  [data-theme="dark"] .bp-btn-main,
+  [data-theme="dark"] .bp-btn-main:hover { color: var(--on-accent); }
+
+  .bp-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 10px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--gray-500);
+    background: var(--gray-50);
+    border-radius: 8px;
+  }
+
+  .bp-note-ic { flex: none; display: flex; margin-top: 1px; }
+
+  .bp-note.err { color: var(--red-700); background: var(--red-50); }
 
   #bg-file { display: none; }
 
@@ -1279,14 +1370,19 @@
         <button id="bg-btn" class="hbtn" type="button" aria-label="更换背景" aria-expanded="false" aria-controls="bg-panel"></button>
         <button id="theme-btn" class="hbtn" type="button" aria-label="切换深色或浅色主题"></button>
         <div id="bg-panel" class="bg-panel" hidden>
+          <div class="bp-head">
+            <span class="bp-head-ic" aria-hidden="true"></span>
+            <span class="bp-head-t">背景与外观</span>
+            <button type="button" class="bp-x" id="bg-close" aria-label="关闭背景面板"></button>
+          </div>
           <p class="bp-title">背景配色</p>
           <div class="bp-grid" id="bg-swatches"></div>
           <p class="bp-title">背景图片</p>
           <div class="bp-actions">
-            <button type="button" class="bp-btn" id="bg-pick">上传图片</button>
+            <button type="button" class="bp-btn bp-btn-main" id="bg-pick">上传图片</button>
             <button type="button" class="bp-btn" id="bg-clear">清除图片</button>
           </div>
-          <p class="bp-note" id="bg-note">图片只存在这台设备的浏览器里，不会上传到任何服务器。</p>
+          <p class="bp-note" id="bg-note"><span class="bp-note-ic" id="bg-note-ic" aria-hidden="true"></span><span id="bg-note-text">图片只存在这台设备的浏览器里，不会上传到任何服务器。</span></p>
           <input type="file" id="bg-file" accept="image/*">
         </div>
       </div>
@@ -1474,6 +1570,8 @@
     undo: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
     reply: '<path d="M9 17 4 12l5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
     image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+    palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
+    lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
   };
 
   function icon(name, size) {
@@ -1515,6 +1613,9 @@
   const bgClear = $('bg-clear');
   const bgFile = $('bg-file');
   const bgNote = $('bg-note');
+  const bgNoteText = $('bg-note-text');
+  const bgNoteIc = $('bg-note-ic');
+  const bgClose = $('bg-close');
   const filters = $('filters');
   const tagFilters = $('tag-filters');
   const list = $('list');
@@ -2926,8 +3027,9 @@
   }
 
   function bgMsg(text, isErr) {
-    bgNote.textContent = text;
+    bgNoteText.textContent = text;
     bgNote.classList.toggle('err', !!isErr);
+    bgNoteIc.innerHTML = icon(isErr ? 'alert' : 'lock', 12);
   }
 
   // 原图直接塞 localStorage 会撑爆配额，先等比缩小再用 canvas 压一遍
@@ -3016,6 +3118,11 @@
 
   bgBtn.addEventListener('click', () => openBgPanel(bgPanel.hidden));
 
+  bgClose.addEventListener('click', () => {
+    openBgPanel(false);
+    bgBtn.focus();
+  });
+
   document.addEventListener('click', (e) => {
     if (!bgPanel.hidden && !bgPanel.contains(e.target) && !bgBtn.contains(e.target)) openBgPanel(false);
   });
@@ -3034,6 +3141,11 @@
   $('search-ico').innerHTML = icon('search', 18);
   undoBtn.innerHTML = icon('undo', 16) + '撤销';
   bgBtn.innerHTML = icon('image', 20);
+  document.querySelector('.bp-head-ic').innerHTML = icon('palette', 16);
+  bgClose.innerHTML = icon('close', 16);
+  bgNoteIc.innerHTML = icon('lock', 12);
+  bgPick.innerHTML = icon('image', 16) + '上传图片';
+  bgClear.innerHTML = icon('trash', 16) + '清除图片';
   try {
     const stored = localStorage.getItem(BGIMG);
     if (stored && /^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(stored)) bgImg = stored;
