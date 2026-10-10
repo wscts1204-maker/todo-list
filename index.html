@@ -218,6 +218,10 @@
 
   .prio-label { font-size: 14px; color: var(--gray-600); }
 
+  /* 统一四行标签宽度，让优先级/到期日/分类/重复的内容左缘对齐 */
+  .prio-row > .prio-label:first-child,
+  .due-row > .prio-label:first-child { width: 64px; flex: none; white-space: nowrap; }
+
   .prio-btns { display: flex; gap: 4px; }
 
   .pbtn {
@@ -265,21 +269,33 @@
 
   .date-input:focus { box-shadow: 0 0 0 2px var(--teal-600); border-color: transparent; }
 
+  #new-due { width: 180px; }
+
   .due-clear { font-size: 13px; color: var(--gray-500); padding: 8px; min-height: 44px; }
   .due-clear:hover { color: var(--gray-700); }
+
+  /* 隐藏 datalist 原生黑箭头（date 输入框无 list 属性不受影响），换成与整体图标一致的 chevron */
+  input[list]::-webkit-calendar-picker-indicator { opacity: 0; }
 
   .tag-input {
     font-family: inherit;
     font-size: 14px;
     color: var(--gray-800);
-    width: 160px;
+    width: 180px;
     max-width: 100%;
-    padding: 8px 12px;
+    padding: 8px 32px 8px 12px;
     min-height: 44px;
     border: 1px solid var(--gray-300);
     border-radius: 8px;
     outline: none;
     background: var(--surface);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+
+  [data-theme="dark"] .tag-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   }
 
   .tag-input:focus { box-shadow: 0 0 0 2px var(--teal-600); border-color: transparent; }
