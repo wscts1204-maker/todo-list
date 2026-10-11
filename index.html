@@ -661,6 +661,10 @@
   .ibtn.no:hover { color: var(--gray-800); }
   .ibtn.snooze { color: var(--yellow-600); }
   .ibtn.snooze:hover { color: var(--yellow-800); background: var(--yellow-50); }
+  .ibtn.pin { color: var(--gray-600); }
+  .ibtn.pin:hover { color: var(--yellow-800); background: var(--yellow-50); }
+  .ibtn.pin.on { color: var(--yellow-600); }
+  .ibtn.pin.on:hover { color: var(--yellow-800); }
 
   .edit-input {
     flex: 1 1 100%;
@@ -1392,6 +1396,12 @@
     .head h1 { font-size: 28px; }
   }
 
+  /* 窄屏上五个 44px 的行内按钮会把任务文字挤没，让它们换到第二行 */
+  @media (max-width: 480px) {
+    .row { flex-wrap: wrap; }
+    .acts { flex: 1 0 100%; justify-content: flex-end; margin-left: 0; }
+  }
+
   /* ---------- 搜索 ---------- */
   .search-bar {
     display: flex;
@@ -1599,6 +1609,62 @@
 
   .pomo-pop .pp-ok:hover { background: var(--teal-800); }
 
+  /* 休息建议 / 下一轮建议的两个按钮（弹层通用） */
+  .pp-btns { display: flex; gap: 8px; margin-top: 4px; }
+
+  .pp-go {
+    flex: 1;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--on-accent);
+    background: var(--teal-700);
+    transition: background .18s;
+  }
+  .pp-go:hover { background: var(--teal-800); }
+
+  .pp-no {
+    flex: 1;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    transition: background .18s, color .18s;
+  }
+  .pp-no:hover { background: var(--gray-100); color: var(--gray-800); }
+
+  .today-strip .ts-btn.pomo.brk { color: var(--on-accent); background: var(--green-600); border-color: transparent; }
+  .today-strip .ts-btn.pomo.brk:hover { background: var(--green-800); }
+
+  /* ---------- 打印选项小面板 ---------- */
+  .print-wrap { position: relative; display: inline-flex; }
+
+  .print-pop {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    z-index: 30;
+    width: min(230px, calc(100vw - 32px));
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-dialog);
+    animation: dlg-in .16s ease-out;
+  }
+
+  .print-pop .pt-t { font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
+
+  .print-pop .pp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .print-pop .pp-go { flex: none; margin-top: 10px; width: 100%; }
+
   /* ---------- 详情面板：顺延按钮 ---------- */
   .due-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 
@@ -1737,6 +1803,8 @@
 
   .sb { background: var(--teal-50); color: var(--teal-700); border-color: transparent; }
 
+  .pf { background: var(--yellow-50); color: var(--yellow-800); border-color: transparent; }
+
   .note-flag { color: var(--gray-600); display: inline-flex; }
 
   /* ---------- 撤销条 ---------- */
@@ -1842,6 +1910,8 @@
     #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
     .search-bar, .filter-bar, .remind-strip, .today-strip,
     .grip, .acts, .detail, .empty, #total { display: none !important; }
+    html[data-pu="1"] li[data-done="1"] { display: none !important; }
+    html[data-pt="1"] li[data-today="0"] { display: none !important; }
     .wrap { max-width: none; padding: 0; margin: 0; }
     .card { background: #fff !important; border: none !important; box-shadow: none !important; }
     .list-card { padding: 0 !important; }
@@ -2023,7 +2093,17 @@
     <div class="backup-row">
       <button id="export-btn" class="bbtn" type="button">⬇ 导出备份</button>
       <button id="import-btn" class="bbtn" type="button">⬆ 导入备份</button>
-      <button id="print-btn" class="bbtn" type="button">🖨 打印清单</button>
+      <span class="print-wrap">
+        <button id="print-btn" class="bbtn" type="button" aria-expanded="false" aria-controls="print-pop">🖨 打印清单</button>
+        <div id="print-pop" class="print-pop" hidden>
+          <div class="pt-t">打印选项</div>
+          <div class="pp-chips">
+            <button id="print-undone" class="fbtn" type="button" aria-pressed="false">只打未完成</button>
+            <button id="print-today" class="fbtn" type="button" aria-pressed="false">只打今天</button>
+          </div>
+          <button id="print-go" class="pp-go" type="button">开始打印</button>
+        </div>
+      </span>
       <input type="file" id="import-file" accept=".json,application/json">
       <span id="backup-msg" class="bmsg"></span>
     </div>
@@ -2039,6 +2119,7 @@
     <button id="batch-all" class="b-act" type="button">全选</button>
     <button id="batch-done" class="b-act" type="button">完成</button>
     <button id="batch-reopen" class="b-act" type="button">放回</button>
+    <button id="batch-purge" class="b-act danger" type="button" title="把选中的已完成任务直接删掉，不进回收站（6 秒内还能撤销）">彻底删除</button>
     <button id="batch-snooze" class="b-act" type="button" title="选中任务的到期日各往后推 1 天（没填日期则设为明天）">顺延 1 天</button>
     <button id="batch-del" class="b-act danger" type="button">删除</button>
     <input id="batch-tag" class="b-tag" type="text" maxlength="60" list="tag-list" placeholder="设分类，空格隔开" aria-label="给选中任务设置分类，空格隔开可多个">
@@ -2089,6 +2170,7 @@
         <b>空格</b><span>完成 / 放回选中的任务</span>
         <b>Enter</b><span>编辑选中的任务</span>
         <b>Delete</b><span>删除选中的任务（进回收站）</span>
+        <b>P</b><span>置顶 / 取消置顶选中的任务</span>
         <b>Esc</b><span>取消选中 / 关闭弹窗</span>
       </div>
       <div class="dialog-actions">
@@ -2106,7 +2188,8 @@
   const NOTIFIED = 'todo.notified';
   const TRASH_KEEP = 30 * 86400000;   // 回收站保留 30 天
   const TRASH_MAX = 200;
-  const POMO_KEY = 'todo.pomo';        // 番茄钟：今天的完成轮数
+  const POMO_KEY = 'todo.pomo';        // 番茄钟：今天的完成轮数 / 休息次数
+  const BREAK_MIN = 5;                 // 一轮专注后的短休息时长（分钟）
   const BASE_TITLE = document.title;
 
   // ---------- 手写清单初始化数据（首次打开自动导入，按文本去重） ----------
@@ -2179,6 +2262,7 @@
     keyboard: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 12h.01"/><path d="M8 16h8"/>',
     snooze: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M12 10v6"/><path d="M9 13h6"/>',
     printer: '<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+    pin: '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
   };
 
   function icon(name, size) {
@@ -2278,6 +2362,7 @@
   const batchAll = $('batch-all');
   const batchDoneBtn = $('batch-done');
   const batchReopen = $('batch-reopen');
+  const batchPurge = $('batch-purge');
   const batchDel = $('batch-del');
   const batchTag = $('batch-tag');
   const batchTagOk = $('batch-tag-ok');
@@ -2285,6 +2370,10 @@
   const batchSnoozeBtn = $('batch-snooze');
   const prioFilters = $('prio-filters');
   const printBtn = $('print-btn');
+  const printPop = $('print-pop');
+  const printUndoneBtn = $('print-undone');
+  const printTodayBtn = $('print-today');
+  const printGo = $('print-go');
   const kbdBtn = $('kbd-btn');
   const kbdModal = $('kbd-modal');
   const kbdClose = $('kbd-close');
@@ -2307,6 +2396,8 @@
   const batchSel = new Set();   // 批量模式下勾选的任务 id
   let kbId = null;              // 键盘光标停在哪个任务上
   let pomoEndAt = 0;            // 番茄钟结束时间戳，0 = 没在计时
+  let breakEndAt = 0;           // 休息结束时间戳，0 = 没在休息
+  let pomoSuggest = '';         // 一轮跑完后的建议：'break' 建议休息 / 'focus' 建议再来一轮 / '' 没有
   let pomoTimer = null;
   let pomoBtnEl = null;
   let pomoPopOpen = false;      // 时长选择小面板开着没（不跨会话保存）
@@ -2348,9 +2439,10 @@
       return [];
     }
     return raw.map(t => {
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], ...t };
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, ...t };
       if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
       if (typeof o.note !== 'string') o.note = '';
+      o.pin = !!o.pin;
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.subs = (Array.isArray(o.subs) ? o.subs : [])
@@ -2373,7 +2465,8 @@
     for (const x of raw) {
       if (!x || typeof x.text !== 'string' || typeof x.deletedAt !== 'number') continue;
       if (now - x.deletedAt > TRASH_KEEP) continue;
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], ...x };
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, ...x };
+      o.pin = !!o.pin;
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.subs = (Array.isArray(o.subs) ? o.subs : [])
@@ -2399,12 +2492,14 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
       p.pomoMin = Math.min(120, Math.max(5, Math.round(Number(p.pomoMin)) || 25));
       if (p.prioFilter !== 'high' && p.prioFilter !== 'mid' && p.prioFilter !== 'low') p.prioFilter = '';
+      p.printUndone = !!p.printUndone;
+      p.printToday = !!p.printToday;
       return p;
     } catch {
       return fallback;
@@ -2448,6 +2543,7 @@
         repeat: item.repeat || '',
         note: '',
         subs: [],
+        pin: false,
         done: false,
         completedAt: null,
         createdAt: Date.now(),
@@ -2614,17 +2710,22 @@
     streak.title = '连续打卡：每天至少完成一项任务就能续上一天';
 
     const pomoN = pomoToday();
+    const restN = pomoRest();
     const pomoCount = document.createElement('span');
     pomoCount.className = 'st-pomo';
     pomoCount.innerHTML = icon('timer', 14);
-    pomoCount.append(document.createTextNode('今日专注 ' + pomoN + ' 轮'));
-    pomoCount.title = '番茄钟：每专注满 ' + prefs.pomoMin + ' 分钟记一轮，只记今天';
+    pomoCount.append(document.createTextNode('今日专注 ' + pomoN + ' 轮' + (restN ? ' · 休息 ' + restN + ' 次' : '')));
+    pomoCount.title = '番茄钟：每专注满 ' + prefs.pomoMin + ' 分钟记一轮，休息满 ' + BREAK_MIN + ' 分钟记一次，都只记今天';
 
     const pomoBtn = document.createElement('button');
     pomoBtn.type = 'button';
-    pomoBtn.className = 'ts-btn pomo' + (pomoEndAt ? ' run' : '');
-    pomoBtn.textContent = pomoEndAt ? pomoLabel() + ' · 点击结束' : '番茄钟 ' + prefs.pomoMin + ' 分钟';
-    pomoBtn.title = pomoEndAt ? '正在专注，点击提前结束（不计轮数）' : '开始一轮 ' + prefs.pomoMin + ' 分钟的专注计时';
+    pomoBtn.className = 'ts-btn pomo' + (pomoEndAt || breakEndAt ? ' run' : '') + (breakEndAt ? ' brk' : '');
+    pomoBtn.textContent = breakEndAt ? '休息 ' + countdown(breakEndAt) + ' · 点击结束'
+      : pomoEndAt ? countdown(pomoEndAt) + ' · 点击结束'
+      : '番茄钟 ' + prefs.pomoMin + ' 分钟';
+    pomoBtn.title = breakEndAt ? '休息中，点击提前结束（不计休息次数）'
+      : pomoEndAt ? '正在专注，点击提前结束（不计轮数）'
+      : '开始一轮 ' + prefs.pomoMin + ' 分钟的专注计时';
     pomoBtn.addEventListener('click', () => {
       pomoPopOpen = false;
       pomoClick();
@@ -2633,7 +2734,46 @@
 
     let pop = null;
     let cfg = null;
-    if (!pomoEndAt) {
+    let suggest = null;
+    if (!pomoEndAt && !breakEndAt && pomoSuggest) {
+      suggest = document.createElement('div');
+      suggest.className = 'pomo-pop';
+      suggest.id = 'pomo-suggest';
+      const head = document.createElement('div');
+      head.className = 'pp-head';
+      const t = document.createElement('span');
+      t.className = 'pp-t';
+      t.textContent = pomoSuggest === 'break' ? '这一轮完成了' : '休息结束了';
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'pp-x';
+      x.innerHTML = icon('close', 14);
+      x.setAttribute('aria-label', '关闭提示');
+      x.addEventListener('click', () => { pomoSuggest = ''; render(); });
+      head.append(t, x);
+
+      const tip = document.createElement('div');
+      tip.style.cssText = 'font-size:12px;color:var(--gray-600);margin-bottom:10px;';
+      tip.textContent = pomoSuggest === 'break'
+        ? '眼睛和脑子缓一缓，休息 ' + BREAK_MIN + ' 分钟再来下一轮。'
+        : '缓好了就可以接着专注下一轮（' + prefs.pomoMin + ' 分钟）。';
+
+      const btns = document.createElement('div');
+      btns.className = 'pp-btns';
+      const go = document.createElement('button');
+      go.type = 'button';
+      go.className = 'pp-go';
+      go.textContent = pomoSuggest === 'break' ? '开始休息 ' + BREAK_MIN + ' 分钟' : '开始下一轮';
+      go.addEventListener('click', () => { (pomoSuggest === 'break' ? breakStart : pomoStart)(); render(); });
+      const no = document.createElement('button');
+      no.type = 'button';
+      no.className = 'pp-no';
+      no.textContent = pomoSuggest === 'break' ? '跳过这次休息' : '稍后再说';
+      no.addEventListener('click', () => { pomoSuggest = ''; render(); });
+      btns.append(go, no);
+      suggest.append(head, tip, btns);
+    }
+    if (!pomoEndAt && !breakEndAt && !pomoSuggest) {
       cfg = document.createElement('button');
       cfg.type = 'button';
       cfg.className = 'ts-btn pomo-cfg';
@@ -2732,45 +2872,72 @@
     if (cfg) todayStrip.append(cfg);
     todayStrip.append(btn);
     if (pop) todayStrip.append(pop);
+    if (suggest) todayStrip.append(suggest);
   }
 
   // ---------- 番茄钟 ----------
-  function pomoToday() {
+  function pomoData() {
     try {
       const o = JSON.parse(localStorage.getItem(POMO_KEY));
-      if (o && o.day === dayKey(Date.now())) return Number(o.n) || 0;
+      if (o && o.day === dayKey(Date.now())) return o;
     } catch {
-      /* 没有记录就是 0 轮 */
+      /* 没有记录就当空的 */
     }
-    return 0;
+    return null;
+  }
+
+  function pomoToday() {
+    const o = pomoData();
+    return o ? Number(o.n) || 0 : 0;
+  }
+
+  function pomoRest() {
+    const o = pomoData();
+    return o ? Number(o.br) || 0 : 0;
   }
 
   function pomoBump() {
     const n = pomoToday() + 1;
     try {
-      localStorage.setItem(POMO_KEY, JSON.stringify({ day: dayKey(Date.now()), n }));
+      localStorage.setItem(POMO_KEY, JSON.stringify({ day: dayKey(Date.now()), n, br: pomoRest() }));
     } catch {
       /* 存不下这轮就不记 */
     }
     return n;
   }
 
-  function pomoLabel() {
-    const left = Math.max(0, pomoEndAt - Date.now());
+  function restBump() {
+    const m = pomoRest() + 1;
+    try {
+      localStorage.setItem(POMO_KEY, JSON.stringify({ day: dayKey(Date.now()), n: pomoToday(), br: m }));
+    } catch {
+      /* 存不下这次就不记 */
+    }
+    return m;
+  }
+
+  function countdown(endAt) {
+    const left = Math.max(0, endAt - Date.now());
     const m = Math.floor(left / 60000);
     const s = Math.floor((left % 60000) / 1000);
     return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }
 
   function pomoTick() {
+    if (breakEndAt) {
+      if (Date.now() >= breakEndAt) { breakFinish(); return; }
+      document.title = countdown(breakEndAt) + ' 休息 · ' + BASE_TITLE;
+      if (pomoBtnEl) pomoBtnEl.textContent = '休息 ' + countdown(breakEndAt) + ' · 点击结束';
+      return;
+    }
     if (!pomoEndAt) return;
     if (Date.now() >= pomoEndAt) { pomoFinish(); return; }
-    const t = pomoLabel();
-    document.title = t + ' 番茄钟 · ' + BASE_TITLE;
-    if (pomoBtnEl) pomoBtnEl.textContent = t + ' · 点击结束';
+    document.title = countdown(pomoEndAt) + ' 番茄钟 · ' + BASE_TITLE;
+    if (pomoBtnEl) pomoBtnEl.textContent = countdown(pomoEndAt) + ' · 点击结束';
   }
 
   function pomoStart() {
+    pomoSuggest = '';
     pomoEndAt = Date.now() + prefs.pomoMin * 60 * 1000;
     pomoTick();
     pomoTimer = setInterval(pomoTick, 500);
@@ -2780,6 +2947,7 @@
     clearInterval(pomoTimer);
     pomoTimer = null;
     pomoEndAt = 0;
+    pomoSuggest = '';
     document.title = BASE_TITLE;
     render();
   }
@@ -2798,6 +2966,42 @@
       /* 不支持通知就静默 */
     }
     pomoBeep();
+    pomoSuggest = 'break';
+    render();
+  }
+
+  function breakStart() {
+    pomoSuggest = '';
+    breakEndAt = Date.now() + BREAK_MIN * 60 * 1000;
+    pomoTick();
+    pomoTimer = setInterval(pomoTick, 500);
+    render();
+  }
+
+  // 提前结束休息不算次数，也不弹「下一轮」建议
+  function breakStop() {
+    clearInterval(pomoTimer);
+    pomoTimer = null;
+    breakEndAt = 0;
+    document.title = BASE_TITLE;
+    render();
+  }
+
+  function breakFinish() {
+    clearInterval(pomoTimer);
+    pomoTimer = null;
+    breakEndAt = 0;
+    document.title = BASE_TITLE;
+    const m = restBump();
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('休息结束', { body: '缓了 ' + BREAK_MIN + ' 分钟（今天第 ' + m + ' 次），继续下一轮专注吗？' });
+      }
+    } catch {
+      /* 不支持通知就静默 */
+    }
+    pomoBeep();
+    pomoSuggest = 'focus';
     render();
   }
 
@@ -2829,6 +3033,7 @@
   }
 
   function pomoClick() {
+    if (breakEndAt) { breakStop(); return; }
     if (pomoEndAt) {
       askConfirm('结束番茄钟', '这一轮还没满 ' + prefs.pomoMin + ' 分钟，现在结束不会计入今天的专注轮数。', pomoStop);
     } else {
@@ -3195,6 +3400,8 @@
   function renderRow(task) {
     const li = document.createElement('li');
     li.dataset.id = task.id;
+    li.dataset.done = task.done ? '1' : '0';
+    li.dataset.today = isTodayTask(task) ? '1' : '0';
     if (task.id === kbId) li.className = 'kb-cursor';
     const row = document.createElement('div');
     row.className = 'row p-' + level(task) + (task.done ? ' done' : '');
@@ -3275,6 +3482,14 @@
         line.append(rp);
       }
 
+      if (task.pin) {
+        const pf = document.createElement('span');
+        pf.className = 'tg pf';
+        pf.innerHTML = icon('pin', 12);
+        pf.title = '已置顶：排在列表最前面';
+        line.append(pf);
+      }
+
       const subs = task.subs || [];
       if (subs.length) {
         const sb = document.createElement('span');
@@ -3324,6 +3539,17 @@
       more.addEventListener('click', () => toggleExpanded(task.id));
 
       acts.append(more);
+
+      // 置顶：点一下钉到列表最前，再点一下取消（位置留在原处，不自动跳）
+      const pinB = document.createElement('button');
+      pinB.type = 'button';
+      pinB.className = 'ibtn pin' + (task.pin ? ' on' : '');
+      pinB.innerHTML = icon('pin', 18);
+      pinB.title = task.pin ? '取消置顶' : '置顶';
+      pinB.setAttribute('aria-label', (task.pin ? '取消置顶「' : '置顶「') + clip(task.text) + '」');
+      pinB.setAttribute('aria-pressed', String(!!task.pin));
+      pinB.addEventListener('click', () => togglePin(task.id));
+      acts.insertBefore(pinB, acts.firstChild);
 
       // 逾期任务的行内一键顺延：直接推到今天
       if (!task.done && dueInDays(task) < 0) {
@@ -3812,6 +4038,21 @@
     render();
   }
 
+  // 置顶 = 挪到数组最前（列表按数组顺序渲染，天然排第一）；取消置顶只去标记，不跳位置
+  function togglePin(id) {
+    const t = tasks.find(x => x.id === id);
+    if (!t) return;
+    if (t.pin) {
+      t.pin = false;
+    } else {
+      t.pin = true;
+      tasks.splice(tasks.indexOf(t), 1);
+      tasks.unshift(t);
+    }
+    save();
+    render();
+  }
+
   // ---------- 拖拽排序（pointer 事件，鼠标与触摸通用） ----------
   function startDrag(ev, li, id) {
     if (dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
@@ -3889,7 +4130,7 @@
   }
 
   function add(text, priority, due, tags, repeat) {
-    tasks.push({ id: uid(), text, priority, due: due || '', tags: normTags(tags), repeat: repeat || '', note: '', subs: [], done: false, completedAt: null, createdAt: Date.now() });
+    tasks.push({ id: uid(), text, priority, due: due || '', tags: normTags(tags), repeat: repeat || '', note: '', subs: [], pin: false, done: false, completedAt: null, createdAt: Date.now() });
     save();
     render();
   }
@@ -3924,6 +4165,7 @@
       repeat: task.repeat,
       note: task.note || '',
       subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
+      pin: !!task.pin,
       done: false,
       completedAt: null,
       createdAt: Date.now(),
@@ -4049,6 +4291,7 @@
   // 当前能看到的任务 id（含已完成历史里正在显示的），「全选」只选这些
   function visibleIds() {
     const ids = visibleTasks().map(t => t.id);
+    if (!prefs.historyOpen) return ids;
     const doneIds = tasks.filter(t => t.done)
       .filter(t => !prefs.dateFilter || dayKey(t.completedAt || 0) === prefs.dateFilter)
       .map(t => t.id);
@@ -4083,6 +4326,7 @@
     batchDoneBtn.disabled = ![...batchSel].some(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
     batchSnoozeBtn.disabled = batchDoneBtn.disabled;
     batchReopen.disabled = ![...batchSel].some(id => { const t = tasks.find(x => x.id === id); return t && t.done; });
+    batchPurge.disabled = batchReopen.disabled;
     batchDel.disabled = batchSel.size === 0;
     batchTagOk.disabled = batchSel.size === 0;
   }
@@ -4153,8 +4397,23 @@
     });
   }
 
-  function batchApplyTag() {
-    const ids = [...batchSel];
+
+  // 彻底删除 = 只清掉选中的已完成任务，不进回收站，但撤销条照样能捞回来
+  function batchPurgeSel() {
+    const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && t.done; });
+    if (!ids.length) return;
+    askConfirm('彻底删除', '选中的 ' + ids.length + ' 项已完成任务不会进回收站，直接清掉（6 秒内还能撤销）。', () => {
+      snapshot('已彻底删除 ' + ids.length + ' 项已完成任务', tasks);
+      const kill = new Set(ids);
+      tasks = tasks.filter(t => !kill.has(t.id));
+      if (editingId && kill.has(editingId)) editingId = null;
+      if (kbId && kill.has(kbId)) kbId = null;
+      for (const id of ids) expanded.delete(id);
+      for (const id of ids) batchSel.delete(id);
+    });
+  }
+
+  function batchApplyTag() {    const ids = [...batchSel];
     if (!ids.length) return;
     const tags = normTags(batchTag.value.split(/[\s,，、/]+/));
     if (!tags.length) {
@@ -4188,6 +4447,7 @@
   batchDoneBtn.addEventListener('click', batchComplete);
   batchSnoozeBtn.addEventListener('click', batchSnoozeSel);
   batchReopen.addEventListener('click', batchReopenSel);
+  batchPurge.addEventListener('click', batchPurgeSel);
   batchDel.addEventListener('click', batchDelete);
   batchTagOk.addEventListener('click', batchApplyTag);
   batchClear.addEventListener('click', () => { batchSel.clear(); render(); });
@@ -4274,6 +4534,7 @@
           .filter(s => s && typeof s.text === 'string' && s.text.trim())
           .slice(0, 50)
           .map(s => ({ id: typeof s.id === 'string' && s.id ? s.id : uid(), text: s.text.trim().slice(0, 120), done: !!s.done })),
+        pin: !!t.pin,
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
         createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
@@ -4667,6 +4928,7 @@
     if (!kbId) return;
     if (e.key === ' ') { e.preventDefault(); toggle(kbId); return; }
     if (e.key === 'Enter') { e.preventDefault(); startEdit(kbId); return; }
+    if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePin(kbId); return; }
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); remove(kbId); kbId = null; }
   });
 
@@ -4677,7 +4939,6 @@
   }
 
   kbdBtn.addEventListener('click', () => openKbd(true));
-  printBtn.addEventListener('click', () => window.print());
   kbdClose.addEventListener('click', () => openKbd(false));
   kbdModal.addEventListener('click', (e) => {
     if (e.target === kbdModal) openKbd(false);
@@ -4685,6 +4946,51 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !kbdModal.hidden) openKbd(false);
   });
+
+  // ---------- 打印选项：只打未完成 / 只打今天 ----------
+  // 开关只写进 html 上的 data-pu/data-pt，配合 @media print 生效，
+  // 这样屏幕上永远看到全部任务，Ctrl+P 直接打印也认这两个设置
+  function syncPrintOptions() {
+    printUndoneBtn.classList.toggle('on', !!prefs.printUndone);
+    printUndoneBtn.setAttribute('aria-pressed', String(!!prefs.printUndone));
+    printTodayBtn.classList.toggle('on', !!prefs.printToday);
+    printTodayBtn.setAttribute('aria-pressed', String(!!prefs.printToday));
+    document.documentElement.dataset.pu = prefs.printUndone ? '1' : '0';
+    document.documentElement.dataset.pt = prefs.printToday ? '1' : '0';
+  }
+
+  function openPrintPop(open) {
+    printPop.hidden = !open;
+    printBtn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      syncPrintOptions();
+      printUndoneBtn.focus();
+    }
+  }
+
+  printBtn.addEventListener('click', () => openPrintPop(printPop.hidden));
+  printUndoneBtn.addEventListener('click', () => {
+    prefs.printUndone = !prefs.printUndone;
+    save();
+    syncPrintOptions();
+  });
+  printTodayBtn.addEventListener('click', () => {
+    prefs.printToday = !prefs.printToday;
+    save();
+    syncPrintOptions();
+  });
+  printGo.addEventListener('click', () => {
+    openPrintPop(false);
+    printBtn.focus();
+    window.print();
+  });
+  document.addEventListener('click', (e) => {
+    if (!printPop.hidden && !printPop.contains(e.target) && !printBtn.contains(e.target)) openPrintPop(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !printPop.hidden) openPrintPop(false);
+  });
+  syncPrintOptions();
 
   // ---------- 主题：跟随系统 / 浅色 / 深色 三态循环 ----------
   const darkMq = matchMedia('(prefers-color-scheme: dark)');
