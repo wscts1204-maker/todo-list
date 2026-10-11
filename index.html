@@ -450,6 +450,110 @@
 
   .tick:hover { color: var(--teal-700); }
 
+  /* ---------- 批量整理模式 ---------- */
+  #list.batch .grip { visibility: hidden; }
+  #list.batch .row .acts { display: none; }
+  #list.batch .tick { color: var(--gray-500); }
+  #list.batch .tick:hover { color: var(--gray-700); }
+  #list.batch .tick.on { color: var(--teal-700); }
+  #list.batch .tick.on:hover { color: var(--teal-800); }
+  #hist-list.batch .hist-back { display: none; }
+  .hist-item .hck { color: var(--gray-500); flex-shrink: 0; padding: 8px; margin-left: -6px; }
+  .hist-item .hck:hover { color: var(--gray-700); }
+  .hist-item .hck.on { color: var(--teal-700); }
+
+  .batch-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 32px);
+    padding: 10px 14px;
+    border-radius: 16px;
+    background: var(--gray-800);
+    color: var(--gray-50);
+    box-shadow: var(--shadow-card);
+    font-size: 13px;
+    z-index: 45;
+  }
+
+  .batch-bar[hidden] { display: none; }
+
+  .batch-bar .b-act {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: none;
+    padding: 8px 12px;
+    min-height: 40px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  .batch-bar .b-act:hover { background: var(--gray-100); }
+  .batch-bar .b-act.danger { color: var(--red-600); }
+  .batch-bar .b-act[disabled] { opacity: .4; }
+  .batch-bar .b-tag {
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 40px;
+    width: 170px;
+  }
+
+  /* ---------- 键盘光标与快捷键说明 ---------- */
+  #list li.kb-cursor { outline: 2px solid var(--teal-600); outline-offset: 2px; border-radius: 12px; }
+
+  .kbd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--gray-500);
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    min-height: 36px;
+  }
+
+  .kbd-btn:hover { color: var(--gray-700); }
+
+  .kbd-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 14px;
+    align-items: center;
+    font-size: 13px;
+    color: var(--gray-600);
+    margin: 0 0 22px;
+  }
+
+  .kbd-list b {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--gray-700);
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 3px 9px;
+    white-space: nowrap;
+    justify-self: start;
+  }
+
+  #kbd-ico { color: var(--teal-600); display: flex; }
+
+  /* 日历里点了「＋」：把添加卡片高亮一下，提示日期已填好 */
+  .input-card.flash { outline: 3px solid var(--teal-600); outline-offset: 3px; }
+
   .body { flex: 1; min-width: 0; }
 
   .text-line {
@@ -1125,6 +1229,36 @@
   .cal-dot.done { background: var(--green-600); }
   .cal-cell.sel .cal-dot { background: var(--on-accent); }
 
+  /* 格子右上角的任务件数 + 快速添加按钮 */
+  .cal-cell { position: relative; cursor: pointer; user-select: none; -webkit-user-select: none; }
+  .cal-cell:focus-visible { outline: 2px solid var(--teal-600); outline-offset: 1px; }
+  .cal-num-badge { position: absolute; top: 3px; right: 5px; font-size: 10px; line-height: 1; color: var(--gray-500); }
+  .cal-cell.sel .cal-num-badge { color: var(--on-accent); opacity: .85; }
+  .cal-add {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1;
+    color: var(--on-accent);
+    background: var(--teal-700);
+    border: none;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s;
+  }
+  .cal-cell.sel .cal-add, .cal-cell:focus-within .cal-add { opacity: 1; pointer-events: auto; }
+  @media (hover: hover) {
+    .cal-cell:hover .cal-add { opacity: 1; pointer-events: auto; }
+  }
+
   .cal-hint { font-size: 11px; line-height: 1.5; color: var(--gray-500); margin-top: 10px; }
 
   /* ---------- 任务行多分类 ---------- */
@@ -1357,6 +1491,13 @@
   .today-strip .ts-btn:hover { background: var(--gray-100); }
   .today-strip .ts-btn.on { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
   .today-strip .ts-btn.on:hover { background: var(--teal-800); }
+
+  .today-strip .ts-btn + .ts-btn { margin-left: 0; }
+  .today-strip .ts-btn.pomo { font-variant-numeric: tabular-nums; }
+  .today-strip .ts-btn.pomo.run { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+  .today-strip .ts-btn.pomo.run:hover { background: var(--teal-800); }
+  .today-strip .st-pomo { display: inline-flex; align-items: center; gap: 4px; color: var(--yellow-600); font-weight: 600; }
+  .today-strip .st-pomo svg { flex-shrink: 0; }
 
   /* ---------- 备注 / 子任务 ---------- */
   .ibtn.more { color: var(--gray-600); }
@@ -1647,6 +1788,7 @@
       </div>
       <div class="tool-actions">
         <button id="toggle-hidden" class="tbtn red" type="button">隐藏已完成任务</button>
+        <button id="batch-btn" class="tbtn gray" type="button">批量管理</button>
         <button id="clear-done" class="tbtn gray" type="button">清空已完成</button>
         <button id="clear-all" class="tbtn gray" type="button">全部清空</button>
         <button id="trash-btn" class="tbtn gray" type="button">回收站</button>
@@ -1691,7 +1833,7 @@
           <button id="cal-jump" class="cal-today-btn" type="button">回到本月</button>
         </div>
         <div id="cal-grid" class="cal-grid"></div>
-        <p class="cal-hint">点某一天，上面的清单只显示那天到期的任务；红点 = 当天到期且已逾期，青点 = 当天到期，绿点 = 当天完成的。</p>
+        <p class="cal-hint">点某一天，上面的清单只显示那天到期的任务；格子右上角是当天共几件，点「＋」直接添加那天的任务。红点 = 当天到期且已逾期，青点 = 当天到期，绿点 = 当天完成的。</p>
       </div>
     </section>
 
@@ -1719,6 +1861,8 @@
 
     <p id="total" class="total">共 0 个任务</p>
 
+    <button id="kbd-btn" class="kbd-btn" type="button">键盘快捷键</button>
+
     <div class="backup-row">
       <button id="export-btn" class="bbtn" type="button">⬇ 导出备份</button>
       <button id="import-btn" class="bbtn" type="button">⬆ 导入备份</button>
@@ -1730,6 +1874,17 @@
   <div id="undo-bar" class="undo-bar" hidden>
     <span class="u-text" id="undo-text"></span>
     <button id="undo-btn" class="u-btn" type="button">撤销</button>
+  </div>
+
+  <div id="batch-bar" class="batch-bar" hidden>
+    <b id="batch-info">已选 0 项</b>
+    <button id="batch-all" class="b-act" type="button">全选</button>
+    <button id="batch-done" class="b-act" type="button">完成</button>
+    <button id="batch-reopen" class="b-act" type="button">放回</button>
+    <button id="batch-del" class="b-act danger" type="button">删除</button>
+    <input id="batch-tag" class="b-tag" type="text" maxlength="60" list="tag-list" placeholder="设分类，空格隔开" aria-label="给选中任务设置分类，空格隔开可多个">
+    <button id="batch-tag-ok" class="b-act" type="button">应用</button>
+    <button id="batch-clear" class="b-act" type="button">取消选择</button>
   </div>
 
   <div id="modal" class="backdrop" hidden>
@@ -1762,6 +1917,27 @@
     </div>
   </div>
 
+  <div id="kbd-modal" class="backdrop" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="kbd-title">
+      <div class="dialog-head">
+        <span class="warn" id="kbd-ico"></span>
+        <h3 id="kbd-title">键盘快捷键</h3>
+      </div>
+      <div class="kbd-list">
+        <b>/</b><span>跳到搜索框</span>
+        <b>N</b><span>跳到新建任务输入框</span>
+        <b>↑ / ↓ 或 J / K</b><span>上下选择任务</span>
+        <b>空格</b><span>完成 / 放回选中的任务</span>
+        <b>Enter</b><span>编辑选中的任务</span>
+        <b>Delete</b><span>删除选中的任务（进回收站）</span>
+        <b>Esc</b><span>取消选中 / 关闭弹窗</span>
+      </div>
+      <div class="dialog-actions">
+        <button id="kbd-close" class="dbtn plain" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
 <script>
   const KEY = 'todo.tasks';
   const PREF = 'todo.prefs';
@@ -1771,6 +1947,9 @@
   const NOTIFIED = 'todo.notified';
   const TRASH_KEEP = 30 * 86400000;   // 回收站保留 30 天
   const TRASH_MAX = 200;
+  const POMO_KEY = 'todo.pomo';        // 番茄钟：今天的完成轮数
+  const POMO_MS = 25 * 60 * 1000;
+  const BASE_TITLE = document.title;
 
   // ---------- 手写清单初始化数据（首次打开自动导入，按文本去重） ----------
   const SEED_KEY = 'todo.seed';
@@ -1836,6 +2015,10 @@
     image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
     palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
     lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    timer: '<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>',
+    square: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>',
+    checkSquare: '<path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+    keyboard: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 12h.01"/><path d="M8 16h8"/>',
   };
 
   function icon(name, size) {
@@ -1929,6 +2112,20 @@
   const trashCloseBtn = $('trash-close-btn');
   const trashList = $('trash-list');
   const trashEmptyBtn = $('trash-empty');
+  const batchBtn = $('batch-btn');
+  const batchBar = $('batch-bar');
+  const batchInfo = $('batch-info');
+  const batchAll = $('batch-all');
+  const batchDoneBtn = $('batch-done');
+  const batchReopen = $('batch-reopen');
+  const batchDel = $('batch-del');
+  const batchTag = $('batch-tag');
+  const batchTagOk = $('batch-tag-ok');
+  const batchClear = $('batch-clear');
+  const kbdBtn = $('kbd-btn');
+  const kbdModal = $('kbd-modal');
+  const kbdClose = $('kbd-close');
+  const kbdIco = $('kbd-ico');
 
   let tasks = load();
   let trash = loadTrash();
@@ -1942,6 +2139,12 @@
   const expanded = new Set();   // 哪些任务展开了备注/子任务面板（不跨会话保存）
   let undoSnap = null;
   let undoTimer = null;
+  let batchOn = false;          // 批量整理模式（只活在当前页面，不进 prefs）
+  const batchSel = new Set();   // 批量模式下勾选的任务 id
+  let kbId = null;              // 键盘光标停在哪个任务上
+  let pomoEndAt = 0;            // 番茄钟结束时间戳，0 = 没在计时
+  let pomoTimer = null;
+  let pomoBtnEl = null;
   const _now = new Date();
   let calY = _now.getFullYear();
   let calM = _now.getMonth();
@@ -2217,6 +2420,21 @@
     streak.append(fire, document.createTextNode(' ' + (days ? '连续打卡 ' + days + ' 天' : '今天完成 1 项就能开始连续打卡')));
     streak.title = '连续打卡：每天至少完成一项任务就能续上一天';
 
+    const pomoN = pomoToday();
+    const pomoCount = document.createElement('span');
+    pomoCount.className = 'st-pomo';
+    pomoCount.innerHTML = icon('timer', 14);
+    pomoCount.append(document.createTextNode('今日专注 ' + pomoN + ' 轮'));
+    pomoCount.title = '番茄钟：每专注满 25 分钟记一轮，只记今天';
+
+    const pomoBtn = document.createElement('button');
+    pomoBtn.type = 'button';
+    pomoBtn.className = 'ts-btn pomo' + (pomoEndAt ? ' run' : '');
+    pomoBtn.textContent = pomoEndAt ? pomoLabel() + ' · 点击结束' : '番茄钟 25 分钟';
+    pomoBtn.title = pomoEndAt ? '正在专注，点击提前结束（不计轮数）' : '开始一轮 25 分钟的专注计时';
+    pomoBtn.addEventListener('click', pomoClick);
+    pomoBtnEl = pomoBtn;
+
     const n = tasks.filter(isTodayTask).length;
     const info = document.createElement('span');
     info.textContent = n ? '今天要做 ' + n + ' 项' : '今天没有到期的任务';
@@ -2233,8 +2451,116 @@
       render();
     });
 
-    todayStrip.append(streak, info, btn);
+    todayStrip.append(streak, pomoCount, info, pomoBtn, btn);
   }
+
+  // ---------- 番茄钟 ----------
+  function pomoToday() {
+    try {
+      const o = JSON.parse(localStorage.getItem(POMO_KEY));
+      if (o && o.day === dayKey(Date.now())) return Number(o.n) || 0;
+    } catch {
+      /* 没有记录就是 0 轮 */
+    }
+    return 0;
+  }
+
+  function pomoBump() {
+    const n = pomoToday() + 1;
+    try {
+      localStorage.setItem(POMO_KEY, JSON.stringify({ day: dayKey(Date.now()), n }));
+    } catch {
+      /* 存不下这轮就不记 */
+    }
+    return n;
+  }
+
+  function pomoLabel() {
+    const left = Math.max(0, pomoEndAt - Date.now());
+    const m = Math.floor(left / 60000);
+    const s = Math.floor((left % 60000) / 1000);
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function pomoTick() {
+    if (!pomoEndAt) return;
+    if (Date.now() >= pomoEndAt) { pomoFinish(); return; }
+    const t = pomoLabel();
+    document.title = t + ' 番茄钟 · ' + BASE_TITLE;
+    if (pomoBtnEl) pomoBtnEl.textContent = t + ' · 点击结束';
+  }
+
+  function pomoStart() {
+    pomoEndAt = Date.now() + POMO_MS;
+    pomoTick();
+    pomoTimer = setInterval(pomoTick, 500);
+  }
+
+  function pomoStop() {
+    clearInterval(pomoTimer);
+    pomoTimer = null;
+    pomoEndAt = 0;
+    document.title = BASE_TITLE;
+    render();
+  }
+
+  function pomoFinish() {
+    clearInterval(pomoTimer);
+    pomoTimer = null;
+    pomoEndAt = 0;
+    document.title = BASE_TITLE;
+    const n = pomoBump();
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('番茄钟完成', { body: '专注满 25 分钟，今天第 ' + n + ' 轮，休息一下吧' });
+      }
+    } catch {
+      /* 不支持通知就静默 */
+    }
+    pomoBeep();
+    render();
+  }
+
+  // 两声短提示音，用 WebAudio 现场合成，不引外部文件
+  function pomoBeep() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const beep = (at, freq) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        o.connect(g);
+        g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime + at);
+        g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + at + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + at + 0.5);
+        o.start(ctx.currentTime + at);
+        o.stop(ctx.currentTime + at + 0.55);
+      };
+      beep(0, 880);
+      beep(0.65, 660);
+      setTimeout(() => ctx.close().catch(() => {}), 1600);
+    } catch {
+      /* 没有音频输出就算了 */
+    }
+  }
+
+  function pomoClick() {
+    if (pomoEndAt) {
+      askConfirm('结束番茄钟', '这一轮还没满 25 分钟，现在结束不会计入今天的专注轮数。', pomoStop);
+    } else {
+      pomoStart();
+      render();
+    }
+  }
+
+  // 后台标签页的定时器会被浏览器节流，回到前台时立刻校准一次
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) pomoTick();
+  });
 
   // ---------- 一句话快速添加：#分类 !高 @明天 ~每周 ----------
   const QUICK_PRIO = { '高': 'high', '中': 'mid', '低': 'low', '高优先': 'high', '中优先': 'mid', '低优先': 'low' };
@@ -2392,6 +2718,15 @@
         render();
       });
       filters.append(chip);
+
+      // 手机上格子太小，加任务的入口放在这里
+      const addDay = document.createElement('button');
+      addDay.type = 'button';
+      addDay.className = 'fbtn';
+      addDay.textContent = '＋ 添加这天';
+      addDay.title = dd ? '添加 ' + (dd.getMonth() + 1) + '月' + dd.getDate() + '日 到期的任务' : '添加任务';
+      addDay.addEventListener('click', () => openAddFor(prefs.dayFilter));
+      filters.append(addDay);
     }
 
     const base = activeTasks();
@@ -2511,6 +2846,7 @@
     renderCalendar();
     renderHistory(done);
     renderStats(done);
+    renderBatchUI();
 
     trashBtn.textContent = '回收站' + (trash.length ? '（' + trash.length + '）' : '');
     pendingCount.textContent = tasks.length - done.length;
@@ -2524,6 +2860,7 @@
   function renderRow(task) {
     const li = document.createElement('li');
     li.dataset.id = task.id;
+    if (task.id === kbId) li.className = 'kb-cursor';
     const row = document.createElement('div');
     row.className = 'row p-' + level(task) + (task.done ? ' done' : '');
 
@@ -2537,10 +2874,18 @@
 
     const tick = document.createElement('button');
     tick.type = 'button';
-    tick.className = 'tick';
-    tick.innerHTML = icon(task.done ? 'checkCircle' : 'circle', 22);
-    tick.setAttribute('aria-label', task.done ? '标记为未完成' : '标记为已完成');
-    tick.addEventListener('click', () => toggle(task.id));
+    if (batchOn) {
+      // 批量模式：勾选框代替完成按钮，点它只是选中/取消选中
+      tick.className = 'tick' + (batchSel.has(task.id) ? ' on' : '');
+      tick.innerHTML = icon(batchSel.has(task.id) ? 'checkSquare' : 'square', 22);
+      tick.setAttribute('aria-label', (batchSel.has(task.id) ? '取消选中「' : '选中「') + clip(task.text) + '」');
+      tick.addEventListener('click', () => batchToggleSel(task.id));
+    } else {
+      tick.className = 'tick';
+      tick.innerHTML = icon(task.done ? 'checkCircle' : 'circle', 22);
+      tick.setAttribute('aria-label', task.done ? '标记为未完成' : '标记为已完成');
+      tick.addEventListener('click', () => toggle(task.id));
+    }
     row.append(tick);
 
     const body = document.createElement('div');
@@ -3041,6 +3386,16 @@
       const item = document.createElement('div');
       item.className = 'hist-item';
 
+      if (batchOn) {
+        const ck = document.createElement('button');
+        ck.type = 'button';
+        ck.className = 'hck' + (batchSel.has(task.id) ? ' on' : '');
+        ck.innerHTML = icon(batchSel.has(task.id) ? 'checkSquare' : 'square', 20);
+        ck.setAttribute('aria-label', (batchSel.has(task.id) ? '取消选中「' : '选中「') + clip(task.text) + '」');
+        ck.addEventListener('click', () => batchToggleSel(task.id));
+        item.append(ck);
+      }
+
       const ico = document.createElement('span');
       ico.className = 'ico';
       ico.innerHTML = icon('checkCircle', 20);
@@ -3088,7 +3443,7 @@
 
   // ---------- 拖拽排序（pointer 事件，鼠标与触摸通用） ----------
   function startDrag(ev, li, id) {
-    if (dragging || (ev.button !== undefined && ev.button !== 0)) return;
+    if (dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
     ev.preventDefault();
 
     const els = [...list.children].filter(el => el.dataset.id);
@@ -3186,27 +3541,31 @@
     return '';
   }
 
+  // 重复任务完成时，在原位置后排出一条新的（下一条继承全部分类/备注/子任务模板）
+  function spliceNextRepeat(task) {
+    if (!task.repeat) return;
+    tasks.splice(tasks.indexOf(task) + 1, 0, {
+      id: uid(),
+      text: task.text,
+      priority: task.priority,
+      due: nextDue(task),
+      tags: tagsOf(task).slice(),
+      repeat: task.repeat,
+      note: task.note || '',
+      subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
+      done: false,
+      completedAt: null,
+      createdAt: Date.now(),
+    });
+  }
+
   function toggle(id) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
     task.done = !task.done;
     task.completedAt = task.done ? Date.now() : null;
     // 重复任务：完成的那条留在历史里（统计要用），紧跟着排出一条新的
-    if (task.done && task.repeat) {
-      tasks.splice(tasks.indexOf(task) + 1, 0, {
-        id: uid(),
-        text: task.text,
-        priority: task.priority,
-        due: nextDue(task),
-        tags: tagsOf(task).slice(),
-        repeat: task.repeat,
-        note: task.note || '',
-        subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
-        done: false,
-        completedAt: null,
-        createdAt: Date.now(),
-      });
-    }
+    if (task.done) spliceNextRepeat(task);
     save();
     render();
   }
@@ -3287,6 +3646,131 @@
   }
 
   undoBtn.addEventListener('click', restoreUndo);
+
+  // ---------- 批量整理：多选后统一完成 / 放回 / 删除 / 设分类 ----------
+  // 当前能看到的任务 id（含已完成历史里正在显示的），「全选」只选这些
+  function visibleIds() {
+    const ids = visibleTasks().map(t => t.id);
+    const doneIds = tasks.filter(t => t.done)
+      .filter(t => !prefs.dateFilter || dayKey(t.completedAt || 0) === prefs.dateFilter)
+      .map(t => t.id);
+    return ids.concat(doneIds);
+  }
+
+  function renderBatchUI() {
+    batchBtn.textContent = batchOn ? '退出批量' : '批量管理';
+    batchBtn.classList.toggle('red', batchOn);
+    batchBtn.classList.toggle('gray', !batchOn);
+    list.classList.toggle('batch', batchOn);
+    histList.classList.toggle('batch', batchOn);
+    batchBar.hidden = !batchOn;
+    if (!batchOn) return;
+
+    const alive = new Set(tasks.map(t => t.id));
+    for (const id of [...batchSel]) if (!alive.has(id)) batchSel.delete(id);
+    batchInfo.textContent = '已选 ' + batchSel.size + ' 项';
+    batchAll.textContent = batchSel.size ? '全不选' : '全选';
+    batchDoneBtn.disabled = ![...batchSel].some(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
+    batchReopen.disabled = ![...batchSel].some(id => { const t = tasks.find(x => x.id === id); return t && t.done; });
+    batchDel.disabled = batchSel.size === 0;
+    batchTagOk.disabled = batchSel.size === 0;
+  }
+
+  function batchToggleSel(id) {
+    if (batchSel.has(id)) batchSel.delete(id);
+    else batchSel.add(id);
+    render();
+  }
+
+  function batchComplete() {
+    const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
+    if (!ids.length) return;
+    snapshot('已批量完成 ' + ids.length + ' 项任务', tasks);
+    for (const id of ids) {
+      const task = tasks.find(t => t.id === id);
+      task.done = true;
+      task.completedAt = Date.now();
+      spliceNextRepeat(task);
+    }
+    save();
+    render();
+  }
+
+  function batchReopenSel() {
+    const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && t.done; });
+    if (!ids.length) return;
+    snapshot('已批量放回 ' + ids.length + ' 项任务', tasks);
+    for (const id of ids) {
+      const t = tasks.find(x => x.id === id);
+      t.done = false;
+      t.completedAt = null;
+    }
+    prefs.dateFilter = '';   // 历史面板带着日期筛选时，放回的任务会「消失」
+    save();
+    render();
+  }
+
+  function batchDelete() {
+    const ids = [...batchSel];
+    if (!ids.length) return;
+    askConfirm('批量删除', '确定把选中的 ' + ids.length + ' 项任务删进回收站吗？保留 30 天，6 秒内也可撤销。', () => {
+      snapshot('已批量删除 ' + ids.length + ' 项任务', tasks);
+      const kill = new Set(ids);
+      for (const id of ids) {
+        const t = tasks.find(x => x.id === id);
+        if (t) trashPush(t);
+      }
+      tasks = tasks.filter(t => !kill.has(t.id));
+      if (editingId && kill.has(editingId)) editingId = null;
+      for (const id of ids) expanded.delete(id);
+      batchSel.clear();
+    });
+  }
+
+  function batchApplyTag() {
+    const ids = [...batchSel];
+    if (!ids.length) return;
+    const tags = normTags(batchTag.value.split(/[\s,，、/]+/));
+    if (!tags.length) {
+      batchTag.placeholder = '先填分类名再点应用';
+      return;
+    }
+    snapshot('已给 ' + ids.length + ' 项任务设置分类「' + tags.join(' / ') + '」', tasks);
+    for (const id of ids) {
+      const t = tasks.find(x => x.id === id);
+      if (t) t.tags = tags.slice();
+    }
+    batchTag.value = '';
+    save();
+    render();
+  }
+
+  batchBtn.addEventListener('click', () => {
+    batchOn = !batchOn;
+    if (!batchOn) batchSel.clear();
+    render();
+  });
+
+  batchAll.addEventListener('click', () => {
+    const vis = visibleIds();
+    const all = vis.length > 0 && vis.every(id => batchSel.has(id));
+    if (all) batchSel.clear();
+    else for (const id of vis) batchSel.add(id);
+    render();
+  });
+
+  batchDoneBtn.addEventListener('click', batchComplete);
+  batchReopen.addEventListener('click', batchReopenSel);
+  batchDel.addEventListener('click', batchDelete);
+  batchTagOk.addEventListener('click', batchApplyTag);
+  batchClear.addEventListener('click', () => { batchSel.clear(); render(); });
+
+  batchTag.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      batchApplyTag();
+    }
+  });
 
   function askConfirm(title, text, action) {
     modalTitle.textContent = title;
@@ -3531,11 +4015,12 @@
       const dueN = tasks.filter(t => !t.done && t.due === key).length;
       const doneN = tasks.filter(t => t.done && t.completedAt && dayKey(t.completedAt) === key).length;
 
-      const cell = document.createElement('button');
-      cell.type = 'button';
+      const cell = document.createElement('div');
       cell.className = 'cal-cell'
         + (key === todayKey ? ' today' : '')
         + (prefs.dayFilter === key ? ' sel' : '');
+      cell.setAttribute('role', 'button');
+      cell.tabIndex = 0;
       cell.setAttribute('aria-pressed', String(prefs.dayFilter === key));
       cell.title = (calM + 1) + '月' + d + '日：到期 ' + dueN + (overN ? '（含逾期 ' + overN + '）' : '') + '，完成 ' + doneN;
 
@@ -3549,13 +4034,55 @@
       if (doneN) { const x = document.createElement('span'); x.className = 'cal-dot done'; dots.append(x); }
 
       cell.append(num, dots);
-      cell.addEventListener('click', () => {
+
+      // 当天共几件（到期 + 完成），>0 才显示
+      const totalN = dueN + doneN;
+      if (totalN) {
+        const cnum = document.createElement('span');
+        cnum.className = 'cal-num-badge';
+        cnum.textContent = String(totalN);
+        cell.append(cnum);
+      }
+
+      // 点 ＋ 直接把添加表单的到期日设成这天；桌面悬停出现，手机上选中格子后出现
+      const addB = document.createElement('button');
+      addB.type = 'button';
+      addB.className = 'cal-add';
+      addB.textContent = '＋';
+      const addTitle = '添加 ' + (calM + 1) + '月' + d + '日 到期的任务';
+      addB.title = addTitle;
+      addB.setAttribute('aria-label', addTitle);
+      addB.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openAddFor(key);
+      });
+      cell.append(addB);
+
+      const flip = () => {
         prefs.dayFilter = prefs.dayFilter === key ? '' : key;
         save();
         render();
+      };
+      cell.addEventListener('click', flip);
+      cell.addEventListener('keydown', (e) => {
+        if (e.isComposing) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          flip();
+        }
       });
       calGrid.append(cell);
     }
+  }
+
+  // 从日历跳过来添加：填好日期、高亮输入卡片、聚焦输入框
+  function openAddFor(day) {
+    newDue.value = day;
+    const card = document.querySelector('.input-card');
+    card.classList.add('flash');
+    setTimeout(() => card.classList.remove('flash'), 1300);
+    input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    input.focus({ preventScroll: true });
   }
 
   calToggle.addEventListener('click', () => {
@@ -3667,6 +4194,68 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !trashModal.hidden) openTrash(false);
+  });
+
+  // ---------- 键盘快捷键（输入框聚焦时全部让路） ----------
+  function kbdRows() {
+    return [...list.querySelectorAll('li[data-id]')];
+  }
+
+  function kbdMove(delta) {
+    const rows = kbdRows();
+    if (!rows.length) return;
+    const idx = rows.findIndex(el => el.dataset.id === kbId);
+    const next = rows[Math.min(rows.length - 1, Math.max(0, idx + delta))];
+    kbId = next.dataset.id;
+    for (const el of rows) el.classList.toggle('kb-cursor', el.dataset.id === kbId);
+    next.scrollIntoView({ block: 'nearest' });
+  }
+
+  function kbdClear() {
+    if (!kbId) return;
+    kbId = null;
+    for (const el of kbdRows()) el.classList.remove('kb-cursor');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    const field = t && t.closest && t.closest('input, textarea, select');
+    if (field) return;
+    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden) return;
+
+    if (e.key === '/') { e.preventDefault(); if (!searchBar.hidden) searchInput.focus(); return; }
+    if (e.key === 'n' || e.key === 'N') {
+      e.preventDefault();
+      input.scrollIntoView({ block: 'center' });
+      input.focus();
+      return;
+    }
+    if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); kbdMove(1); return; }
+    if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); kbdMove(-1); return; }
+    if (e.key === 'Escape') { kbdClear(); return; }
+
+    // 焦点正好在某个按钮上时空格/回车留给按钮本身
+    if (t && t.closest && t.closest('button, a, [role="button"]')) return;
+    if (!kbId) return;
+    if (e.key === ' ') { e.preventDefault(); toggle(kbId); return; }
+    if (e.key === 'Enter') { e.preventDefault(); startEdit(kbId); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); remove(kbId); kbId = null; }
+  });
+
+  // ---------- 快捷键说明弹层 ----------
+  function openKbd(open) {
+    kbdModal.hidden = !open;
+    if (open) kbdClose.focus();
+  }
+
+  kbdBtn.addEventListener('click', () => openKbd(true));
+  kbdClose.addEventListener('click', () => openKbd(false));
+  kbdModal.addEventListener('click', (e) => {
+    if (e.target === kbdModal) openKbd(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !kbdModal.hidden) openKbd(false);
   });
 
   // ---------- 主题：跟随系统 / 浅色 / 深色 三态循环 ----------
@@ -3840,6 +4429,8 @@
   $('search-ico').innerHTML = icon('search', 18);
   undoBtn.innerHTML = icon('undo', 16) + '撤销';
   bgBtn.innerHTML = icon('image', 20);
+  kbdIco.innerHTML = icon('keyboard', 24);
+  kbdBtn.innerHTML = icon('keyboard', 16) + '键盘快捷键';
   document.querySelector('.bp-head-ic').innerHTML = icon('palette', 16);
   bgClose.innerHTML = icon('close', 16);
   bgNoteIc.innerHTML = icon('lock', 12);
