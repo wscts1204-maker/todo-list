@@ -1624,7 +1624,7 @@
   }
 
   .cal-cell:hover { background: var(--gray-100); }
-  .cal-cell.empty { background: transparent; min-height: 0; pointer-events: none; }
+  .cal-cell.cal-pad { background: transparent; min-height: 0; pointer-events: none; }
   .cal-cell.today { border-color: var(--teal-600); }
   .cal-cell.sel, .cal-cell.sel:hover { background: var(--teal-700); color: var(--on-accent); border-color: transparent; }
 
@@ -7510,7 +7510,8 @@
 
     for (let i = 0; i < lead; i++) {
       const pad = document.createElement('span');
-      pad.className = 'cal-cell empty';
+      // 类名不能带 empty —— 会被空状态那块的 .empty { padding: 48px } 命中，把首周撑高
+      pad.className = 'cal-cell cal-pad';
       calGrid.append(pad);
     }
 
