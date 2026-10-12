@@ -57,6 +57,11 @@
     --shadow-btn-hover: 0 10px 15px -3px rgba(13, 61, 58, .22);
     --shadow-dialog: 0 25px 50px -12px rgba(15, 23, 42, .35);
     --scrim: rgba(15, 23, 42, .45);
+    --hm0: #eef3f1;
+    --hm1: #37a48e;
+    --hm2: #1d8474;
+    --hm3: #0c5b52;
+    --hm-line: rgba(15, 118, 110, .3);
   }
 
   [data-theme="dark"] {
@@ -104,6 +109,11 @@
     --shadow-btn-hover: 0 10px 15px -3px rgba(0, 0, 0, .55);
     --shadow-dialog: 0 25px 50px -12px rgba(0, 0, 0, .7);
     --scrim: rgba(0, 0, 0, .7);
+    --hm0: #1e2f2c;
+    --hm1: #3d8b7c;
+    --hm2: #17a895;
+    --hm3: #5eead4;
+    --hm-line: rgba(255, 255, 255, .13);
   }
 
   /* ---------- 背景配色：每套配浅色 / 深色列两个版本，跟随主题走 ---------- */
@@ -324,6 +334,7 @@
     padding: 12px;
     text-align: center;
     min-height: 44px;
+    white-space: nowrap;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -819,6 +830,73 @@
 
   .st-hint { font-size: 12px; color: var(--gray-500); margin-top: 14px; }
 
+  /* ---------- 打卡热力图 ---------- */
+  .hm-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .hm-days {
+    display: grid;
+    grid-template-rows: repeat(7, 12px);
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .hm-days span {
+    height: 12px;
+    line-height: 12px;
+    font-size: 10px;
+    color: var(--gray-600);
+  }
+
+  .hm {
+    display: grid;
+    grid-template-rows: repeat(7, 12px);
+    grid-auto-flow: column;
+    grid-auto-columns: 12px;
+    gap: 3px;
+  }
+
+  .hm-c {
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--hm-line);
+    border-radius: 3px;
+    background: var(--hm0);
+  }
+
+  .hm-c.l1 { background: var(--hm1); }
+  .hm-c.l2 { background: var(--hm2); }
+  .hm-c.l3 { background: var(--hm3); }
+  .hm-c.future { visibility: hidden; }
+  .hm-c.today { border-color: var(--teal-600); box-shadow: 0 0 0 1.5px var(--teal-600); }
+
+  .hm-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+
+  .hm-legend i {
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--hm-line);
+    border-radius: 3px;
+    background: var(--hm0);
+  }
+  .hm-legend i.l1 { background: var(--hm1); }
+  .hm-legend i.l2 { background: var(--hm2); }
+  .hm-legend i.l3 { background: var(--hm3); }
+
   .hist-filter {
     display: flex;
     align-items: center;
@@ -970,6 +1048,147 @@
   .dbtn.plain:hover { color: var(--gray-800); }
   .dbtn.danger { background: var(--red-600); color: var(--on-accent); }
   .dbtn.danger:hover { background: var(--red-700); }
+
+  .dialog-input {
+    width: 100%;
+    font-size: 15px;
+    padding: 10px 12px;
+    min-height: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: var(--surface);
+    color: var(--gray-800);
+    margin-bottom: 8px;
+  }
+
+  .dialog-input:focus { outline: 2px solid var(--teal-600); outline-offset: 1px; }
+
+  .dialog-err { font-size: 13px; color: var(--red-600); margin-bottom: 16px !important; }
+
+  /* ---------- 多清单切换条 ---------- */
+  .list-tabs { margin-bottom: 12px; }
+
+  .lt-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .lt-chips { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+
+  .lt-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 44px;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+
+  .lt-chip:hover { border-color: var(--teal-600); color: var(--teal-700); }
+
+  .lt-chip.on {
+    background: var(--teal-600);
+    border-color: transparent;
+    color: var(--on-accent);
+  }
+
+  .lt-chip.on:hover { background: var(--teal-700); color: var(--on-accent); }
+
+  .lt-chip .lt-n {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+  }
+
+  .lt-chip.on .lt-n { background: var(--teal-800); color: var(--on-accent); }
+
+  .lt-add, .lt-menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-700);
+    background: transparent;
+    border: 1px dashed var(--teal-600);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 44px;
+    transition: background .2s;
+  }
+
+  .lt-add:hover { background: var(--teal-50); }
+
+  .lt-menu {
+    border-style: solid;
+    border-color: var(--card-border);
+    color: var(--gray-700);
+    width: 44px;
+    padding: 0;
+    margin-left: auto;
+  }
+
+  .lt-menu:hover { background: var(--gray-100); color: var(--gray-800); }
+  .lt-menu[aria-expanded="true"] { background: var(--gray-100); }
+
+  .lt-pop {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 30;
+    width: min(220px, calc(100vw - 32px));
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-dialog);
+    animation: dlg-in .16s ease-out;
+  }
+
+  .lt-pop .lp-t {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-600);
+    padding: 6px 10px 8px;
+  }
+
+  .lt-pop button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    font-size: 14px;
+    text-align: left;
+    color: var(--gray-800);
+    background: transparent;
+    border-radius: 9px;
+    padding: 10px;
+    min-height: 44px;
+    transition: background .16s;
+  }
+
+  .lt-pop button:hover { background: var(--gray-100); }
+  .lt-pop button.danger { color: var(--red-600); }
+  .lt-pop button.danger:hover { background: var(--red-50); }
+  .lt-pop button:disabled { color: var(--gray-500); cursor: not-allowed; }
+  .lt-pop button:disabled:hover { background: transparent; }
+
+  @media (max-width: 480px) {
+    .lt-chip, .lt-add { padding: 8px 12px; }
+  }
 
   /* ---------- 主题与背景 ---------- */
   .head-tools {
@@ -1491,6 +1710,139 @@
     font-weight: 500;
   }
 
+  /* ---------- 批量粘贴 ---------- */
+  .bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .bb-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--teal-700);
+    background: var(--surface);
+    border: 1px solid var(--teal-600);
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 44px;
+    transition: background-color .16s ease, color .16s ease;
+  }
+
+  .bb-btn:hover { background: var(--teal-50); color: var(--teal-800); }
+  .bb-btn.main { background: var(--teal-600); color: var(--on-accent); border-color: transparent; }
+  .bb-btn.main:hover { background: var(--teal-700); color: var(--on-accent); }
+  .bb-btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+  .bb-hint { font-size: 12px; color: var(--gray-600); }
+
+  .bulk-box {
+    margin-top: 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: var(--surface-glass);
+    padding: 10px;
+    animation: dlg-in .16s ease-out;
+  }
+
+  .bulk-text {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 10px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .bulk-text::placeholder { color: var(--gray-500); }
+  .bulk-text:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .bulk-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .bk-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 4px 6px 4px 10px;
+    min-height: 44px;
+  }
+
+  .bk-n {
+    flex-shrink: 0;
+    width: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bk-txt {
+    flex: 1 1 140px;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-800);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bk-chip {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--teal-800);
+    background: var(--teal-50);
+    border-radius: 999px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .bk-x {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: var(--gray-600);
+    background: transparent;
+    transition: background-color .16s ease, color .16s ease;
+  }
+
+  .bk-x:hover { background: var(--red-50); color: var(--red-600); }
+
+  .bulk-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .bulk-sum { font-size: 12px; color: var(--gray-600); flex: 1; min-width: 120px; }
+
   /* ---------- 今日专注 ---------- */
   .today-strip {
     position: relative;
@@ -1807,6 +2159,87 @@
 
   .note-flag { color: var(--gray-600); display: inline-flex; }
 
+  .att-flag { color: var(--gray-600); display: inline-flex; }
+
+  /* ---------- 附件 ---------- */
+  .att-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .att-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 4px 6px 4px 10px;
+    min-height: 44px;
+  }
+
+  .att-ic { color: var(--gray-600); display: inline-flex; flex-shrink: 0; }
+
+  .att-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--gray-800);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .att-size { font-size: 12px; color: var(--gray-600); white-space: nowrap; }
+
+  .att-item .a-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: var(--teal-700);
+    background: transparent;
+    transition: background-color .16s ease, color .16s ease;
+  }
+
+  .att-item .a-btn:hover { background: var(--gray-100); color: var(--teal-800); }
+  .att-item .a-btn.del:hover { background: var(--red-50); color: var(--red-600); }
+
+  .att-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .att-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    border: 1px dashed var(--teal-600);
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 44px;
+    transition: background-color .16s ease;
+  }
+
+  .att-add:hover { background: var(--gray-100); color: var(--teal-800); }
+  .att-add[disabled] { opacity: .55; cursor: not-allowed; }
+
+  .att-hint { font-size: 12px; color: var(--gray-600); margin: 0; }
+  .att-hint.err { color: var(--red-600); }
+
+  .att-picker { display: none; }
+
   /* ---------- 撤销条 ---------- */
   .undo-bar {
     position: fixed;
@@ -1880,11 +2313,11 @@
     .search-input { font-size: 16px; }
     .grip { width: 32px; margin-left: -12px; }
     .toolbar { flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-    .stats { gap: 16px; width: auto; }
+    .stats { gap: 16px; width: auto; flex-shrink: 0; }
     .stat { padding: 16px; }
     .stat b { font-size: 24px; }
     .stat span { font-size: 14px; }
-    .tool-actions { flex-direction: row; width: auto; }
+    .tool-actions { flex-direction: row; width: auto; flex-wrap: wrap; justify-content: flex-end; }
     .tbtn { font-size: 16px; padding: 12px 16px; }
     .row { padding: 16px; }
     .tick { margin-right: 6px; }
@@ -1908,7 +2341,7 @@
     body::before { display: none !important; }
     .head, .input-card, .toolbar, #calendar-card, #history, #stats,
     #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
-    .search-bar, .filter-bar, .remind-strip, .today-strip,
+    .search-bar, .filter-bar, .remind-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total { display: none !important; }
     html[data-pu="1"] li[data-done="1"] { display: none !important; }
     html[data-pt="1"] li[data-today="0"] { display: none !important; }
@@ -1916,7 +2349,7 @@
     .card { background: #fff !important; border: none !important; box-shadow: none !important; }
     .list-card { padding: 0 !important; }
     .list-card::before {
-      content: '我的待办清单';
+      content: var(--print-title, '我的待办清单');
       display: block;
       padding: 0 16px 12px;
       font-size: 20px;
@@ -1978,11 +2411,33 @@
       </div>
     </header>
 
+    <section class="list-tabs" aria-label="清单切换">
+      <div class="lt-row">
+        <div class="lt-chips" id="list-chips"></div>
+        <button type="button" class="lt-add" id="list-add"></button>
+        <button type="button" class="lt-menu" id="list-menu" aria-haspopup="true" aria-expanded="false" aria-label="当前清单的操作"></button>
+        <div class="lt-pop" id="list-pop" hidden></div>
+      </div>
+    </section>
+
     <section class="card input-card">
       <form id="form" class="input-row" autocomplete="off">
         <input id="new-task" type="text" placeholder="今天要做什么？" maxlength="200">
         <button id="add" type="submit">➕ 添加任务</button>
       </form>
+      <div class="bulk-bar">
+        <button type="button" class="bb-btn" id="bulk-toggle" aria-expanded="false" aria-controls="bulk-box"></button>
+        <span class="bb-hint">粘贴多行文字可一次建多条</span>
+      </div>
+      <div class="bulk-box" id="bulk-box" hidden>
+        <textarea id="bulk-text" class="bulk-text" rows="4" placeholder="一行一条，也可以用顿号、逗号分隔：&#10;买菜&#10;交水电费、约牙医"></textarea>
+        <div class="bulk-preview" id="bulk-preview"></div>
+        <div class="bulk-foot">
+          <span class="bulk-sum" id="bulk-sum"></span>
+          <button type="button" class="bb-btn main" id="bulk-add"></button>
+          <button type="button" class="bb-btn" id="bulk-close">收起</button>
+        </div>
+      </div>
       <div id="quick-hint" class="quick-hint" role="status" aria-live="polite"></div>
       <div class="prio-row">
         <span class="prio-label">优先级：</span>
@@ -2134,6 +2589,8 @@
         <h3 id="modal-title">确认清空</h3>
       </div>
       <p id="modal-text">确定要清空所有任务吗？此操作无法撤销。</p>
+      <input id="modal-input" class="dialog-input" type="text" maxlength="12" hidden autocomplete="off">
+      <p id="modal-err" class="dialog-err" hidden></p>
       <div class="dialog-actions">
         <button id="modal-cancel" class="dbtn plain" type="button">取消</button>
         <button id="modal-ok" class="dbtn danger" type="button">确认清空</button>
@@ -2171,6 +2628,8 @@
         <b>Enter</b><span>编辑选中的任务</span>
         <b>Delete</b><span>删除选中的任务（进回收站）</span>
         <b>P</b><span>置顶 / 取消置顶选中的任务</span>
+        <b>Ctrl + Enter</b><span>批量粘贴面板里一次添加全部</span>
+        <b>粘贴多行</b><span>在输入框直接粘贴，自动进批量面板</span>
         <b>Esc</b><span>取消选中 / 关闭弹窗</span>
       </div>
       <div class="dialog-actions">
@@ -2191,6 +2650,21 @@
   const POMO_KEY = 'todo.pomo';        // 番茄钟：今天的完成轮数 / 休息次数
   const BREAK_MIN = 5;                 // 一轮专注后的短休息时长（分钟）
   const BASE_TITLE = document.title;
+  const LISTS_KEY = 'todo.lists';      // 清单元数据（名字与当前选中项）
+  const DEFAULT_LIST = 'main';         // 默认清单沿用 todo.tasks 这个老键，不做数据迁移
+  const LIST_NAME_MAX = 12;
+  const LIST_MAX = 12;
+  // 附件的文件本体走 IndexedDB（localStorage 装不下），任务里只存一条元数据
+  const ATT_DB = 'todo-files';
+  const ATT_STORE = 'files';
+  const ATT_MAX = 8;                    // 单条任务最多几个附件
+  const ATT_SIZE_MAX = 5 * 1024 * 1024; // 单个文件最大 5MB
+  const ATT_EMBED_MAX = 2 * 1024 * 1024; // 导出备份时，超过这个体积的文件不写进 JSON
+  const ATT_JSON_MAX = 12000000;         // 备份 JSON 里附件数据的总体积上限，免得文件大到导不出去
+
+  function tasksKey(id) {
+    return id === DEFAULT_LIST ? KEY : KEY + '.' + id;
+  }
 
   // ---------- 手写清单初始化数据（首次打开自动导入，按文本去重） ----------
   const SEED_KEY = 'todo.seed';
@@ -2263,6 +2737,13 @@
     snooze: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M12 10v6"/><path d="M9 13h6"/>',
     printer: '<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
     pin: '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+    folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+    paperclip: '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 0 12.88 8.8l-8.56 8.57a2 2 0 0 1-2.83-2.83l8.57-8.57"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
   };
 
   function icon(name, size) {
@@ -2274,6 +2755,8 @@
     mid: { label: '中', icon: 'scale' },
     low: { label: '低', icon: 'feather' },
   };
+
+  const WEEKDAY_NAME = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
   const REPEATS = [
     { key: '', label: '不重复' },
@@ -2378,8 +2861,22 @@
   const kbdModal = $('kbd-modal');
   const kbdClose = $('kbd-close');
   const kbdIco = $('kbd-ico');
+  const listChips = $('list-chips');
+  const listAdd = $('list-add');
+  const listMenu = $('list-menu');
+  const listPop = $('list-pop');
+  const modalInput = $('modal-input');
+  const modalErr = $('modal-err');
+  const bulkToggle = $('bulk-toggle');
+  const bulkBox = $('bulk-box');
+  const bulkText = $('bulk-text');
+  const bulkPreview = $('bulk-preview');
+  const bulkSum = $('bulk-sum');
+  const bulkAddBtn = $('bulk-add');
+  const bulkCloseBtn = $('bulk-close');
 
-  let tasks = load();
+  let lists = loadLists();
+  let tasks = loadList(lists.active);
   let trash = loadTrash();
   let prefs = loadPrefs();
   let newPriority = 'mid';
@@ -2387,10 +2884,12 @@
   let query = '';
   let editingId = null;
   let confirmAction = null;
+  let promptAction = null;        // 弹窗带输入框时，确定按钮走这条
   let dragging = null;
   const expanded = new Set();   // 哪些任务展开了备注/子任务面板（不跨会话保存）
   let undoSnap = null;
   let undoTrash = null;         // 只有导入备份会带回收站快照
+  let undoLists = null;         // 导入备份换掉整个清单结构时的快照，撤销要连清单一起回滚
   let undoTimer = null;
   let batchOn = false;          // 批量整理模式（只活在当前页面，不进 prefs）
   const batchSel = new Set();   // 批量模式下勾选的任务 id
@@ -2431,25 +2930,191 @@
     { key: 'nodate', label: '无日期' },
   ];
 
-  function load() {
+  function loadList(id) {
     let raw;
     try {
-      raw = JSON.parse(localStorage.getItem(KEY)) || [];
+      raw = JSON.parse(localStorage.getItem(tasksKey(id))) || [];
     } catch {
       return [];
     }
+    if (!Array.isArray(raw)) return [];
     return raw.map(t => {
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, ...t };
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], ...t };
       if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
       if (typeof o.note !== 'string') o.note = '';
       o.pin = !!o.pin;
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
+      o.att = normAtt(o.att);
       o.subs = (Array.isArray(o.subs) ? o.subs : [])
         .filter(s => s && typeof s.text === 'string' && s.text.trim())
         .map(s => ({ id: s.id || uid(), text: s.text, done: !!s.done }));
       return o;
     });
+  }
+
+  // 清单列表：{ active, items: [{id,name}] }。没有 todo.lists 这个键时就是一个默认清单，
+  // 老数据原样待在 todo.tasks 里，不做迁移 —— 少一次改写就少一次丢数据的机会。
+  function loadLists() {
+    let raw;
+    try {
+      raw = JSON.parse(localStorage.getItem(LISTS_KEY));
+    } catch {
+      raw = null;
+    }
+    const items = [];
+    if (raw && Array.isArray(raw.lists)) {
+      for (const x of raw.lists) {
+        if (!x || typeof x.id !== 'string' || !x.id) continue;
+        if (items.some(l => l.id === x.id)) continue;
+        const name = typeof x.name === 'string' ? x.name.trim().slice(0, LIST_NAME_MAX) : '';
+        items.push({ id: x.id.slice(0, 40), name: name || '未命名' });
+        if (items.length >= LIST_MAX) break;
+      }
+    }
+    if (!items.some(l => l.id === DEFAULT_LIST)) items.unshift({ id: DEFAULT_LIST, name: '我的清单' });
+    const active = raw && typeof raw.active === 'string' && items.some(l => l.id === raw.active)
+      ? raw.active : DEFAULT_LIST;
+    return { active, items };
+  }
+
+  function saveLists() {
+    try {
+      localStorage.setItem(LISTS_KEY, JSON.stringify({ v: 1, active: lists.active, lists: lists.items }));
+    } catch {
+      /* 元数据写不进去也不该挡住用户操作 */
+    }
+  }
+
+  function currentList() {
+    return lists.items.find(l => l.id === lists.active) || lists.items[0];
+  }
+
+  function listName(id) {
+    const l = lists.items.find(x => x.id === id);
+    return l ? l.name : '';
+  }
+
+  // 切清单时这些临时状态没有意义，统一清掉；导入备份也要清，但那时撤销条必须留着（keepUndo）
+  function resetTransient(keepUndo) {
+    editingId = null;
+    kbId = null;
+    batchOn = false;
+    batchSel.clear();
+    expanded.clear();
+    closeListMenu();
+    if (!keepUndo) closeUndo();
+  }
+
+  function switchList(id) {
+    if (id === lists.active || !lists.items.some(l => l.id === id)) return;
+    save();
+    lists.active = id;
+    saveLists();
+    tasks = loadList(id);
+    resetTransient();
+    render();
+  }
+
+  function createList(name) {
+    if (lists.items.length >= LIST_MAX) return;
+    save();
+    const id = 'l-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+    lists.items.push({ id, name });
+    lists.active = id;
+    saveLists();
+    tasks = [];
+    resetTransient();
+    render();
+  }
+
+  function renameCurrentList(name) {
+    const l = currentList();
+    if (!l || l.name === name) return;
+    l.name = name;
+    saveLists();
+    render();
+  }
+
+  function deleteCurrentList() {
+    if (lists.items.length < 2) return;
+    const gone = lists.active;
+    const name = currentList().name;
+    askConfirm('删除清单', '「' + name + '」这个清单会被删掉，里面 ' + tasks.length + ' 条任务先进回收站，30 天内还能恢复。其他清单不受影响。', () => {
+      for (const t of tasks) trashPush({ ...t, listId: gone });
+      try {
+        localStorage.removeItem(tasksKey(gone));
+      } catch { /* 删不掉就算了，反正不再引用它 */ }
+      lists.items = lists.items.filter(x => x.id !== gone);
+      lists.active = lists.items[0].id;
+      saveLists();
+      tasks = loadList(lists.active);
+      resetTransient();
+      render();
+    });
+  }
+
+  function renderListTabs() {
+    listChips.textContent = '';
+    for (const l of lists.items) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'lt-chip' + (l.id === lists.active ? ' on' : '');
+      b.textContent = l.name;
+      const n = document.createElement('span');
+      n.className = 'lt-n';
+      const own = l.id === lists.active ? tasks : loadList(l.id);
+      n.textContent = String(own.filter(t => !t.done).length);
+      n.setAttribute('aria-label', '待完成 ' + n.textContent + ' 项');
+      b.append(n);
+      if (l.id === lists.active) b.setAttribute('aria-current', 'true');
+      b.title = '切换到「' + l.name + '」';
+      b.addEventListener('click', () => switchList(l.id));
+      listChips.append(b);
+    }
+    listAdd.innerHTML = icon('plus', 16) + '<span>新建清单</span>';
+    listMenu.innerHTML = icon('more', 18);
+    // 只有一个清单时也要能改名，所以菜单不禁用；「删除」那一项自己按数量禁用
+  }
+
+  function closeListMenu() {
+    if (!listPop) return;
+    listPop.hidden = true;
+    listMenu.setAttribute('aria-expanded', 'false');
+  }
+
+  function openListMenu(open) {
+    if (open) {
+      listPop.textContent = '';
+      const t = document.createElement('p');
+      t.className = 'lp-t';
+      t.textContent = '当前：' + currentList().name;
+      const ren = document.createElement('button');
+      ren.type = 'button';
+      ren.innerHTML = icon('pencil', 16) + '<span>重命名这个清单</span>';
+      ren.addEventListener('click', () => {
+        closeListMenu();
+        askPrompt('重命名清单', '最多 ' + LIST_NAME_MAX + ' 个字。', currentList().name, LIST_NAME_MAX, '保存', (val) => {
+          renameCurrentList(val);
+          backupMsg('清单已改名为「' + val + '」');
+        });
+      });
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'danger';
+      del.innerHTML = icon('trash', 16) + '<span>删除这个清单</span>';
+      del.disabled = lists.items.length < 2;
+      del.title = lists.items.length < 2 ? '至少要留一个清单' : '任务会先进回收站';
+      del.addEventListener('click', () => {
+        closeListMenu();
+        deleteCurrentList();
+      });
+      listPop.append(t, ren, del);
+      listPop.hidden = false;
+      listMenu.setAttribute('aria-expanded', 'true');
+    } else {
+      closeListMenu();
+    }
   }
 
   function loadTrash() {
@@ -2465,13 +3130,15 @@
     for (const x of raw) {
       if (!x || typeof x.text !== 'string' || typeof x.deletedAt !== 'number') continue;
       if (now - x.deletedAt > TRASH_KEEP) continue;
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, ...x };
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], ...x };
       o.pin = !!o.pin;
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
+      o.att = normAtt(o.att);
       o.subs = (Array.isArray(o.subs) ? o.subs : [])
         .filter(s => s && typeof s.text === 'string' && s.text.trim())
         .map(s => ({ id: s.id || uid(), text: s.text, done: !!s.done }));
+      if (typeof o.listId !== 'string' || !o.listId) delete o.listId;
       out.push(o);
     }
     return out;
@@ -2483,10 +3150,14 @@
     } catch {
       /* 存不下就先不放 */
     }
+    scheduleGc();   // 回收站一变，孤儿附件的判定也要跟着变
   }
 
   function trashPush(task) {
-    trash.push({ ...JSON.parse(JSON.stringify(task)), deletedAt: Date.now() });
+    const copy = { ...JSON.parse(JSON.stringify(task)), deletedAt: Date.now() };
+    // 回收站是全局的，条目记住自己来自哪个清单，恢复时才回得去
+    if (typeof copy.listId !== 'string' || !copy.listId) copy.listId = lists.active;
+    trash.push(copy);
     if (trash.length > TRASH_MAX) trash = trash.slice(trash.length - TRASH_MAX);
     saveTrash();
   }
@@ -2507,7 +3178,7 @@
   }
 
   function save() {
-    localStorage.setItem(KEY, JSON.stringify(tasks));
+    localStorage.setItem(tasksKey(lists.active), JSON.stringify(tasks));
     localStorage.setItem(PREF, JSON.stringify(prefs));
   }
 
@@ -3346,6 +4017,11 @@
       save();
     }
 
+    renderListTabs();
+    // 打印页的标题跟着当前清单走（CSS 里用 var(--print-title) 取）
+    document.documentElement.style.setProperty('--print-title',
+      '"' + currentList().name.replace(/[\\"]/g, '\\$&') + '"');
+
     const done = tasks.filter(t => t.done);
     const shown = visibleTasks();
 
@@ -3506,6 +4182,15 @@
         nf.innerHTML = icon('note', 14);
         nf.title = '备注：' + task.note.slice(0, 60);
         line.append(nf);
+      }
+
+      const atts = attOf(task);
+      if (atts.length) {
+        const af = document.createElement('span');
+        af.className = 'att-flag';
+        af.innerHTML = icon('paperclip', 14);
+        af.title = atts.length + ' 个附件：' + atts.map(a => a.name).join('、');
+        line.append(af);
       }
 
       body.append(line);
@@ -3711,6 +4396,7 @@
     });
     addRow.append(si, sb);
     box.append(addRow);
+    attSection(task, box);
     return box;
   }
 
@@ -3746,6 +4432,315 @@
 
     row.append(tick, txt, del);
     return row;
+  }
+
+  // ---------- 附件：文件本体放 IndexedDB，任务里只留一份元数据 ----------
+  function attOf(task) {
+    return Array.isArray(task.att) ? task.att : [];
+  }
+
+  function normAtt(value) {
+    if (!Array.isArray(value)) return [];
+    const out = [];
+    for (const a of value) {
+      if (!a || typeof a !== 'object' || typeof a.id !== 'string' || !a.id || typeof a.name !== 'string' || !a.name) continue;
+      out.push({
+        id: a.id.slice(0, 40),
+        name: a.name.slice(0, 80),
+        type: typeof a.type === 'string' ? a.type : '',
+        size: Number(a.size) || 0,
+        at: Number(a.at) || 0,
+      });
+      if (out.length >= ATT_MAX) break;
+    }
+    return out;
+  }
+
+  function fmtSize(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
+  }
+
+  let idbPromise = null;
+
+  function openDb() {
+    if (idbPromise) return idbPromise;
+    idbPromise = new Promise((resolve, reject) => {
+      let req;
+      try {
+        req = indexedDB.open(ATT_DB, 1);
+      } catch (e) {
+        reject(e);
+        return;
+      }
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(ATT_STORE)) db.createObjectStore(ATT_STORE, { keyPath: 'id' });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('打不开本地存储'));
+    }).catch((e) => {
+      idbPromise = null;   // 失败不缓存，下次还能重试（比如隐私模式刚退出）
+      throw e;
+    });
+    return idbPromise;
+  }
+
+  function wrapReq(req) {
+    return new Promise((resolve, reject) => {
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('读取附件失败'));
+    });
+  }
+
+  function txDone(t) {
+    return new Promise((resolve, reject) => {
+      t.oncomplete = () => resolve(true);
+      t.onerror = () => reject(t.error || new Error('写入附件失败'));
+      t.onabort = () => reject(t.error || new Error('写入附件被中断'));
+    });
+  }
+
+  function idbGet(id) {
+    return openDb().then(db => wrapReq(db.transaction(ATT_STORE, 'readonly').objectStore(ATT_STORE).get(id)));
+  }
+
+  function idbGetAll() {
+    return openDb().then(db => wrapReq(db.transaction(ATT_STORE, 'readonly').objectStore(ATT_STORE).getAll()));
+  }
+
+  function idbPut(rec) {
+    return openDb().then(db => {
+      const t = db.transaction(ATT_STORE, 'readwrite');
+      t.objectStore(ATT_STORE).put(rec);
+      return txDone(t);
+    });
+  }
+
+  function idbDel(ids) {
+    if (!ids.length) return Promise.resolve(true);
+    return openDb().then(db => {
+      const t = db.transaction(ATT_STORE, 'readwrite');
+      const store = t.objectStore(ATT_STORE);
+      for (const id of ids) store.delete(id);
+      return txDone(t);
+    });
+  }
+
+  // 所有清单的任务 + 回收站引用到的附件 id；引用不到的文件才算孤儿
+  function referencedAttIds() {
+    const set = new Set();
+    for (const l of lists.items) {
+      const arr = l.id === lists.active ? tasks : loadList(l.id);
+      for (const t of arr) for (const a of attOf(t)) set.add(a.id);
+    }
+    for (const t of trash) for (const a of attOf(t)) set.add(a.id);
+    return set;
+  }
+
+  function gcAttachments() {
+    idbGetAll().then(all => {
+      const keep = referencedAttIds();
+      const dead = all.filter(r => r && !keep.has(r.id)).map(r => r.id);
+      return dead.length ? idbDel(dead) : null;
+    }).catch(() => { /* 存不了附件的环境，回收也就无从谈起 */ });
+  }
+
+  let gcTimer = null;
+  function scheduleGc() {
+    clearTimeout(gcTimer);
+    gcTimer = setTimeout(gcAttachments, 1500);
+  }
+
+  function blobToDataURL(blob) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result));
+      fr.onerror = () => reject(fr.error || new Error('读文件失败'));
+      fr.readAsDataURL(blob);
+    });
+  }
+
+  function dataURLToBlob(dataUrl, type) {
+    const comma = dataUrl.indexOf(',');
+    if (comma < 0) throw new Error('附件数据坏了');
+    const bin = atob(dataUrl.slice(comma + 1));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: type || 'application/octet-stream' });
+  }
+
+  async function attachFiles(task, fileList, say) {
+    const files = [...fileList];
+    if (!files.length) return;
+    const list = attOf(task).slice();
+    const ok = [];
+    let tooBig = 0;
+    for (const f of files) {
+      if (!f || typeof f.size !== 'number') continue;
+      if (f.size > ATT_SIZE_MAX) { tooBig++; continue; }
+      ok.push(f);
+    }
+    if (tooBig) say('有 ' + tooBig + ' 个文件超过 ' + fmtSize(ATT_SIZE_MAX) + '，没存进来', true);
+    const room = ATT_MAX - list.length;
+    if (room <= 0) { say('附件最多 ' + ATT_MAX + ' 个，先删掉几个再传', !tooBig); return; }
+    const use = ok.slice(0, room);
+    if (ok.length > use.length && !tooBig) say('一条任务最多 ' + ATT_MAX + ' 个附件，多出来的没存', true);
+    if (!use.length) return;
+    let failed = '';
+    for (const f of use) {
+      const id = uid();
+      const meta = { id, name: (f.name || '未命名文件').slice(0, 80), type: f.type || '', size: f.size, at: Date.now() };
+      try {
+        await idbPut({ ...meta, taskId: task.id, blob: f });
+      } catch (e) {
+        failed = '这个浏览器存不了附件（无痕模式或存储被拒）';
+        break;
+      }
+      list.push(meta);
+    }
+    task.att = list;
+    save();
+    render();
+    if (failed) say(failed, true);
+    else if (!tooBig) say('已添加 ' + use.length + ' 个附件');
+  }
+
+  async function withAttFile(att, run, say) {
+    try {
+      const rec = await idbGet(att.id);
+      if (!rec || !rec.blob) {
+        say('这个附件的文件本体已经不在了', true);
+        return;
+      }
+      await run(rec);
+    } catch (e) {
+      say('打不开附件：' + (e && e.message ? e.message : '本地存储不可用'), true);
+    }
+  }
+
+  function saveAsBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name || '附件';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  function attSection(task, box) {
+    const label = document.createElement('span');
+    label.className = 'd-label';
+    label.textContent = '附件';
+
+    const hint = document.createElement('p');
+    hint.className = 'att-hint';
+    hint.hidden = true;
+    const say = (text, isErr) => {
+      hint.textContent = text;
+      hint.hidden = !text;
+      hint.classList.toggle('err', !!isErr);
+    };
+
+    const list = attOf(task);
+    const wrap = document.createElement('div');
+    wrap.className = 'att-list';
+    for (const a of list) {
+      const item = document.createElement('div');
+      item.className = 'att-item';
+
+      const ic = document.createElement('span');
+      ic.className = 'att-ic';
+      ic.innerHTML = icon(/^image\//.test(a.type) ? 'image' : 'folder', 16);
+
+      const nm = document.createElement('span');
+      nm.className = 'att-name';
+      nm.textContent = a.name;
+      nm.title = a.name + '（' + fmtSize(a.size) + '）';
+
+      const sz = document.createElement('span');
+      sz.className = 'att-size';
+      sz.textContent = fmtSize(a.size);
+
+      const view = document.createElement('button');
+      view.type = 'button';
+      view.className = 'a-btn';
+      view.innerHTML = icon(/^image\//.test(a.type) ? 'eye' : 'download', 16);
+      view.title = /^image\//.test(a.type) ? '看图' : '下载文件';
+      view.setAttribute('aria-label', (/^image\//.test(a.type) ? '预览附件 ' : '下载附件 ') + a.name);
+      view.addEventListener('click', () => {
+        withAttFile(a, (rec) => {
+          if (/^image\//.test(a.type)) {
+            const url = URL.createObjectURL(rec.blob);
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+            const w = window.open(url, '_blank');
+            if (!w) saveAsBlob(rec.blob, a.name);   // 弹窗被拦就直接下载，别什么都不发生
+          } else {
+            saveAsBlob(rec.blob, a.name);
+          }
+        }, say);
+      });
+
+      const dl = document.createElement('button');
+      dl.type = 'button';
+      dl.className = 'a-btn';
+      dl.innerHTML = icon('download', 16);
+      dl.title = '另存到本地';
+      dl.setAttribute('aria-label', '下载附件 ' + a.name);
+      dl.addEventListener('click', () => {
+        withAttFile(a, (rec) => saveAsBlob(rec.blob, a.name), say);
+      });
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'a-btn del';
+      del.innerHTML = icon('trash', 16);
+      del.title = '删除这个附件';
+      del.setAttribute('aria-label', '删除附件 ' + a.name);
+      del.addEventListener('click', () => {
+        task.att = attOf(task).filter(x => x.id !== a.id);
+        save();
+        idbDel([a.id]).catch(() => { /* 删不掉也只是占点空间，回收时会清 */ });
+        scheduleGc();
+        render();
+      });
+
+      item.append(ic, nm, sz);
+      if (/^image\//.test(a.type)) item.append(view);
+      item.append(dl, del);
+      wrap.append(item);
+    }
+    if (!list.length) wrap.hidden = true;
+
+    const foot = document.createElement('div');
+    foot.className = 'att-foot';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'att-add';
+    add.innerHTML = icon('paperclip', 14) + '<span>添加附件</span>';
+    add.disabled = list.length >= ATT_MAX;
+    add.title = list.length >= ATT_MAX ? '一条任务最多 ' + ATT_MAX + ' 个附件' : '图片或任意文件，单个不超过 ' + fmtSize(ATT_SIZE_MAX);
+
+    const picker = document.createElement('input');
+    picker.type = 'file';
+    picker.multiple = true;
+    picker.className = 'att-picker';
+    picker.setAttribute('aria-label', '选择要附加的文件');
+    picker.addEventListener('change', () => {
+      attachFiles(task, picker.files, say).then(() => { picker.value = ''; });
+    });
+
+    const note = document.createElement('span');
+    note.className = 'att-hint';
+    note.textContent = list.length >= ATT_MAX
+      ? '已经 ' + ATT_MAX + ' 个了'
+      : '单个文件 ≤' + fmtSize(ATT_SIZE_MAX) + '，还能加 ' + (ATT_MAX - list.length) + ' 个';
+
+    foot.append(add, picker, note);
+    box.append(label, wrap, foot, hint);
   }
 
   function editControls(task) {
@@ -3955,6 +4950,133 @@
     note.textContent = '近 7 天共完成 ' + days.reduce((s, d) => s + d.n, 0) + ' 个 · 统计的是全部任务，不受上方筛选影响';
     tsec.append(note);
     statsBody.append(tsec);
+
+    const byDay = completedByDay(done);
+    if (byDay.size) {
+      statsBody.append(weekSection(byDay));
+      statsBody.append(heatSection(byDay));
+    }
+  }
+
+  // 每天完成了几条：热力图与本周小结都从这张表算
+  function completedByDay(done) {
+    const map = new Map();
+    for (const t of done) {
+      if (!t.completedAt) continue;
+      const k = dayKey(t.completedAt);
+      map.set(k, (map.get(k) || 0) + 1);
+    }
+    return map;
+  }
+
+  function weekOf(byDay, start, len) {
+    let n = 0, touched = 0, best = { key: '', n: 0 };
+    for (let i = 0; i < len; i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+      const k = dayKey(d.getTime());
+      const c = byDay.get(k) || 0;
+      n += c;
+      if (c) touched++;
+      if (c > best.n) best = { key: k, n: c };
+    }
+    return { n, touched, best };
+  }
+
+  function weekStart() {
+    const base = parseDay(dayKey(Date.now()));
+    const dow = (base.getDay() + 6) % 7;   // 周一 = 0
+    return new Date(base.getFullYear(), base.getMonth(), base.getDate() - dow);
+  }
+
+  function weekSection(byDay) {
+    const start = weekStart();
+    const prev = new Date(start.getFullYear(), start.getMonth(), start.getDate() - 7);
+    const cur = weekOf(byDay, start, 7);
+    const old = weekOf(byDay, prev, 7);
+    const sec = stSection('本周小结');
+    const grid = document.createElement('div');
+    grid.className = 'st-grid';
+    const diff = cur.n - old.n;
+    grid.append(
+      statCell('本周完成', cur.n),
+      statCell('比上周', diff > 0 ? '↑' + diff : diff < 0 ? '↓' + (-diff) : '持平'),
+      statCell('打卡天数', cur.touched + '/7'),
+      statCell('最活跃', cur.best.n ? WEEKDAY_NAME[parseDay(cur.best.key).getDay()] : '—'),
+    );
+    sec.append(grid);
+    const p = document.createElement('p');
+    p.className = 'st-hint';
+    p.textContent = '本周从 ' + (start.getMonth() + 1) + '月' + start.getDate() + '日开始，连续打卡 '
+      + streakDays() + ' 天' + (cur.n ? '；最忙的那天完成了 ' + cur.best.n + ' 个' : '；这周还没完成过任务') + '。';
+    sec.append(p);
+    return sec;
+  }
+
+  function heatSection(byDay) {
+    const WEEKS = 20;
+    const start = weekStart();
+    start.setDate(start.getDate() - (WEEKS - 1) * 7);
+    const todayKey = dayKey(Date.now());
+    let max = 0, total = 0, touched = 0;
+    byDay.forEach((v, k) => {
+      if (v > max) max = v;
+      const d = parseDay(k);
+      if (d && d >= start) { total += v; if (v) touched++; }
+    });
+
+    const sec = stSection('打卡热力图');
+    const wrap = document.createElement('div');
+    wrap.className = 'hm-wrap';
+
+    const days = document.createElement('div');
+    days.className = 'hm-days';
+    ['一', '', '三', '', '五', '', '日'].forEach((label, i) => {
+      const s = document.createElement('span');
+      s.textContent = label;
+      if (!label) s.setAttribute('aria-hidden', 'true');
+      days.append(s);
+    });
+
+    const grid = document.createElement('div');
+    grid.className = 'hm';
+    grid.setAttribute('role', 'img');
+    grid.setAttribute('aria-label', '近 ' + WEEKS + ' 周的每日完成数量，颜色越深完成得越多');
+    for (let i = 0; i < WEEKS * 7; i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+      const k = dayKey(d.getTime());
+      const n = byDay.get(k) || 0;
+      const c = document.createElement('span');
+      const future = k > todayKey;
+      let lvl = 0;
+      if (n) lvl = n >= max * 0.75 ? 3 : n >= max * 0.45 ? 2 : 1;
+      c.className = 'hm-c' + (lvl ? ' l' + lvl : '') + (future ? ' future' : '') + (k === todayKey ? ' today' : '');
+      c.title = (d.getMonth() + 1) + '月' + d.getDate() + '日：完成 ' + n + ' 个';
+      grid.append(c);
+    }
+
+    wrap.append(days, grid);
+    sec.append(wrap);
+
+    const legend = document.createElement('div');
+    legend.className = 'hm-legend';
+    const less = document.createElement('span');
+    less.textContent = '少';
+    legend.append(less);
+    for (const cls of ['', 'l1', 'l2', 'l3']) {
+      const i = document.createElement('i');
+      if (cls) i.className = cls;
+      legend.append(i);
+    }
+    const more = document.createElement('span');
+    more.textContent = '多';
+    legend.append(more);
+    sec.append(legend);
+
+    const p = document.createElement('p');
+    p.className = 'st-hint';
+    p.textContent = '近 ' + WEEKS + ' 周共完成 ' + total + ' 个，其中 ' + touched + ' 天有打卡 · 一格是一天';
+    sec.append(p);
+    return sec;
   }
 
   function renderHistory(done) {
@@ -4255,12 +5377,14 @@
     undoTimer = null;
     undoSnap = null;
     undoTrash = null;
+    undoLists = null;
     undoBar.hidden = true;
   }
 
-  function snapshot(label, snap, snapTrash) {
+  function snapshot(label, snap, snapTrash, snapLists) {
     undoSnap = JSON.parse(JSON.stringify(snap));
     undoTrash = snapTrash === undefined ? null : JSON.parse(JSON.stringify(snapTrash));
+    undoLists = snapLists === undefined ? null : JSON.parse(JSON.stringify(snapLists));
     undoText.textContent = label;
     undoBar.hidden = false;
     clearTimeout(undoTimer);
@@ -4269,7 +5393,28 @@
 
   function restoreUndo() {
     if (!undoSnap) return;
-    tasks = undoSnap;
+    if (undoLists) {
+      // 导入备份改动了整个清单结构，撤销要把每个清单的内容和名字一起放回去
+      const back = new Set(undoLists.items.map(l => l.id));
+      for (const l of lists.items) {
+        if (!back.has(l.id)) {
+          try {
+            localStorage.removeItem(tasksKey(l.id));
+          } catch { /* 清不掉也只是留个孤儿键 */ }
+        }
+      }
+      lists.items = undoLists.items.map(l => ({ id: l.id, name: l.name }));
+      lists.active = back.has(undoLists.active) ? undoLists.active : DEFAULT_LIST;
+      for (const l of undoLists.items) {
+        try {
+          localStorage.setItem(tasksKey(l.id), JSON.stringify(l.tasks));
+        } catch { /* 放不下就先放着，内存里的 tasks 马上会被覆盖 */ }
+      }
+      saveLists();
+      tasks = loadList(lists.active);
+    } else {
+      tasks = undoSnap;
+    }
     if (undoTrash) {
       // 导入备份的撤销：任务与回收站一起还原
       trash = undoTrash;
@@ -4462,15 +5607,69 @@
   function askConfirm(title, text, action) {
     modalTitle.textContent = title;
     modalText.textContent = text;
+    modalText.style.marginBottom = '24px';
+    modalInput.hidden = true;
+    modalErr.hidden = true;
     modalOk.textContent = title;
     confirmAction = action;
+    promptAction = null;
     modal.hidden = false;
     modalOk.focus();
+  }
+
+  // 要用户填一个短词的场合（清单改名 / 新建清单）：复用同一个弹窗，多一个输入框
+  function askPrompt(title, text, value, max, okLabel, action) {
+    modalTitle.textContent = title;
+    modalText.textContent = text;
+    modalText.style.marginBottom = '12px';
+    modalInput.hidden = false;
+    modalInput.maxLength = max;
+    modalInput.value = value || '';
+    modalErr.hidden = true;
+    modalErr.textContent = '';
+    modalOk.textContent = okLabel;
+    confirmAction = null;
+    promptAction = function (val) {
+      if (!val) {
+        modalErr.textContent = '名字不能空着';
+        modalErr.hidden = false;
+        modalInput.focus();
+        return false;
+      }
+      if (val.length > max) {
+        modalErr.textContent = '最多 ' + max + ' 个字';
+        modalErr.hidden = false;
+        modalInput.focus();
+        return false;
+      }
+      action(val);
+      return true;
+    };
+    modal.hidden = false;
+    modalInput.focus();
+    modalInput.select();
   }
 
   function closeConfirm() {
     modal.hidden = true;
     confirmAction = null;
+    promptAction = null;
+    modalInput.hidden = true;
+    modalErr.hidden = true;
+  }
+
+  function submitModal() {
+    if (promptAction) {
+      if (!promptAction(modalInput.value.trim())) return;
+      closeConfirm();
+      save();
+      render();
+      return;
+    }
+    if (confirmAction) confirmAction();
+    closeConfirm();
+    save();
+    render();
   }
 
   // ---------- 备份：导出 / 导入 JSON ----------
@@ -4479,12 +5678,46 @@
     backupMsgEl.classList.toggle('err', !!isErr);
   }
 
-  function exportBackup() {
-    if (!tasks.length && !trash.length) {
+  async function exportBackup() {
+    // 每个清单都要读一遍，非当前清单的内容不能碰内存变量
+    const groups = lists.items.map(l => ({
+      id: l.id,
+      name: l.name,
+      tasks: l.id === lists.active ? tasks : loadList(l.id),
+    }));
+    const total = groups.reduce((n, g) => n + g.tasks.length, 0);
+    if (!total && !trash.length) {
       backupMsg('还没有任务可导出', true);
       return;
     }
-    const data = { app: 'todo-list', version: 1, exportedAt: new Date().toISOString(), tasks, trash };
+    backupMsg('正在打包附件…');
+    // 附件本体是二进制，只有体积可控的才转成 base64 一起打包，太大的留在本机
+    let files = null;
+    let skipped = 0;
+    try {
+      const all = await idbGetAll();
+      const keep = referencedAttIds();
+      files = {};
+      let bytes = 0;
+      for (const rec of all) {
+        if (!rec || !rec.blob || !keep.has(rec.id)) continue;
+        if (rec.size > ATT_EMBED_MAX) { skipped++; continue; }
+        const dataUrl = await blobToDataURL(rec.blob);
+        if (bytes + dataUrl.length > ATT_JSON_MAX) { skipped++; continue; }
+        bytes += dataUrl.length;
+        files[rec.id] = { name: rec.name, type: rec.type, data: dataUrl };
+      }
+    } catch {
+      files = null;
+    }
+    const data = {
+      app: 'todo-list',
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      lists: groups.map(g => ({ id: g.id, name: g.name, tasks: g.tasks })),
+      trash,
+    };
+    if (files && Object.keys(files).length) data.files = files;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -4493,7 +5726,10 @@
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    backupMsg('已导出 ' + tasks.length + ' 条任务' + (trash.length ? '（回收站另有 ' + trash.length + ' 条）' : ''));
+    backupMsg('已导出 ' + total + ' 条任务（' + groups.length + ' 个清单）'
+      + (files && Object.keys(files).length ? '，含 ' + Object.keys(files).length + ' 个附件' : '')
+      + (skipped ? '，' + skipped + ' 个大附件没打包' : '')
+      + (trash.length ? '，回收站另有 ' + trash.length + ' 条' : ''));
   }
 
   // 备份里的 trash 数组：条目 = 任务 + deletedAt，同样要走一遍归一化
@@ -4535,12 +5771,96 @@
           .slice(0, 50)
           .map(s => ({ id: typeof s.id === 'string' && s.id ? s.id : uid(), text: s.text.trim().slice(0, 120), done: !!s.done })),
         pin: !!t.pin,
+        att: normAtt(t.att),
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
         createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
       });
     }
     return out;
+  }
+
+  // version 2 按清单分组；version 1（或裸数组）只有一包任务，归到默认清单里
+  function normalizeImportedLists(parsed) {
+    if (!parsed || !Array.isArray(parsed.lists)) {
+      const flat = normalizeImported(parsed);
+      if (!flat) return null;
+      return [{ id: DEFAULT_LIST, name: listName(DEFAULT_LIST) || '我的清单', tasks: flat }];
+    }
+    const out = [];
+    for (const l of parsed.lists) {
+      if (!l || !Array.isArray(l.tasks)) continue;
+      const arr = normalizeImported(l);
+      if (!arr) continue;
+      let id = typeof l.id === 'string' && l.id ? l.id.slice(0, 40) : uid();
+      if (out.some(x => x.id === id)) id = uid();
+      const name = typeof l.name === 'string' ? l.name.trim().slice(0, LIST_NAME_MAX) : '';
+      out.push({ id, name: name || '未命名', tasks: arr });
+      if (out.length >= LIST_MAX) break;
+    }
+    if (!out.length) return null;
+    // 默认清单必须存在，否则老键 todo.tasks 会变孤儿；把第一个当默认清单最稳
+    if (!out.some(x => x.id === DEFAULT_LIST)) out[0] = { ...out[0], id: DEFAULT_LIST, name: out[0].name };
+    return out;
+  }
+
+  function applyImportedLists(incoming) {
+    const before = lists.items.map(l => l.id);
+    lists.items = incoming.map(l => ({ id: l.id, name: l.name }));
+    lists.active = DEFAULT_LIST;
+    const keep = new Set(lists.items.map(l => l.id));
+    for (const id of before) {
+      if (keep.has(id)) continue;
+      try {
+        localStorage.removeItem(tasksKey(id));
+      } catch { /* 清不掉只是留个孤儿键，不影响使用 */ }
+    }
+    for (const l of incoming) {
+      try {
+        localStorage.setItem(tasksKey(l.id), JSON.stringify(l.tasks));
+      } catch { /* 存不下就先这样，导入的内容已经在备份文件里 */ }
+    }
+    saveLists();
+    tasks = loadList(DEFAULT_LIST);
+    resetTransient(true);
+  }
+
+  // 备份里的附件是 base64；只回写那些「任务或回收站确实引用到」的文件
+  async function storeImportedFiles(parsed, incoming, impTrash) {
+    const map = parsed && parsed.files && typeof parsed.files === 'object' ? parsed.files : null;
+    if (!map) return { want: 0, got: 0 };
+    const wanted = [];
+    const seen = new Set();
+    const collect = (arr) => {
+      if (!Array.isArray(arr)) return;
+      for (const t of arr) for (const a of attOf(t)) {
+        if (map[a.id] && !seen.has(a.id)) { seen.add(a.id); wanted.push(a.id); }
+      }
+    };
+    for (const l of incoming) collect(l.tasks);
+    collect(impTrash);
+    collect(trash);
+    let got = 0;
+    for (const id of wanted) {
+      const entry = map[id];
+      if (!entry || typeof entry.data !== 'string' || entry.data.indexOf(';base64,') < 0) continue;
+      try {
+        const type = typeof entry.type === 'string' ? entry.type : '';
+        const blob = dataURLToBlob(entry.data, type);
+        await idbPut({
+          id,
+          name: typeof entry.name === 'string' ? entry.name.slice(0, 80) : '附件',
+          type,
+          size: blob.size,
+          at: Date.now(),
+          blob,
+        });
+        got++;
+      } catch {
+        break;   // 存第一个就失败说明这个浏览器不配合，别再试了
+      }
+    }
+    return { want: wanted.length, got };
   }
 
   function importBackup(file) {
@@ -4555,26 +5875,47 @@
         backupMsg('这个文件不是有效的 JSON 备份', true);
         return;
       }
-      const incoming = normalizeImported(parsed);
+      const incoming = normalizeImportedLists(parsed);
       if (!incoming) {
         backupMsg('文件里没有找到任务列表', true);
         return;
       }
-      if (!incoming.length) {
+      const total = incoming.reduce((n, l) => n + l.tasks.length, 0);
+      if (!total) {
         backupMsg('文件里的任务列表是空的', true);
         return;
       }
-      askConfirm('导入备份', '将用备份里的 ' + incoming.length + ' 条任务覆盖当前 ' + tasks.length + ' 条，导入后 6 秒内可以撤销。', () => {
+      askConfirm('导入备份',
+        '将用备份里的 ' + incoming.length + ' 个清单、共 ' + total + ' 条任务替换当前的清单'
+        + '（现在这些清单会被覆盖，导入后 6 秒内可以撤销）。', () => {
+        // 先留一份完整的旧结构，撤销时整体回滚
+        const prevLists = {
+          active: lists.active,
+          items: lists.items.map(l => ({
+            id: l.id, name: l.name,
+            tasks: l.id === lists.active ? tasks : loadList(l.id),
+          })),
+        };
+        const prevTasks = tasks;
+        const prevTrash = trash;
         const impTrash = normalizeTrash(parsed);
-        snapshot('已导入备份，覆盖了原来 ' + tasks.length + ' 条任务', tasks, trash);
-        tasks = incoming;
+        applyImportedLists(incoming);
         if (impTrash) {
           trash = impTrash;
           saveTrash();
+          if (!trashModal.hidden) renderTrashList();
         }
-        editingId = null;
-        expanded.clear();
-        backupMsg('已导入 ' + incoming.length + ' 条任务');
+        snapshot('已导入备份，' + incoming.length + ' 个清单共 ' + total + ' 条任务', prevTasks, prevTrash, prevLists);
+        backupMsg('已导入 ' + total + ' 条任务（' + incoming.length + ' 个清单）');
+        storeImportedFiles(parsed, incoming, impTrash).then((r) => {
+          if (!r.want) return;
+          if (r.got) {
+            backupMsg('已导入 ' + total + ' 条任务（' + incoming.length + ' 个清单），附件 ' + r.got + ' 个'
+              + (r.got < r.want ? '，另有 ' + (r.want - r.got) + ' 个存不下' : ''));
+          } else {
+            backupMsg('任务导入了，但附件没能存进这个浏览器', true);
+          }
+        });
       });
     };
     reader.readAsText(file);
@@ -4595,6 +5936,146 @@
     newDue.value = '';
     renderQuickHint();
     input.focus();
+  }
+
+  // ---------- 批量粘贴：一段文字 → 多条任务 ----------
+  const BULK_SPLIT = /[\n\r、，,；;]+/;
+  const BULK_MAX = 50;
+  let bulkItems = [];
+
+  function parseBulk(text) {
+    const out = [];
+    for (const chunk of String(text || '').split(BULK_SPLIT)) {
+      let s = chunk.trim();
+      if (!s) continue;
+      s = s.replace(/^[-*•·]\s*/, '').replace(/^\d+[.、)]\s*/, '');   // 去掉「- 」「1. 」这类列表前缀
+      s = s.replace(/^[“"'‘’]+|[”"'‘’]+$/g, '').trim();
+      if (!s) continue;
+      const hit = parseQuickAdd(s);
+      const label = hit.text || s;
+      if (!label) continue;
+      if (out.some(o => (o.hit.text || o.raw) === label)) continue;   // 同一条不重复建
+      out.push({ raw: s, hit });
+      if (out.length >= BULK_MAX) break;
+    }
+    return out;
+  }
+
+  function bulkRowMeta(hit) {
+    const bits = [];
+    if (hit.priority) bits.push(LEVELS[hit.priority].label + '优先');
+    if (hit.due) {
+      const today = dayKey(Date.now());
+      const tomorrow = dayKey(Date.now() + 86400000);
+      bits.push(hit.due === today ? '今天' : hit.due === tomorrow ? '明天' : hit.due.replace(/^\d{4}-/, '').replace('-', '/'));
+    }
+    if (hit.tags.length) bits.push(hit.tags.join('/'));
+    if (hit.repeat) bits.push(REPEAT_LABEL[hit.repeat]);
+    return bits;
+  }
+
+  function renderBulkPreview() {
+    bulkPreview.textContent = '';
+    for (let i = 0; i < bulkItems.length; i++) {
+      const item = bulkItems[i];
+      const row = document.createElement('div');
+      row.className = 'bk-row';
+
+      const n = document.createElement('span');
+      n.className = 'bk-n';
+      n.textContent = String(i + 1);
+
+      const txt = document.createElement('span');
+      txt.className = 'bk-txt';
+      txt.textContent = item.hit.text || item.raw;
+      txt.title = txt.textContent;
+
+      row.append(n, txt);
+
+      for (const bit of bulkRowMeta(item.hit)) {
+        const chip = document.createElement('span');
+        chip.className = 'bk-chip';
+        chip.textContent = bit;
+        row.append(chip);
+      }
+
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'bk-x';
+      x.innerHTML = icon('close', 16);
+      x.setAttribute('aria-label', '不要这条：' + clip(item.hit.text || item.raw));
+      x.title = '从这次批量里去掉';
+      x.addEventListener('click', () => {
+        bulkItems.splice(i, 1);
+        // 文本框是唯一的真来源，删完把剩下的写回去，手动改文字也还能改
+        bulkText.value = bulkItems.map(o => o.raw).join('\n');
+        renderBulkPreview();
+        bulkSum.focus();
+      });
+      row.append(x);
+      bulkPreview.append(row);
+    }
+    const total = bulkItems.length;
+    bulkAddBtn.textContent = total ? '添加这 ' + total + ' 条' : '添加';
+    bulkAddBtn.disabled = total === 0;
+    bulkSum.textContent = total
+      ? '识别出 ' + total + ' 条' + (total >= BULK_MAX ? '（一次最多 ' + BULK_MAX + ' 条）' : '')
+        + '，没写日期/分类的沿用上方选好的'
+      : '还没有识别到任务，一行写一条';
+  }
+
+  let bulkTimer = null;
+  function scheduleBulk() {
+    clearTimeout(bulkTimer);
+    bulkTimer = setTimeout(() => {
+      bulkItems = parseBulk(bulkText.value);
+      renderBulkPreview();
+    }, 140);
+  }
+
+  function openBulk(text) {
+    bulkBox.hidden = false;
+    bulkToggle.setAttribute('aria-expanded', 'true');
+    if (typeof text === 'string') bulkText.value = text;
+    bulkItems = parseBulk(bulkText.value);
+    renderBulkPreview();
+    bulkText.focus();
+  }
+
+  function closeBulk() {
+    bulkBox.hidden = true;
+    bulkToggle.setAttribute('aria-expanded', 'false');
+  }
+
+  function bulkCommit() {
+    if (!bulkItems.length) return;
+    const items = bulkItems.slice();
+    snapshot('已批量添加 ' + items.length + ' 条任务', tasks);
+    const fallbackTags = normTags([newTag.value.trim()]);
+    for (const item of items) {
+      const hit = item.hit;
+      tasks.push({
+        id: uid(),
+        text: (hit.text || item.raw).slice(0, 200),
+        priority: hit.priority || newPriority,
+        due: hit.due || newDue.value || '',
+        tags: hit.tags.length ? hit.tags : fallbackTags,
+        repeat: hit.repeat || newRepeat,
+        note: '',
+        subs: [],
+        pin: false,
+        att: [],
+        done: false,
+        completedAt: null,
+        createdAt: Date.now(),
+      });
+    }
+    bulkText.value = '';
+    bulkItems = [];
+    renderBulkPreview();
+    closeBulk();
+    save();
+    render();
   }
 
   // ---------- 到期提醒：横幅 + 每天首次打开的浏览器通知 ----------
@@ -4832,7 +6313,8 @@
       const meta = document.createElement('div');
       meta.className = 'meta';
       const tags = tagsOf(item);
-      meta.textContent = '删除于 ' + new Date(item.deletedAt).toLocaleString('zh-CN') + (tags.length ? ' · ' + tags.join(' / ') : '');
+      const from = lists.items.length > 1 && item.listId ? '来自「' + (listName(item.listId) || '已删除的清单') + '」 · ' : '';
+      meta.textContent = from + '删除于 ' + new Date(item.deletedAt).toLocaleString('zh-CN') + (tags.length ? ' · ' + tags.join(' / ') : '');
 
       info.append(t, meta);
 
@@ -4853,13 +6335,26 @@
     const idx = trash.findIndex(x => x.id === id);
     if (idx < 0) return;
     const restored = trash[idx];
+    // 回到它自己的清单；清单已经没了就回默认清单
+    const dest = lists.items.some(l => l.id === restored.listId) ? restored.listId : DEFAULT_LIST;
     trash.splice(idx, 1);
     delete restored.deletedAt;
-    tasks.push(restored);
+    delete restored.listId;
     saveTrash();
-    save();
+    if (dest === lists.active) {
+      tasks.push(restored);
+      save();
+    } else {
+      const other = loadList(dest);
+      other.push(restored);
+      try {
+        localStorage.setItem(tasksKey(dest), JSON.stringify(other));
+      } catch { /* 写不进去就只丢掉这一条，不影响回收站本身 */ }
+    }
     renderTrashList();
-    render();
+    // 切过去才看得到恢复结果，否则用户只会觉得点了没反应
+    if (dest !== lists.active) switchList(dest);
+    else render();
   }
 
   trashBtn.addEventListener('click', () => openTrash(trashModal.hidden));
@@ -5194,6 +6689,31 @@
 
   input.addEventListener('input', renderQuickHint);
 
+  // 粘贴多行文字时直接进批量面板；单行照旧留在输入框里
+  input.addEventListener('paste', (e) => {
+    const txt = e.clipboardData ? e.clipboardData.getData('text') : '';
+    if (!txt) return;
+    const items = parseBulk(txt);
+    if (items.length < 2) return;
+    e.preventDefault();
+    openBulk(items.map(o => o.raw).join('\n'));
+  });
+
+  bulkToggle.innerHTML = icon('copy', 14) + '<span>批量粘贴</span>';
+  bulkToggle.addEventListener('click', () => {
+    if (bulkBox.hidden) openBulk(bulkText.value);
+    else closeBulk();
+  });
+  bulkCloseBtn.addEventListener('click', closeBulk);
+  bulkText.addEventListener('input', scheduleBulk);
+  bulkAddBtn.addEventListener('click', bulkCommit);
+  bulkText.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      bulkCommit();
+    }
+  });
+
   function clearSearch() {
     query = '';
     searchInput.value = '';
@@ -5287,24 +6807,54 @@
   });
 
   modalCancel.addEventListener('click', closeConfirm);
-  modalOk.addEventListener('click', () => {
-    if (confirmAction) confirmAction();
-    closeConfirm();
-    save();
-    render();
-  });
+  modalOk.addEventListener('click', submitModal);
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeConfirm();
   });
+  modalInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      submitModal();
+    }
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !modal.hidden) closeConfirm();
+  });
+
+  listAdd.addEventListener('click', () => {
+    if (lists.items.length >= LIST_MAX) {
+      backupMsg('清单最多建 ' + LIST_MAX + ' 个，先删掉一个再建', true);
+      return;
+    }
+    askPrompt('新建清单', '给这个清单起个名字，比如「工作」「考证」。最多 ' + LIST_NAME_MAX + ' 个字。', '', LIST_NAME_MAX, '创建', (val) => {
+      createList(val);
+      backupMsg('已创建清单「' + val + '」');
+    });
+  });
+
+  listMenu.addEventListener('click', () => openListMenu(listPop.hidden));
+
+  document.addEventListener('click', (e) => {
+    if (listPop.hidden) return;
+    if (listPop.contains(e.target) || listMenu.contains(e.target)) return;
+    closeListMenu();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !listPop.hidden) closeListMenu();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !bulkBox.hidden) closeBulk();
   });
 
   renderPrioPicker();
   renderRepPicker();
   renderQuickHint();
   window.addEventListener('resize', liftUndoBar);
-  seed();
+  // 种子任务只进默认清单；当前停在别的清单时不播种，免得整包塞进「工作」里
+  if (lists.active === DEFAULT_LIST) seed();
+  scheduleGc();   // 上次没清掉的孤儿附件，开机后静悄悄回收
   render();
   notifyDue(false);
 </script>
