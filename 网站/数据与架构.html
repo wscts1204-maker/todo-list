@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据与架构 · 我的待办清单</title>
+<script>try{var t=localStorage.getItem('flowdoc.theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark';}catch(e){}</script>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>待办清单说明站</a>
+    <div class="nav-links">
+      <a href="index.html">总览</a>
+      <a href="功能清单.html">功能清单</a>
+      <a href="业务流程图.html">业务流程图</a>
+      <a href="数据与架构.html">数据与架构</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <button type="button" class="btn" data-print>打印本页</button>
+    <button type="button" class="btn" data-theme-toggle>切换为深色</button>
+  </div>
+</nav>
+
+<div class="shell">
+  <section class="hero">
+    <h1>数据与架构</h1>
+    <p class="lead">没有账号、没有服务器；数据落在哪、上限在哪里，这一页说清楚。下面的上限取值正是业务流程图里各个判定分支的依据。</p>
+    <div class="chip-row">
+      <span class="chip" data-meta="verified"></span>
+      <span class="chip" data-meta="extracted"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>数据存储与边界</h2>
+    <p class="sub" id="store-note">换设备或清除浏览器数据，只能靠导出备份迁移。</p>
+    <div class="store-grid" id="store-grid"></div>
+  </section>
+
+  <section class="card">
+    <h2>关键数字（源码常量核对）</h2>
+    <p class="sub"><span id="num-count">15 项</span>，最后一列是源码里的常量名或实现位置。</p>
+    <div class="table-wrap">
+      <table class="num" id="num-table"></table>
+    </div>
+  </section>
+
+  <div class="pager">
+    <a class="btn" href="业务流程图.html">← 上一页：业务流程图</a>
+    <a class="btn primary" href="index.html">返回总览 →</a>
+  </div>
+
+  <footer class="site-foot">
+    键名与常量以线上 <code>index.html</code> 为准；本页不联网、不读写任务数据，主题选择只记在浏览器里。
+  </footer>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/pages.js"></script>
+</body>
+</html>

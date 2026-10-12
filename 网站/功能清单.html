@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>功能清单 · 我的待办清单</title>
+<script>try{var t=localStorage.getItem('flowdoc.theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark';}catch(e){}</script>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>待办清单说明站</a>
+    <div class="nav-links">
+      <a href="index.html">总览</a>
+      <a href="功能清单.html">功能清单</a>
+      <a href="业务流程图.html">业务流程图</a>
+      <a href="数据与架构.html">数据与架构</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <button type="button" class="btn" data-theme-toggle>切换为深色</button>
+  </div>
+</nav>
+
+<div class="shell wide">
+  <section class="hero">
+    <h1>功能清单</h1>
+    <p class="lead">按页面区块归纳成模块卡片：左侧目录可跳转，顶部搜索框按关键词过滤每一条能力。所有描述都以线上源码为准，未做推测。</p>
+    <div class="chip-row">
+      <span class="chip" id="feat-total">共 8 个模块 39 项</span>
+      <span class="chip" data-meta="verified"></span>
+      <span class="chip" data-meta="extracted"></span>
+    </div>
+  </section>
+
+  <div class="split grid-gap">
+    <aside class="side-toc">
+      <h3>模块目录</h3>
+      <ol id="side-toc"></ol>
+    </aside>
+
+    <div>
+      <div class="filter-bar">
+        <span class="search-field">
+          <input type="search" id="feat-search" placeholder="搜索能力，例如：附件 / 撤销 / 番茄钟" aria-label="搜索能力条目">
+          <button type="button" id="feat-clear" aria-label="清空搜索">×</button>
+        </span>
+        <span class="hint">不区分大小写，命中项名与说明文字。</span>
+      </div>
+      <div id="mod-list"></div>
+    </div>
+  </div>
+
+  <div class="pager">
+    <a class="btn" href="index.html">← 返回总览</a>
+    <a class="btn primary" href="业务流程图.html">下一步：业务流程图 →</a>
+  </div>
+
+  <footer class="site-foot">
+    条目数以数据文件现场计算为准，与卡片实际渲染数量一致；若某条与线上行为不符，以线上 <code>index.html</code> 为准。
+  </footer>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/pages.js"></script>
+</body>
+</html>
