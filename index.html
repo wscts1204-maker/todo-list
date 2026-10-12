@@ -523,6 +523,21 @@
     width: 170px;
   }
 
+  .batch-bar .b-move {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: none;
+    border-radius: 999px;
+    padding: 8px 12px;
+    min-height: 44px;
+    max-width: 170px;
+    flex-shrink: 0;
+  }
+
+  .batch-bar .b-move[disabled] { opacity: .4; }
+
   /* ---------- 键盘光标与快捷键说明 ---------- */
   #list li.kb-cursor { outline: 2px solid var(--teal-600); outline-offset: 2px; border-radius: 12px; }
 
@@ -936,7 +951,7 @@
 
   .hist-item .t { font-size: 14px; color: var(--gray-800); text-decoration: line-through; word-break: break-word; }
 
-  .hist-item .time { font-size: 12px; color: var(--gray-500); }
+  .hist-item .time { font-size: 12px; color: var(--gray-500); word-break: break-word; }
 
   .hist-item .badge { flex-shrink: 0; }
 
@@ -997,6 +1012,9 @@
   .backdrop[hidden] { display: none; }
 
   .backdrop { animation: fade-in .14s ease-out; }
+
+  /* 确认/填写弹窗是「弹窗上的弹窗」（比如回收站里点清空），要压住其他所有遮罩 */
+  #modal { z-index: 60; }
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -1096,12 +1114,12 @@
   .lt-chip:hover { border-color: var(--teal-600); color: var(--teal-700); }
 
   .lt-chip.on {
-    background: var(--teal-600);
+    background: var(--teal-700);
     border-color: transparent;
     color: var(--on-accent);
   }
 
-  .lt-chip.on:hover { background: var(--teal-700); color: var(--on-accent); }
+  .lt-chip.on:hover { background: var(--teal-800); color: var(--on-accent); }
 
   .lt-chip .lt-n {
     font-size: 11px;
@@ -1112,7 +1130,7 @@
     color: var(--gray-700);
   }
 
-  .lt-chip.on .lt-n { background: var(--teal-800); color: var(--on-accent); }
+  .lt-chip.on .lt-n { background: var(--surface); color: var(--teal-700); }
 
   .lt-add, .lt-menu {
     display: inline-flex;
@@ -1185,6 +1203,22 @@
   .lt-pop button.danger:hover { background: var(--red-50); }
   .lt-pop button:disabled { color: var(--gray-500); cursor: not-allowed; }
   .lt-pop button:disabled:hover { background: transparent; }
+
+  /* 清单拖拽排序：被拖动的那颗半透明，插入位置用一条青绿竖标提示 */
+  .lt-chip { position: relative; touch-action: pan-y; }
+  .lt-chip.lt-drag { opacity: .45; }
+  .lt-chip.lt-drop-before::before,
+  .lt-chip.lt-drop-after::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--teal-600);
+  }
+  .lt-chip.lt-drop-before::before { left: -6px; }
+  .lt-chip.lt-drop-after::after { right: -6px; }
 
   @media (max-width: 480px) {
     .lt-chip, .lt-add { padding: 8px 12px; }
@@ -1407,6 +1441,111 @@
   .remind-strip .r-btn.bell { margin-left: 0; color: var(--gray-600); border-color: var(--gray-300); }
   .remind-strip .r-btn.bell:hover { background: var(--gray-100); }
 
+  /* ---------- 到点提醒条 ---------- */
+  .alarm-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 12px 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--yellow-50);
+    color: var(--yellow-800);
+    font-size: 13px;
+    font-weight: 500;
+    animation: al-in .26s ease-out;
+  }
+
+  @keyframes al-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .alarm-strip[hidden] { display: none; }
+
+  .alarm-strip .r-ic { display: inline-flex; flex-shrink: 0; }
+
+  .alarm-strip .a-head { font-weight: 700; }
+
+  .alarm-strip .a-list { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; flex: 1 1 100%; min-width: 0; }
+
+  .alarm-strip .a-item { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+
+  .alarm-strip .a-t {
+    max-width: min(168px, 100%);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .alarm-strip .a-btn {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--yellow-800);
+    background: var(--surface);
+    border: 1px solid var(--yellow-100);
+    padding: 8px 12px;
+    min-height: 44px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+
+  .alarm-strip .a-btn:hover { background: var(--yellow-100); }
+
+  /* 详情面板：提醒时间 */
+  .remind-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+
+  .remind-row .rm-input { flex: 0 1 190px; min-width: 0; }
+
+  .remind-row .rm-set, .remind-row .rm-off {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    transition: background .15s, color .15s;
+  }
+
+  .remind-row .rm-set:hover { background: var(--gray-100); }
+
+  .remind-row .rm-set svg, .remind-row .rm-off svg { color: var(--yellow-600); flex-shrink: 0; }
+
+  .remind-row .rm-off { color: var(--red-700); }
+
+  .remind-row .rm-off:hover { background: var(--red-100); }
+
+  .remind-row .rm-hint { font-size: 12px; color: var(--gray-600); flex: 1 1 100%; }
+
+  .remind-row .rm-hint.bad { color: var(--red-700); font-weight: 600; }
+
+  .remind-row .rm-quick {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: none;
+    border: 1px dashed var(--gray-300);
+    padding: 6px 10px;
+    min-height: 36px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s;
+  }
+
+  .remind-row .rm-quick:hover { color: var(--yellow-800); border-color: var(--yellow-600); }
+
+  .rm { background: var(--yellow-50); color: var(--yellow-800); border-color: transparent; }
+
+  .rm.over { background: var(--red-100); color: var(--red-800); }
+
   /* ---------- 日历视图 ---------- */
   .cal-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .cal-nav b { font-size: 15px; color: var(--gray-800); }
@@ -1561,7 +1700,7 @@
   /* ---------- 回收站 ---------- */
   .trash-dialog { max-width: 480px; }
 
-  .dialog-head .bp-x { margin-left: auto; }
+  .dialog-head .bp-x { margin-left: auto; margin-right: 0; }
 
   .trash-hint { font-size: 12px; color: var(--gray-500); margin: 0 0 10px; }
 
@@ -1605,6 +1744,91 @@
   .trash-item .t-restore:hover { background: var(--teal-50); }
 
   .trash-empty { padding: 24px 0; text-align: center; font-size: 13px; color: var(--gray-500); }
+
+  /* ---------- 分类管理 ---------- */
+  .dialog-head .warn.tagm-warn { color: var(--teal-600); }
+
+  .fbtn.mg {
+    margin-left: auto;
+    color: var(--teal-700);
+    background: transparent;
+    border: 1px dashed var(--teal-600);
+  }
+
+  .fbtn.mg:hover { background: var(--teal-50); }
+
+  .tagm-list {
+    max-height: 52vh;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tagm-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: var(--gray-50);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+  }
+
+  .tagm-row .tm-info { flex: 1 1 130px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+  .tagm-row .tm-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  .tagm-row .tm-name svg { color: var(--teal-600); flex-shrink: 0; }
+  .tagm-row .tm-cnt { font-size: 12px; color: var(--gray-600); }
+
+  .tagm-row .tm-acts { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; flex: 0 1 auto; min-width: 0; }
+
+  .tm-act {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 6px 12px;
+    min-height: 44px;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+
+  .tm-act:hover { background: var(--gray-100); }
+  .tm-act.on { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+  .tm-act.danger { color: var(--red-600); }
+  .tm-act.danger:hover { background: var(--red-50); }
+
+  .tm-sel { font-size: 12px; max-width: 132px; }
+
+  .tm-input {
+    flex: 1;
+    min-width: 0;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 44px;
+    outline: none;
+  }
+
+  .tm-input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .tm-empty { padding: 20px 0; text-align: center; font-size: 13px; color: var(--gray-500); }
 
   /* 窄屏上标题会伸到右上角按钮底下，给它们让出位置 */
   @media (max-width: 431px) {
@@ -2039,6 +2263,78 @@
 
   .due-actions .d-act svg { color: var(--teal-600); flex-shrink: 0; }
 
+  /* 详情面板：跨清单移动 */
+  .move-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .move-row .mv-hint { font-size: 12px; color: var(--gray-600); }
+
+  /* 详情面板：番茄钟绑定 */
+  .focus-row { align-items: center; }
+
+  .due-actions .d-act.focus.on { background: var(--teal-50); border-color: transparent; color: var(--teal-800); }
+
+  .due-actions .d-act.focus.on:hover { background: var(--teal-50); }
+
+  .focus-row .fo-sum { font-size: 12px; color: var(--gray-600); }
+
+  /* 行内「N 轮」标记 */
+  .fo { background: var(--yellow-50); color: var(--yellow-800); border-color: transparent; }
+
+  /* 今日条：本轮专注绑定 */
+  .today-strip .st-bind {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    max-width: 100%;
+    padding: 3px 4px 3px 10px;
+    border-radius: 999px;
+    background: var(--teal-50);
+    color: var(--teal-800);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .today-strip .st-bind .sb-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
+
+  .today-strip .st-bind .sb-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    color: var(--teal-800);
+    transition: background .15s;
+  }
+
+  .today-strip .st-bind .sb-x:hover { background: var(--teal-600); color: var(--on-accent); }
+
+  /* 统计面板：番茄钟投入 */
+  .fo-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .fo-item { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+
+  .fo-item.done .fo-name { text-decoration: line-through; color: var(--gray-500); }
+
+  .fo-name {
+    flex: 0 1 116px;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--gray-700);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fo-n { flex: none; min-width: 34px; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--gray-600); }
+
   /* ---------- 备注 / 子任务 ---------- */
   .ibtn.more { color: var(--gray-600); }
   .ibtn.more:hover { color: var(--gray-800); background: var(--gray-100); }
@@ -2341,7 +2637,7 @@
     body::before { display: none !important; }
     .head, .input-card, .toolbar, #calendar-card, #history, #stats,
     #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
-    .search-bar, .filter-bar, .remind-strip, .today-strip, .list-tabs,
+    .search-bar, .filter-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total { display: none !important; }
     html[data-pu="1"] li[data-done="1"] { display: none !important; }
     html[data-pt="1"] li[data-today="0"] { display: none !important; }
@@ -2485,6 +2781,7 @@
         <button id="search-clear" class="s-clear" type="button" hidden>清除</button>
       </div>
       <div id="remind-strip" class="remind-strip" hidden></div>
+      <div id="alarm-strip" class="alarm-strip" hidden></div>
       <div id="today-strip" class="today-strip" hidden></div>
       <div id="filters" class="filter-bar"></div>
       <div id="tag-filters" class="filter-bar"></div>
@@ -2579,6 +2876,7 @@
     <button id="batch-del" class="b-act danger" type="button">删除</button>
     <input id="batch-tag" class="b-tag" type="text" maxlength="60" list="tag-list" placeholder="设分类，空格隔开" aria-label="给选中任务设置分类，空格隔开可多个">
     <button id="batch-tag-ok" class="b-act" type="button">应用</button>
+    <select id="batch-move" class="b-move" aria-label="把选中的任务移到其他清单"></select>
     <button id="batch-clear" class="b-act" type="button">取消选择</button>
   </div>
 
@@ -2610,6 +2908,21 @@
       <div class="dialog-actions">
         <button id="trash-empty" class="dbtn danger" type="button">清空回收站</button>
         <button id="trash-close-btn" class="dbtn plain" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tag-modal" class="backdrop" hidden>
+    <div class="dialog trash-dialog" role="dialog" aria-modal="true" aria-labelledby="tagm-title">
+      <div class="dialog-head">
+        <span class="warn tagm-warn" id="tagm-ico"></span>
+        <h3 id="tagm-title">分类管理</h3>
+        <button type="button" class="bp-x" id="tagm-close" aria-label="关闭分类管理"></button>
+      </div>
+      <p class="trash-hint">改名、合并、去掉标记都在所有清单里生效（回收站里的同名分类也一起改），改完 6 秒内可撤销。数量只数各清单的任务，不含回收站。</p>
+      <div id="tagm-list" class="tagm-list"></div>
+      <div class="dialog-actions">
+        <button id="tagm-done" class="dbtn plain" type="button">关闭</button>
       </div>
     </div>
   </div>
@@ -2661,6 +2974,9 @@
   const ATT_SIZE_MAX = 5 * 1024 * 1024; // 单个文件最大 5MB
   const ATT_EMBED_MAX = 2 * 1024 * 1024; // 导出备份时，超过这个体积的文件不写进 JSON
   const ATT_JSON_MAX = 12000000;         // 备份 JSON 里附件数据的总体积上限，免得文件大到导不出去
+  const REM_KEY = 'todo.reminded';       // 已经弹过的精确提醒：{ 任务id: 那次提醒的时刻 }
+  const REM_LATER = 10 * 60 * 1000;      // 「稍后提醒」推后 10 分钟
+  const REM_MISS = 3 * 60 * 60 * 1000;   // 错过超过 3 小时就不补弹了
 
   function tasksKey(id) {
     return id === DEFAULT_LIST ? KEY : KEY + '.' + id;
@@ -2744,6 +3060,9 @@
     download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
     eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
     copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    move: '<path d="m17 2 4 4-4 4"/><path d="M3 6h18"/><path d="m7 22-4-4 4-4"/><path d="M21 18H3"/>',
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
   };
 
   function icon(name, size) {
@@ -2824,6 +3143,7 @@
   const undoText = $('undo-text');
   const undoBtn = $('undo-btn');
   const remindStrip = $('remind-strip');
+  const alarmStrip = $('alarm-strip');
   const calCard = $('calendar-card');
   const calBody = $('cal-body');
   const calToggle = $('cal-toggle');
@@ -2851,6 +3171,7 @@
   const batchTagOk = $('batch-tag-ok');
   const batchClear = $('batch-clear');
   const batchSnoozeBtn = $('batch-snooze');
+  const batchMove = $('batch-move');
   const prioFilters = $('prio-filters');
   const printBtn = $('print-btn');
   const printPop = $('print-pop');
@@ -2874,6 +3195,11 @@
   const bulkSum = $('bulk-sum');
   const bulkAddBtn = $('bulk-add');
   const bulkCloseBtn = $('bulk-close');
+  const tagModal = $('tag-modal');
+  const tagmIco = $('tagm-ico');
+  const tagmClose = $('tagm-close');
+  const tagmDone = $('tagm-done');
+  const tagmList = $('tagm-list');
 
   let lists = loadLists();
   let tasks = loadList(lists.active);
@@ -2900,6 +3226,11 @@
   let pomoTimer = null;
   let pomoBtnEl = null;
   let pomoPopOpen = false;      // 时长选择小面板开着没（不跨会话保存）
+  let pomoTaskId = '';          // 这一轮番茄钟绑在哪条任务上（只活在当前页面，不持久）
+  let listDragEndAt = 0;         // 刚拖完清单芯片的时间戳，紧随的那次 click 要忽略
+  let reminded = loadReminded(); // 已经响过的精确提醒 { 任务id: 那一刻 }，刷新页面也不重复弹
+  const ringing = [];            // 到点了但用户还没处理完的提醒，显示在提醒横幅里
+  let renamingTag = '';          // 分类管理面板里正在改名的那一个（不跨会话保存）
   const _now = new Date();
   let calY = _now.getFullYear();
   let calM = _now.getMonth();
@@ -2920,6 +3251,18 @@
 
   function tagsOf(task) {
     return Array.isArray(task.tags) ? task.tags : [];
+  }
+
+  // 番茄钟在某条任务上累计的轮数
+  function clampFocus(v) {
+    const n = Math.round(Number(v));
+    return Number.isFinite(n) && n > 0 ? Math.min(n, 999) : 0;
+  }
+
+  // 精确提醒：一个未来的毫秒时间戳，0 / 坏值都当作没设
+  function clampRemind(v) {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? Math.round(n) : 0;
   }
 
   const FILTERS = [
@@ -2943,6 +3286,8 @@
       if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
       if (typeof o.note !== 'string') o.note = '';
       o.pin = !!o.pin;
+      o.focus = clampFocus(o.focus);
+      o.remind = clampRemind(o.remind);
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.att = normAtt(o.att);
@@ -3002,7 +3347,9 @@
     batchOn = false;
     batchSel.clear();
     expanded.clear();
+    pomoTaskId = '';
     closeListMenu();
+    if (!tagModal.hidden) openTagModal(false);
     if (!keepUndo) closeUndo();
   }
 
@@ -3068,8 +3415,15 @@
       n.setAttribute('aria-label', '待完成 ' + n.textContent + ' 项');
       b.append(n);
       if (l.id === lists.active) b.setAttribute('aria-current', 'true');
-      b.title = '切换到「' + l.name + '」';
-      b.addEventListener('click', () => switchList(l.id));
+      b.title = lists.items.length > 1
+        ? '切换到「' + l.name + '」，按住左右拖动可以和别的清单换顺序'
+        : '切换到「' + l.name + '」';
+      b.setAttribute('aria-label', '清单「' + l.name + '」，待完成 ' + n.textContent);
+      b.addEventListener('click', () => {
+        if (Date.now() - listDragEndAt < 250) return;   // 刚拖完，别把这次点击当成切换清单
+        switchList(l.id);
+      });
+      b.addEventListener('pointerdown', (e) => startListDrag(e, b));
       listChips.append(b);
     }
     listAdd.innerHTML = icon('plus', 16) + '<span>新建清单</span>';
@@ -3099,6 +3453,19 @@
           backupMsg('清单已改名为「' + val + '」');
         });
       });
+      const idx = lists.items.findIndex(l => l.id === lists.active);
+      const mvL = document.createElement('button');
+      mvL.type = 'button';
+      mvL.innerHTML = icon('chevronLeft', 16) + '<span>把这个清单往前挪</span>';
+      mvL.disabled = idx < 1;
+      mvL.title = idx < 1 ? '已经排在最前面了' : '往左挪一个位置';
+      mvL.addEventListener('click', () => { closeListMenu(); moveListBy(-1); });
+      const mvR = document.createElement('button');
+      mvR.type = 'button';
+      mvR.innerHTML = icon('chevronRight', 16) + '<span>把这个清单往后挪</span>';
+      mvR.disabled = idx < 0 || idx === lists.items.length - 1;
+      mvR.title = mvR.disabled ? '已经排在最后面了' : '往右挪一个位置';
+      mvR.addEventListener('click', () => { closeListMenu(); moveListBy(1); });
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'danger';
@@ -3109,12 +3476,168 @@
         closeListMenu();
         deleteCurrentList();
       });
-      listPop.append(t, ren, del);
+      listPop.append(t, ren, mvL, mvR, del);
       listPop.hidden = false;
       listMenu.setAttribute('aria-expanded', 'true');
     } else {
       closeListMenu();
     }
+  }
+
+  // ---------- 跨清单移动 + 清单排序 ----------
+  // 当前清单靠 save() 落盘，写别的清单要直接碰 localStorage
+  function saveListArr(id, arr) {
+    try {
+      localStorage.setItem(tasksKey(id), JSON.stringify(arr));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // 整份清单结构的快照：撤销跨清单移动 / 全库改分类时要连名字、顺序、内容一起回滚
+  function listsSnapshot() {
+    return {
+      active: lists.active,
+      items: lists.items.map(l => ({ id: l.id, name: l.name, tasks: l.id === lists.active ? tasks : loadList(l.id) })),
+    };
+  }
+
+  function otherLists() {
+    return lists.items.filter(l => l.id !== lists.active);
+  }
+
+  function moveTaskTo(id, targetId) {
+    const to = lists.items.find(l => l.id === targetId);
+    if (!to || to.id === lists.active) return;
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    snapshot('已把「' + clip(task.text) + '」移到「' + to.name + '」', tasks, trash, listsSnapshot());
+    if (!saveListArr(targetId, loadList(targetId).concat([task]))) {
+      closeUndo();
+      backupMsg('「' + to.name + '」放不下了，任务还留在原处');
+      return;
+    }
+    tasks = tasks.filter(t => t.id !== id);
+    dropTransient(id);
+    save();
+    render();
+  }
+
+  function batchMoveSel(targetId) {
+    const to = lists.items.find(l => l.id === targetId);
+    if (!to || to.id === lists.active) return;
+    const ids = new Set(batchSel);
+    const moving = tasks.filter(t => ids.has(t.id));
+    if (!moving.length) return;
+    snapshot('已把 ' + moving.length + ' 项任务移到「' + to.name + '」', tasks, trash, listsSnapshot());
+    if (!saveListArr(targetId, loadList(targetId).concat(moving))) {
+      closeUndo();
+      backupMsg('「' + to.name + '」放不下了，任务还留在原处');
+      return;
+    }
+    tasks = tasks.filter(t => !ids.has(t.id));
+    for (const id of ids) dropTransient(id);
+    save();
+    render();
+  }
+
+  // 移动走了就别再带着它的展开态 / 选中态 / 键盘光标
+  function dropTransient(id) {
+    expanded.delete(id);
+    batchSel.delete(id);
+    if (editingId === id) editingId = null;
+    if (kbId === id) kbId = null;
+    if (pomoTaskId === id) pomoTaskId = '';
+  }
+
+  function reorderLists(from, to) {
+    const arr = lists.items;
+    if (from < 0 || to < 0 || from >= arr.length || to >= arr.length || from === to) return;
+    const [moved] = arr.splice(from, 1);
+    arr.splice(to, 0, moved);
+    saveLists();
+    render();
+  }
+
+  function moveListBy(dir) {
+    const i = lists.items.findIndex(l => l.id === lists.active);
+    if (i < 0) return;
+    reorderLists(i, i + dir);
+  }
+
+  // 拖芯片换顺序：按行优先的阅读顺序算「插在第几个」
+  function listDropIndex(rects, x, y) {
+    const tops = [...new Set(rects.map(r => Math.round(r.top)))].sort((a, b) => a - b);
+    let row = -1;
+    for (let i = 0; i < tops.length; i++) {
+      const inRow = rects.filter(r => Math.round(r.top) === tops[i]);
+      const h = Math.max(...inRow.map(r => r.height));
+      if (y >= tops[i] - 6 && y < tops[i] + h + 6) { row = i; break; }
+    }
+    if (row < 0) {
+      let best = Infinity;
+      tops.forEach((t, i) => {
+        const r = rects.find(z => Math.round(z.top) === t);
+        const d = Math.abs(y - (r.top + r.height / 2));
+        if (d < best) { best = d; row = i; }
+      });
+    }
+    let n = 0;
+    for (let i = 0; i < tops.length; i++) {
+      const inRow = rects.filter(r => Math.round(r.top) === tops[i]);
+      if (i < row) n += inRow.length;
+      else if (i === row) n += inRow.filter(r => r.left + r.width / 2 < x).length;
+    }
+    return n;
+  }
+
+  function startListDrag(ev, chip) {
+    if (ev.button !== undefined && ev.button !== 0) return;
+    if (lists.items.length < 2) return;
+    const chips = [...listChips.children];
+    const from = chips.indexOf(chip);
+    if (from < 0) return;
+    const rects = chips.map(c => c.getBoundingClientRect());
+    const startX = ev.clientX;
+    const startY = ev.clientY;
+    let moved = false;
+    let last = from;
+
+    const mark = (n) => {
+      for (const c of chips) c.classList.remove('lt-drop-before', 'lt-drop-after');
+      if (n === from || n === from + 1) return;
+      if (n >= chips.length) chips[chips.length - 1].classList.add('lt-drop-after');
+      else chips[n].classList.add('lt-drop-before');
+    };
+
+    const onMove = (e) => {
+      if (!moved && Math.hypot(e.clientX - startX, e.clientY - startY) < 6) return;
+      if (!moved) {
+        moved = true;
+        chip.classList.add('lt-drag');
+      }
+      last = listDropIndex(rects, e.clientX, e.clientY);
+      mark(last);
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      chip.classList.remove('lt-drag');
+      for (const c of chips) c.classList.remove('lt-drop-before', 'lt-drop-after');
+      if (!moved) return;
+      listDragEndAt = Date.now();
+      if (last !== from && last !== from + 1) {
+        reorderLists(from, last > from ? last - 1 : last);
+      }
+    };
+
+    ev.preventDefault();
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
   }
 
   function loadTrash() {
@@ -3132,6 +3655,8 @@
       if (now - x.deletedAt > TRASH_KEEP) continue;
       const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], ...x };
       o.pin = !!o.pin;
+      o.focus = clampFocus(o.focus);
+      o.remind = clampRemind(o.remind);
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.att = normAtt(o.att);
@@ -3388,15 +3913,34 @@
     pomoCount.append(document.createTextNode('今日专注 ' + pomoN + ' 轮' + (restN ? ' · 休息 ' + restN + ' 次' : '')));
     pomoCount.title = '番茄钟：每专注满 ' + prefs.pomoMin + ' 分钟记一轮，休息满 ' + BREAK_MIN + ' 分钟记一次，都只记今天';
 
+    const bound = pomoTask();
+    const bind = document.createElement('span');
+    bind.className = 'st-bind';
+    if (bound) {
+      const label = document.createElement('span');
+      label.className = 'sb-t';
+      label.textContent = '本轮专注：' + clip(bound.text);
+      label.title = '这一轮番茄钟完成后记在「' + bound.text + '」上，目前已累计 ' + clampFocus(bound.focus) + ' 轮';
+      const clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'sb-x';
+      clear.innerHTML = icon('close', 12);
+      clear.setAttribute('aria-label', '取消这一轮的任务绑定');
+      clear.title = '不绑任务，就开始一轮普通专注';
+      clear.addEventListener('click', () => { pomoTaskId = ''; render(); });
+      bind.append(label, clear);
+    }
+
     const pomoBtn = document.createElement('button');
     pomoBtn.type = 'button';
     pomoBtn.className = 'ts-btn pomo' + (pomoEndAt || breakEndAt ? ' run' : '') + (breakEndAt ? ' brk' : '');
     pomoBtn.textContent = breakEndAt ? '休息 ' + countdown(breakEndAt) + ' · 点击结束'
       : pomoEndAt ? countdown(pomoEndAt) + ' · 点击结束'
       : '番茄钟 ' + prefs.pomoMin + ' 分钟';
-    pomoBtn.title = breakEndAt ? '休息中，点击提前结束（不计休息次数）'
+    pomoBtn.title = (breakEndAt ? '休息中，点击提前结束（不计休息次数）'
       : pomoEndAt ? '正在专注，点击提前结束（不计轮数）'
-      : '开始一轮 ' + prefs.pomoMin + ' 分钟的专注计时';
+      : '开始一轮 ' + prefs.pomoMin + ' 分钟的专注计时')
+      + (bound ? '，这一轮记在「' + clip(bound.text) + '」上' : '');
     pomoBtn.addEventListener('click', () => {
       pomoPopOpen = false;
       pomoClick();
@@ -3540,6 +4084,7 @@
     });
 
     todayStrip.append(streak, pomoCount, info, pomoBtn);
+    if (bound) todayStrip.append(bind);
     if (cfg) todayStrip.append(cfg);
     todayStrip.append(btn);
     if (pop) todayStrip.append(pop);
@@ -3607,6 +4152,25 @@
     if (pomoBtnEl) pomoBtnEl.textContent = countdown(pomoEndAt) + ' · 点击结束';
   }
 
+  // ---------- 番茄钟绑定任务 ----------
+  // 绑给谁只活在当前页面：切清单、任务被删/完成/移走就自动松开
+  function pomoTask() {
+    if (!pomoTaskId) return null;
+    const t = tasks.find(x => x.id === pomoTaskId);
+    return t && !t.done ? t : null;
+  }
+
+  function pomoStartFor(id) {
+    const t = tasks.find(x => x.id === id);
+    if (!t || t.done) return;
+    pomoTaskId = id;
+    pomoSuggest = '';
+    if (breakEndAt) { render(); return; }      // 休息中：绑定留给下一轮
+    if (pomoEndAt) { pomoTick(); render(); return; }   // 正在跑：只换绑，倒计时不重置
+    pomoStart();
+    render();
+  }
+
   function pomoStart() {
     pomoSuggest = '';
     pomoEndAt = Date.now() + prefs.pomoMin * 60 * 1000;
@@ -3629,9 +4193,15 @@
     pomoEndAt = 0;
     document.title = BASE_TITLE;
     const n = pomoBump();
+    const bound = pomoTask();
+    if (bound) {
+      bound.focus = clampFocus((bound.focus || 0) + 1);
+      save();
+    }
     try {
       if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('番茄钟完成', { body: '专注满 ' + prefs.pomoMin + ' 分钟，今天第 ' + n + ' 轮，休息一下吧' });
+        new Notification('番茄钟完成', { body: '专注满 ' + prefs.pomoMin + ' 分钟，今天第 ' + n + ' 轮'
+          + (bound ? '（记在「' + clip(bound.text) + '」上）' : '') + '，休息一下吧' });
       }
     } catch {
       /* 不支持通知就静默 */
@@ -3715,7 +4285,10 @@
 
   // 后台标签页的定时器会被浏览器节流，回到前台时立刻校准一次
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) pomoTick();
+    if (!document.hidden) {
+      pomoTick();
+      remindTick();
+    }
   });
 
   // ---------- 一句话快速添加：#分类 !高 @明天 ~每周 ----------
@@ -3959,6 +4532,17 @@
       });
       tagFilters.append(b);
     }
+
+    // 管理分类的入口挂在筛选行末尾
+    const mg = document.createElement('button');
+    mg.type = 'button';
+    mg.className = 'fbtn mg';
+    mg.innerHTML = icon('tag', 14) + '<span>管理分类</span>';
+    mg.title = '改名、合并、去掉标记';
+    mg.setAttribute('aria-label', '打开分类管理');
+    mg.setAttribute('aria-expanded', String(!tagModal.hidden));
+    mg.addEventListener('click', () => openTagModal(tagModal.hidden));
+    tagFilters.append(mg);
   }
 
   function renderPrioFilters() {
@@ -4009,6 +4593,200 @@
     }
   }
 
+  // ---------- 分类管理：改名 / 合并 / 去掉标记，一次作用到所有清单 ----------
+  function tagCounts() {
+    const map = new Map();
+    for (const l of lists.items) {
+      const arr = l.id === lists.active ? tasks : loadList(l.id);
+      for (const t of arr) {
+        for (const tag of tagsOf(t)) {
+          const e = map.get(tag) || { open: 0, done: 0 };
+          if (t.done) e.done++; else e.open++;
+          map.set(tag, e);
+        }
+      }
+    }
+    return map;
+  }
+
+  // to 为空 = 把这个分类从任务上摘掉；to 已经是另一个分类名 = 合并过去
+  function retag(from, to) {
+    const edit = (t) => {
+      const tags = tagsOf(t);
+      if (!tags.includes(from)) return false;
+      const next = [];
+      for (const x of tags) {
+        const v = x === from ? to : x;
+        if (v && !next.includes(v)) next.push(v);
+      }
+      t.tags = normTags(next);
+      return true;
+    };
+    let n = 0;
+    for (const l of lists.items) {
+      if (l.id === lists.active) {
+        for (const t of tasks) if (edit(t)) n++;
+      } else {
+        const arr = loadList(l.id);
+        let hit = 0;
+        for (const t of arr) if (edit(t)) hit++;
+        if (hit) { n += hit; saveListArr(l.id, arr); }
+      }
+    }
+    let th = 0;
+    for (const t of trash) if (edit(t)) th++;
+    if (th) saveTrash();
+    return n;
+  }
+
+  function applyTagOp(from, to, label) {
+    snapshot(label, tasks, trash, listsSnapshot());
+    if (!retag(from, to)) {
+      closeUndo();
+      backupMsg('没有任务在用「' + from + '」');
+      return;
+    }
+    save();
+    render();
+    renderTagList();
+  }
+
+  function openTagModal(open) {
+    tagModal.hidden = !open;
+    if (!open) renamingTag = '';
+    renderTagFilters();
+    if (open) {
+      renderTagList();
+      const first = tagmList.querySelector('button, input');
+      if (first) first.focus();
+    }
+  }
+
+  function renderTagList() {
+    tagmIco.innerHTML = icon('tag', 22);
+    tagmClose.innerHTML = icon('close', 16);
+    tagmList.textContent = '';
+
+    const counts = tagCounts();
+    const names = [...counts.keys()].sort((a, b) => a.localeCompare(b, 'zh'));
+    if (!names.length) {
+      const none = document.createElement('div');
+      none.className = 'tm-empty';
+      none.textContent = '还没有用过分类：给任务写上分类后，就能在这里改名、合并。';
+      tagmList.append(none);
+      return;
+    }
+
+    for (const name of names) {
+      const c = counts.get(name);
+      const row = document.createElement('div');
+      row.className = 'tagm-row';
+
+      if (renamingTag === name) {
+        const box = document.createElement('input');
+        box.type = 'text';
+        box.className = 'tm-input';
+        box.maxLength = 12;
+        box.value = name;
+        box.setAttribute('aria-label', '把分类「' + name + '」改成');
+        const okb = document.createElement('button');
+        okb.type = 'button';
+        okb.className = 'tm-act on';
+        okb.textContent = '保存';
+        const no = document.createElement('button');
+        no.type = 'button';
+        no.className = 'tm-act';
+        no.textContent = '取消';
+        const cancel = () => { renamingTag = ''; renderTagList(); };
+        const commit = () => {
+          const val = box.value.trim();
+          renamingTag = '';
+          if (!val || val === name) { renderTagList(); return; }
+          const merged = counts.has(val);
+          applyTagOp(name, val, merged
+            ? '已把分类「' + name + '」并入「' + val + '」'
+            : '已把分类「' + name + '」改名为「' + val + '」');
+        };
+        box.addEventListener('keydown', (e) => {
+          if (e.isComposing) return;
+          // 这两个键都要吃掉：冒泡到 document 会被「Escape 关面板」和「回车编辑任务」抢走
+          if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); commit(); }
+          else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cancel(); }
+        });
+        okb.addEventListener('click', commit);
+        no.addEventListener('click', cancel);
+        row.append(box, okb, no);
+        tagmList.append(row);
+        box.focus();
+        box.select();
+        continue;
+      }
+
+      const info = document.createElement('div');
+      info.className = 'tm-info';
+      const nm = document.createElement('span');
+      nm.className = 'tm-name';
+      nm.innerHTML = icon('tag', 12);
+      nm.append(document.createTextNode(name));
+      const cnt = document.createElement('span');
+      cnt.className = 'tm-cnt';
+      cnt.textContent = c.open + ' 项待完成 · ' + c.done + ' 项已完成';
+      info.append(nm, cnt);
+
+      const acts = document.createElement('div');
+      acts.className = 'tm-acts';
+
+      const ren = document.createElement('button');
+      ren.type = 'button';
+      ren.className = 'tm-act';
+      ren.textContent = '改名';
+      ren.title = '新的名字如果已经存在，就等于把两个分类合并';
+      ren.setAttribute('aria-label', '给分类「' + name + '」改名');
+      ren.addEventListener('click', () => { renamingTag = name; renderTagList(); });
+
+      const drop = document.createElement('button');
+      drop.type = 'button';
+      drop.className = 'tm-act danger';
+      drop.textContent = '去掉标记';
+      drop.title = '从所有任务上摘掉这个分类，任务本身不会被删';
+      drop.setAttribute('aria-label', '去掉分类「' + name + '」的标记');
+      drop.addEventListener('click', () => applyTagOp(name, '', '已去掉分类「' + name + '」的标记'));
+
+      const sel = document.createElement('select');
+      sel.className = 'sel-input tm-sel';
+      sel.setAttribute('aria-label', '把分类「' + name + '」合并到');
+      const ph = document.createElement('option');
+      ph.value = '';
+      ph.textContent = '合并到…';
+      sel.append(ph);
+      for (const other of names) {
+        if (other === name) continue;
+        const o = document.createElement('option');
+        o.value = other;
+        o.textContent = other;
+        sel.append(o);
+      }
+      if (names.length < 2) sel.disabled = true;
+      sel.title = names.length < 2 ? '至少要有一个别的分类才能合并' : '把这个分类的任务并到另一个分类里';
+      sel.addEventListener('change', () => {
+        const v = sel.value;
+        sel.value = '';
+        if (!v || v === name) return;
+        applyTagOp(name, v, '已把分类「' + name + '」并入「' + v + '」');
+      });
+
+      row.append(info, acts);
+      acts.append(ren, drop, sel);
+      tagmList.append(row);
+    }
+  }
+
+  tagmClose.addEventListener('click', () => openTagModal(false));
+  tagmDone.addEventListener('click', () => openTagModal(false));
+  tagModal.addEventListener('click', (e) => {
+    if (e.target === tagModal) openTagModal(false);
+  });
+
   function render() {
     list.textContent = '';
 
@@ -4058,6 +4836,7 @@
     renderPrioFilters();
     renderTagOptions();
     renderRemind();
+    renderAlarms();
     renderToday();
     renderCalendar();
     renderHistory(done);
@@ -4149,6 +4928,16 @@
         line.append(tgs);
       }
 
+      const rmAt = clampRemind(task.remind);
+      if (rmAt && !task.done) {
+        const rc = document.createElement('span');
+        rc.className = 'tg rm' + (rmAt <= Date.now() ? ' over' : '');
+        rc.innerHTML = icon('bell', 12);
+        rc.append(remindText(rmAt));
+        rc.title = '提醒：' + remindFull(rmAt) + (rmAt <= Date.now() ? '（已到点，展开这条可以改时间或取消）' : '');
+        line.append(rc);
+      }
+
       if (task.repeat) {
         const rp = document.createElement('span');
         rp.className = 'tg rp';
@@ -4164,6 +4953,16 @@
         pf.innerHTML = icon('pin', 12);
         pf.title = '已置顶：排在列表最前面';
         line.append(pf);
+      }
+
+      const foN = clampFocus(task.focus);
+      if (foN) {
+        const fo = document.createElement('span');
+        fo.className = 'tg fo';
+        fo.innerHTML = icon('timer', 12);
+        fo.append(foN + ' 轮');
+        fo.title = '在这项上专注了 ' + foN + ' 轮，约 ' + (foN * prefs.pomoMin) + ' 分钟';
+        line.append(fo);
       }
 
       const subs = task.subs || [];
@@ -4365,6 +5164,139 @@
     dueActions.append(delay);
 
     box.append(dueActions);
+
+    // 番茄钟绑定：把接下来的一轮专注记在这一项上
+    if (!task.done) {
+      const foRow = document.createElement('div');
+      foRow.className = 'due-actions focus-row';
+      const foBtn = document.createElement('button');
+      foBtn.type = 'button';
+      foBtn.className = 'd-act focus' + (task.id === pomoTaskId ? ' on' : '');
+      foBtn.innerHTML = icon('timer', 14) + (task.id === pomoTaskId ? '正在专注这一项' : '专注这一项');
+      foBtn.title = task.id === pomoTaskId
+        ? '这一轮的计时已经绑在这项上，点它不会重新计时'
+        : '开始一轮 ' + prefs.pomoMin + ' 分钟计时，跑完后记在这一项上';
+      foBtn.setAttribute('aria-label', (task.id === pomoTaskId ? '这一轮已绑定「' : '把下一轮专注记在「') + clip(task.text) + '」');
+      foBtn.addEventListener('click', () => pomoStartFor(task.id));
+      foRow.append(foBtn);
+      const fn = clampFocus(task.focus);
+      if (fn) {
+        const fs = document.createElement('span');
+        fs.className = 'fo-sum';
+        fs.textContent = '已累计 ' + fn + ' 轮，约 ' + (fn * prefs.pomoMin) + ' 分钟';
+        foRow.append(fs);
+      }
+      box.append(foRow);
+    }
+
+    // 精确提醒：定到某一刻，到点在这页顶上弹出处置条
+    if (!task.done) {
+      const rmAt = clampRemind(task.remind);
+      const rmRow = document.createElement('div');
+      rmRow.className = 'remind-row';
+
+      const rmIn = document.createElement('input');
+      rmIn.type = 'datetime-local';
+      rmIn.className = 'date-input rm-input';
+      rmIn.value = localInput(rmAt);
+      rmIn.setAttribute('aria-label', '给「' + clip(task.text) + '」设定提醒时间');
+
+      const rmHint = document.createElement('span');
+      rmHint.className = 'rm-hint';
+      rmHint.textContent = rmAt ? '将在 ' + remindFull(rmAt) + ' 提醒' : '选好时刻再点「设提醒」；不需要提醒就不用管';
+      const say = (txt, bad) => {
+        rmHint.textContent = txt;
+        rmHint.className = 'rm-hint' + (bad ? ' bad' : '');
+      };
+
+      const rmSet = document.createElement('button');
+      rmSet.type = 'button';
+      rmSet.className = 'rm-set';
+      rmSet.innerHTML = icon('bell', 14) + (rmAt ? '改到这个时间' : '设提醒');
+      rmSet.addEventListener('click', () => {
+        const ms = fromLocalInput(rmIn.value);
+        if (!ms) { say('请先选好日期和时间', true); return; }
+        if (ms <= Date.now()) { say('这个时间已经过去了，往后选一个', true); return; }
+        task.remind = ms;
+        reminded.delete(task.id);   // 换了时刻，要能重新响
+        saveReminded();
+        save();
+        render();
+        backupMsg('已设在 ' + remindFull(ms) + ' 提醒');
+      });
+
+      rmRow.append(rmIn, rmSet);
+
+      if (rmAt) {
+        const rmOff = document.createElement('button');
+        rmOff.type = 'button';
+        rmOff.className = 'rm-off';
+        rmOff.innerHTML = icon('close', 14) + '取消提醒';
+        rmOff.addEventListener('click', () => {
+          task.remind = 0;
+          reminded.delete(task.id);
+          saveReminded();
+          dropRing(task.id);
+          save();
+          render();
+          backupMsg('已取消这条提醒');
+        });
+        rmRow.append(rmOff);
+      }
+
+      const soonDate = new Date();
+      soonDate.setHours(9, 0, 0, 0);
+      const quicks = [
+        { label: '1 小时后', ms: Math.ceil((Date.now() + 3600000) / 60000) * 60000 },
+        { label: '明天 9 点', ms: new Date(soonDate.getFullYear(), soonDate.getMonth(), soonDate.getDate() + 1, 9, 0, 0, 0).getTime() },
+      ];
+      for (const q of quicks) {
+        const qb = document.createElement('button');
+        qb.type = 'button';
+        qb.className = 'rm-quick';
+        qb.textContent = q.label;
+        qb.title = '填到上面的时间里，还要点「设提醒」才生效';
+        qb.addEventListener('click', () => {
+          rmIn.value = localInput(q.ms);
+          say('已填 ' + remindFull(q.ms) + '，点「设提醒」生效');
+        });
+        rmRow.append(qb);
+      }
+
+      rmRow.append(rmHint);
+      box.append(rmRow);
+    }
+
+    // 跨清单移动：只有真的存在别的清单时才出现
+    const others = otherLists();
+    if (others.length) {
+      const moveRow = document.createElement('div');
+      moveRow.className = 'move-row';
+      const mvSel = document.createElement('select');
+      mvSel.className = 'sel-input';
+      mvSel.setAttribute('aria-label', '把「' + clip(task.text) + '」移到哪个清单');
+      const ph = document.createElement('option');
+      ph.value = '';
+      ph.textContent = '移到其他清单…';
+      mvSel.append(ph);
+      for (const l of others) {
+        const o = document.createElement('option');
+        o.value = l.id;
+        o.textContent = l.name;
+        mvSel.append(o);
+      }
+      mvSel.addEventListener('change', () => {
+        const id = mvSel.value;
+        mvSel.value = '';
+        if (id) moveTaskTo(task.id, id);
+      });
+      const mvHint = document.createElement('span');
+      mvHint.className = 'mv-hint';
+      mvHint.textContent = '备注、子任务、附件一起过去，6 秒内可撤销';
+      moveRow.append(mvSel, mvHint);
+      box.append(moveRow);
+    }
+
     box.append(noteLabel, note, tagLabel, tagsEdit, subLabel);
 
     for (const s of task.subs || []) box.append(subRow(task, s));
@@ -4956,6 +5888,53 @@
       statsBody.append(weekSection(byDay));
       statsBody.append(heatSection(byDay));
     }
+
+    const fsec = focusSection();
+    if (fsec) statsBody.append(fsec);
+  }
+
+  // 番茄钟投入：哪几项被专注得最多，只统计完整跑完的轮次
+  function focusSection() {
+    const used = tasks.map(t => ({ t, n: clampFocus(t.focus) })).filter(x => x.n > 0);
+    if (!used.length) return null;
+    used.sort((a, b) => b.n - a.n || (a.t.done ? 1 : 0) - (b.t.done ? 1 : 0));
+    const sec = stSection('番茄钟投入');
+    const max = used[0].n;
+    const list = document.createElement('div');
+    list.className = 'fo-list';
+    for (const { t, n } of used.slice(0, 6)) {
+      const row = document.createElement('div');
+      row.className = 'fo-item' + (t.done ? ' done' : '');
+
+      const name = document.createElement('span');
+      name.className = 'fo-name';
+      name.title = t.text;
+      name.textContent = clip(t.text);
+
+      const track = document.createElement('span');
+      track.className = 'st-track';
+      const fill = document.createElement('span');
+      fill.className = 'st-fill';
+      fill.style.width = Math.max(6, Math.round((n / max) * 100)) + '%';
+      track.append(fill);
+
+      const num = document.createElement('span');
+      num.className = 'fo-n';
+      num.textContent = n + ' 轮';
+      num.title = '约 ' + (n * prefs.pomoMin) + ' 分钟';
+
+      row.append(name, track, num);
+      list.append(row);
+    }
+    sec.append(list);
+
+    const total = used.reduce((s, x) => s + x.n, 0);
+    const hint = document.createElement('p');
+    hint.className = 'st-hint';
+    hint.textContent = '一共 ' + total + ' 轮、约 ' + (Math.round(total * prefs.pomoMin / 6) / 10) + ' 小时'
+      + (used.length > 6 ? '，只显示投入最多的 6 项' : '') + ' · 提前结束的计时不计入';
+    sec.append(hint);
+    return sec;
   }
 
   // 每天完成了几条：热力图与本周小结都从这张表算
@@ -5428,6 +6407,7 @@
     save();
     render();
     if (!trashModal.hidden) renderTrashList();
+    if (!tagModal.hidden) renderTagList();
   }
 
   undoBtn.addEventListener('click', restoreUndo);
@@ -5474,6 +6454,25 @@
     batchPurge.disabled = batchReopen.disabled;
     batchDel.disabled = batchSel.size === 0;
     batchTagOk.disabled = batchSel.size === 0;
+    fillBatchMove();
+  }
+
+  // 批量「移到其他清单」：只有一个清单时没有目标，整颗下拉禁用
+  function fillBatchMove() {
+    const others = otherLists();
+    batchMove.disabled = batchSel.size === 0 || others.length === 0;
+    batchMove.title = others.length ? '' : '先新建一个清单才能把任务移过去';
+    batchMove.textContent = '';
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.textContent = '移到其他清单…';
+    batchMove.append(ph);
+    for (const l of others) {
+      const o = document.createElement('option');
+      o.value = l.id;
+      o.textContent = '移到「' + l.name + '」';
+      batchMove.append(o);
+    }
   }
 
   function batchToggleSel(id) {
@@ -5595,6 +6594,11 @@
   batchPurge.addEventListener('click', batchPurgeSel);
   batchDel.addEventListener('click', batchDelete);
   batchTagOk.addEventListener('click', batchApplyTag);
+  batchMove.addEventListener('change', () => {
+    const id = batchMove.value;
+    batchMove.value = '';
+    if (id) batchMoveSel(id);
+  });
   batchClear.addEventListener('click', () => { batchSel.clear(); render(); });
 
   batchTag.addEventListener('keydown', (e) => {
@@ -5771,6 +6775,8 @@
           .slice(0, 50)
           .map(s => ({ id: typeof s.id === 'string' && s.id ? s.id : uid(), text: s.text.trim().slice(0, 120), done: !!s.done })),
         pin: !!t.pin,
+        focus: clampFocus(t.focus),
+        remind: clampRemind(t.remind),
         att: normAtt(t.att),
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
@@ -6149,6 +7155,246 @@
     }
   }
 
+  // ---------- 精确提醒：定到具体时刻，到点在这页上弹出处置条 ----------
+  function p2(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+
+  function loadReminded() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(REM_KEY) || '{}');
+      const m = new Map();
+      if (raw && typeof raw === 'object') {
+        for (const k of Object.keys(raw)) {
+          const n = Number(raw[k]);
+          if (k && Number.isFinite(n)) m.set(k, n);
+        }
+      }
+      return m;
+    } catch {
+      return new Map();
+    }
+  }
+
+  function saveReminded() {
+    try {
+      const obj = {};
+      let n = 0;
+      reminded.forEach((v, k) => {
+        if (n >= 200) return;
+        obj[k] = v;
+        n++;
+      });
+      localStorage.setItem(REM_KEY, JSON.stringify(obj));
+    } catch {
+      /* 存不下就算了，最坏是刷新后同一时刻再弹一次 */
+    }
+  }
+
+  // 活动清单读内存，别的清单直接读存储：提醒不能因为切了清单就哑掉
+  function eachTask(fn) {
+    for (const l of lists.items) {
+      const arr = l.id === lists.active ? tasks : loadList(l.id);
+      for (const t of arr) fn(t, l.id);
+    }
+  }
+
+  function patchTask(listId, id, mut) {
+    if (listId === lists.active) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return false;
+      mut(t);
+      save();
+      return true;
+    }
+    const arr = loadList(listId);
+    const t = arr.find(x => x.id === id);
+    if (!t) return false;
+    mut(t);
+    return saveListArr(listId, arr);
+  }
+
+  function remindText(ms) {
+    const d = new Date(ms);
+    const hm = p2(d.getHours()) + ':' + p2(d.getMinutes());
+    const k = dayKey(ms);
+    if (k === dayKey(Date.now())) return '今天 ' + hm;
+    if (k === dayKey(Date.now() + 86400000)) return '明天 ' + hm;
+    if (d.getFullYear() === new Date().getFullYear()) return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hm;
+    return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hm;
+  }
+
+  function remindFull(ms) {
+    const d = new Date(ms);
+    return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 '
+      + WEEKDAY_NAME[d.getDay()] + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+  }
+
+  function localInput(ms) {
+    if (!ms) return '';
+    const d = new Date(ms);
+    return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + 'T' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+  }
+
+  function fromLocalInput(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(v || ''));
+    if (!m) return 0;
+    const d = new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+    return Number.isFinite(d.getTime()) ? d.getTime() : 0;
+  }
+
+  let alarmStale = false;
+
+  function remindTick() {
+    // 到点时如果正在改标题，先只挂个标记，等下一次心跳再整页刷新
+    if (alarmStale) {
+      if (editingId !== null) return;
+      alarmStale = false;
+      render();
+      return;
+    }
+    const now = Date.now();
+    const fired = [];
+    eachTask((t, listId) => {
+      const at = clampRemind(t.remind);
+      if (!at || t.done || at > now || reminded.get(t.id) === at) return;
+      reminded.set(t.id, at);
+      // 错过太久（比如页面关了好几天）就不补弹，只当场处理掉
+      if (now - at > REM_MISS) return;
+      fired.push({ listId, id: t.id, text: t.text, at });
+    });
+    if (!fired.length) return;
+    saveReminded();
+    for (const f of fired) ringing.push(f);
+    notifyAlarm(fired);
+    if (editingId === null) {
+      render();
+    } else {
+      renderAlarms();
+      alarmStale = true;
+    }
+  }
+
+  function notifyAlarm(fired) {
+    try {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      if (fired.length === 1) {
+        new Notification('该做这件事了', { body: fired[0].text + '（原定 ' + remindFull(fired[0].at) + '）', tag: 'todo-alarm-' + fired[0].id });
+      } else {
+        new Notification('该做这件事了', { body: fired.map(f => '· ' + clip(f.text)).join('\n'), tag: 'todo-alarm' });
+      }
+    } catch {
+      /* 不支持通知就只走页面内的处置条 */
+    }
+    pomoBeep();
+  }
+
+  // 任务被删/完成/改过时间，处置条上那一条就该自己消失
+  function pruneRing() {
+    for (let i = ringing.length - 1; i >= 0; i--) {
+      const it = ringing[i];
+      const arr = it.listId === lists.active ? tasks : loadList(it.listId);
+      const t = arr.find(x => x.id === it.id);
+      if (!t || t.done || clampRemind(t.remind) !== it.at) ringing.splice(i, 1);
+    }
+  }
+
+  function dropRing(id) {
+    for (let i = ringing.length - 1; i >= 0; i--) {
+      if (ringing[i].id === id) ringing.splice(i, 1);
+    }
+  }
+
+  function alarmLater(it) {
+    const at = Date.now() + REM_LATER;
+    patchTask(it.listId, it.id, t => { t.remind = at; });
+    reminded.delete(it.id);
+    saveReminded();
+    dropRing(it.id);
+    render();
+    backupMsg('「' + clip(it.text) + '」改为 ' + remindText(at) + ' 再提醒');
+  }
+
+  function alarmDone(it) {
+    patchTask(it.listId, it.id, t => { t.remind = 0; });
+    reminded.delete(it.id);
+    saveReminded();
+    dropRing(it.id);
+    render();
+  }
+
+  function renderAlarms() {
+    pruneRing();
+    alarmStrip.hidden = ringing.length === 0;
+    alarmStrip.textContent = '';
+    if (!ringing.length) return;
+
+    const ic = document.createElement('span');
+    ic.className = 'r-ic';
+    ic.innerHTML = icon('bell', 16);
+
+    const head = document.createElement('span');
+    head.className = 'a-head';
+    head.textContent = ringing.length === 1 ? '到点了：' : '有 ' + ringing.length + ' 项到点了：';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'a-list';
+
+    for (const it of ringing.slice(0, 4)) {
+      const item = document.createElement('span');
+      item.className = 'a-item';
+
+      const label = document.createElement('span');
+      label.className = 'a-t';
+      label.textContent = clip(it.text);
+      const where = lists.items.find(l => l.id === it.listId);
+      label.title = it.text + ' · 原定 ' + remindFull(it.at) + (where && where.id !== lists.active ? '（在「' + where.name + '」）' : '');
+
+      const later = document.createElement('button');
+      later.type = 'button';
+      later.className = 'a-btn';
+      later.textContent = '稍后 10 分钟';
+      later.setAttribute('aria-label', '把「' + it.text + '」推后 10 分钟再提醒');
+      later.addEventListener('click', () => alarmLater(it));
+
+      const ok = document.createElement('button');
+      ok.type = 'button';
+      ok.className = 'a-btn';
+      ok.textContent = '知道了';
+      ok.setAttribute('aria-label', '「' + it.text + '」的提醒不再提示');
+      ok.addEventListener('click', () => alarmDone(it));
+
+      item.append(label, later, ok);
+      wrap.append(item);
+    }
+
+    if (ringing.length > 4) {
+      const more = document.createElement('span');
+      more.className = 'a-more';
+      more.textContent = '还有 ' + (ringing.length - 4) + ' 项';
+      wrap.append(more);
+      const all = document.createElement('button');
+      all.type = 'button';
+      all.className = 'a-btn';
+      all.textContent = '全部知道了';
+      all.setAttribute('aria-label', '所有到点的提醒都不再提示');
+      all.addEventListener('click', () => {
+        const items = ringing.slice();
+        for (const it of items) {
+          patchTask(it.listId, it.id, t => { t.remind = 0; });
+          reminded.delete(it.id);
+        }
+        saveReminded();
+        ringing.length = 0;
+        render();
+        backupMsg('已收掉 ' + items.length + ' 项到点的提醒');
+      });
+      wrap.append(all);
+    }
+
+    alarmStrip.append(ic, head, wrap);
+  }
+
   // ---------- 日历月视图 ----------
   function renderCalendar() {
     calCard.hidden = tasks.length === 0;
@@ -6191,7 +7437,9 @@
       cell.setAttribute('role', 'button');
       cell.tabIndex = 0;
       cell.setAttribute('aria-pressed', String(prefs.dayFilter === key));
-      cell.title = (calM + 1) + '月' + d + '日：到期 ' + dueN + (overN ? '（含逾期 ' + overN + '）' : '') + '，完成 ' + doneN;
+      const remN = tasks.filter(t => !t.done && clampRemind(t.remind) && dayKey(t.remind) === key).length;
+      cell.title = (calM + 1) + '月' + d + '日：到期 ' + dueN + (overN ? '（含逾期 ' + overN + '）' : '') + '，完成 ' + doneN
+        + (remN ? '，' + remN + ' 项设了提醒' : '');
 
       const num = document.createElement('span');
       num.textContent = String(d);
@@ -6376,7 +7624,10 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !trashModal.hidden) openTrash(false);
+    if (e.key !== 'Escape' || !modal.hidden) return;   // 上面还压着确认弹窗时，Esc 只关最上面那个
+    if (!trashModal.hidden) openTrash(false);
+    // 正在分类管理里改名时，Esc 先交给输入框自己取消改名
+    if (!tagModal.hidden && !renamingTag) openTagModal(false);
   });
 
   // ---------- 键盘快捷键（输入框聚焦时全部让路） ----------
@@ -6857,6 +8108,8 @@
   scheduleGc();   // 上次没清掉的孤儿附件，开机后静悄悄回收
   render();
   notifyDue(false);
+  remindTick();                       // 已经到点的提醒，打开页面就补上处置条
+  setInterval(remindTick, 15000);     // 页面开着就按时响
 </script>
 </body>
 </html>
