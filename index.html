@@ -2669,6 +2669,25 @@
     .side .st-grid { grid-template-columns: repeat(2, 1fr); }
     .side .hist-head { margin-bottom: 12px; }
     .side .hist-head h3 { font-size: 16px; }
+
+    /* 今日专注搬进侧栏：卡片自己就是那块青色底，横条去掉外壳 */
+    .focus-card { background: var(--teal-50); color: var(--teal-800); }
+    .focus-card .hist-head h3 { color: var(--teal-800); }
+    .side .today-strip { margin: 0; padding: 0; background: none; color: inherit; }
+    .side .today-strip > span { flex: 1 1 100%; }
+    .side .today-strip .st-bind { width: 100%; background: var(--surface); }
+    .side .today-strip .st-bind .sb-t { flex: 1 1 auto; max-width: none; }
+    .side .today-strip .ts-btn { flex: 1 1 auto; margin-left: 0; }
+    .side .today-strip .ts-btn.pomo-cfg { flex: 0 0 auto; }
+    /* 侧栏是滚动容器：绝对定位的弹层会被 overflow 裁掉，改成就地展开占满一行 */
+    .side .today-strip .pomo-pop {
+      position: static;
+      flex: 1 1 100%;
+      width: auto;
+      margin-top: 2px;
+      box-shadow: none;
+      transform-origin: top left;
+    }
   }
 
   /* ---------- 打印：只输出清单本身 ---------- */
@@ -2862,6 +2881,12 @@
 
     </main>
     <aside class="side">
+    <section id="focus-card" class="card hist-card focus-card" hidden>
+      <div class="hist-head">
+        <h3>今日专注</h3>
+      </div>
+    </section>
+
     <section id="stats" class="card hist-card">
       <div class="hist-head">
         <h3>数据统计</h3>
@@ -3187,6 +3212,7 @@
   const modalCancel = $('modal-cancel');
   const quickHint = $('quick-hint');
   const todayStrip = $('today-strip');
+  const focusCard = $('focus-card');
   const undoBar = $('undo-bar');
   const undoText = $('undo-text');
   const undoBtn = $('undo-btn');
@@ -3940,7 +3966,23 @@
     return n;
   }
 
+  // 今日专注横条：窄屏在清单上方，宽屏整块搬进侧栏卡片
+  const mqWide = matchMedia('(min-width: 1040px)');
+  const todayHome = todayStrip.parentElement;
+
+  function placeTodayStrip() {
+    if (mqWide.matches) {
+      if (todayStrip.parentElement !== focusCard) focusCard.appendChild(todayStrip);
+    } else if (todayStrip.parentElement !== todayHome) {
+      todayHome.insertBefore(todayStrip, filters);
+    }
+  }
+
+  mqWide.addEventListener('change', render);
+
   function renderToday() {
+    placeTodayStrip();
+    focusCard.hidden = !mqWide.matches || tasks.length === 0;
     todayStrip.hidden = tasks.length === 0;
     if (!tasks.length) return;
     todayStrip.textContent = '';
