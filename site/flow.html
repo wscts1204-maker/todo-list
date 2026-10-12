@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>业务流程图 · 我的待办清单</title>
+<script>try{var t=localStorage.getItem('flowdoc.theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark';}catch(e){}</script>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/flow.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>待办清单说明站</a>
+    <div class="nav-links">
+      <a href="index.html">总览</a>
+      <a href="features.html">功能清单</a>
+      <a href="flow.html">业务流程图</a>
+      <a href="data.html">数据与架构</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <button type="button" class="btn" data-print>打印流程图</button>
+    <button type="button" class="btn" data-theme-toggle>切换为深色</button>
+  </div>
+</nav>
+
+<div class="shell wide">
+  <section class="hero">
+    <h1>业务流程图</h1>
+    <p class="lead">从「打开页面」到「数据只留在本机」的完整闭环：加载 → 建任务 → 组织 → 聚焦 → 执行 → 处置 → 复盘。<b>黄色菱形</b>是判定分支，<b>蓝色虚线框</b>是真正写入浏览器存储的动作，<b>灰色点线框</b>是并行的旁路能力。</p>
+    <div class="chip-row">
+      <span class="chip"><b data-count="lanes">7</b>&nbsp;条泳道</span>
+      <span class="chip"><b data-count="nodes">45</b>&nbsp;个节点</span>
+      <span class="chip"><b data-count="edges">56</b>&nbsp;条连线</span>
+      <span class="chip">泳道高度由实测内容推出，改文字不会错位</span>
+    </div>
+  </section>
+
+  <div class="flow-toolbar">
+    <button type="button" class="btn" id="zoom-out">缩小</button>
+    <button type="button" class="btn" id="zoom-in">放大</button>
+    <button type="button" class="btn on" id="zoom-fit">适应宽度</button>
+    <span class="hint" id="zoom-label">100%</span>
+    <span class="nav-spacer"></span>
+    <span class="hint">点任意方框可高亮它与相关连线，再点一次取消。</span>
+  </div>
+
+  <div class="legend">
+    <span class="lg"><i class="term"></i>开始 / 结束</span>
+    <span class="lg"><i class="proc"></i>处理</span>
+    <span class="lg"><i class="dec"></i>判定</span>
+    <span class="lg"><i class="data"></i>写入浏览器存储</span>
+    <span class="lg"><i class="side"></i>旁路能力</span>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="scaler" id="scaler">
+      <div class="canvas" id="canvas">
+        <svg class="svg-layer" id="wires" aria-hidden="true"></svg>
+        <svg class="svg-layer" id="labels" aria-hidden="true"></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="pager">
+    <a class="btn" href="features.html">← 上一页：功能清单</a>
+    <a class="btn primary" href="data.html">下一页：数据与架构 →</a>
+  </div>
+
+  <footer class="site-foot">
+    连线由脚本按节点实测位置绘制；缩放只作用于画布，横向超出时可在图内滚动查看。
+  </footer>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/flow.js"></script>
+</body>
+</html>

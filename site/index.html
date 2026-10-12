@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的待办清单 · 产品说明站</title>
+<script>try{var t=localStorage.getItem('flowdoc.theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark';}catch(e){}</script>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><i aria-hidden="true"></i>待办清单说明站</a>
+    <div class="nav-links">
+      <a href="index.html">总览</a>
+      <a href="features.html">功能清单</a>
+      <a href="flow.html">业务流程图</a>
+      <a href="data.html">数据与架构</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <button type="button" class="btn" data-theme-toggle>切换为深色</button>
+  </div>
+</nav>
+
+<div class="shell">
+  <section class="hero">
+    <h1>我的待办清单 · 产品说明站</h1>
+    <p class="lead">一个纯单文件、零依赖、可完全离线的待办应用。本站把它的能力逐项列出、画成一张业务流程图，并说明数据到底存在哪里——所有内容以线上源码逐条核对，不含推测。</p>
+    <div class="cta">
+      <a class="btn primary" href="features.html">看功能清单</a>
+      <a class="btn" href="flow.html">看业务流程图</a>
+      <a class="btn" href="data.html">看数据与架构</a>
+    </div>
+    <div class="chip-row">
+      <span class="chip" data-meta="verified"></span>
+      <span class="chip" data-meta="extracted"></span>
+      <span class="chip"><a data-meta="source" href="https://wscts1204-maker.github.io/todo-list/" target="_blank" rel="noreferrer"></a></span>
+      <span class="chip"><a data-meta="repo" href="https://github.com/wscts1204-maker/todo-list" target="_blank" rel="noreferrer"></a></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>站点规模</h2>
+    <p class="sub">这几个数是从站内数据文件现场算出来的，与下面各页的内容一一对应。</p>
+    <div class="stat-strip">
+      <div class="stat"><b data-count="modules">8</b><span>功能模块</span></div>
+      <div class="stat"><b data-count="features">39</b><span>能力条目</span></div>
+      <div class="stat"><b data-count="numbers">15</b><span>源码常量上限</span></div>
+      <div class="stat"><b data-count="lanes">7</b><span>流程泳道</span></div>
+      <div class="stat"><b data-count="nodes">45</b><span>流程节点</span></div>
+      <div class="stat"><b data-count="edges">56</b><span>流程连线</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>三个页面各讲什么</h2>
+    <p class="sub">按「有哪些能力 → 怎么串起来 → 数据放在哪」的顺序读。</p>
+    <div class="nav-cards">
+      <a href="features.html">
+        <b>功能清单</b>
+        <em>按页面区块归纳成模块卡片，左侧目录可跳转，顶部搜索框能按关键词过滤每一条能力。</em>
+        <u>打开 →</u>
+      </a>
+      <a href="flow.html">
+        <b>业务流程图</b>
+        <em>从「打开页面」到「数据只留在本机」的完整闭环，七条泳道；黄色菱形是判定分支，蓝色虚线框是真正写存储的动作。</em>
+        <u>打开 →</u>
+      </a>
+      <a href="data.html">
+        <b>数据与架构</b>
+        <em>六个存储键位与隔离边界，加上十五项源码常量上限——流程图里每个判定分支的依据都在这张表里。</em>
+        <u>打开 →</u>
+      </a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>它是怎么跑起来的</h2>
+    <p class="sub">一句话：没有账号、没有服务器、没有网络请求。</p>
+    <div class="store-grid">
+      <div class="store">
+        <h3>一个文件就是全部</h3>
+        <p>整个应用是一个 <code>index.html</code>，不引用任何 CDN 资源。双击本地文件即可使用，断网也能正常读写。</p>
+      </div>
+      <div class="store">
+        <h3>数据只在本机</h3>
+        <p>任务、清单、回收站存 localStorage，附件本体存 IndexedDB。换浏览器、换设备或清除浏览器数据都会丢失，长期保存靠导出备份。</p>
+      </div>
+      <div class="store">
+        <h3>首次打开有 27 条</h3>
+        <p>第一次打开会自动导入一份内置首批清单并按文本去重，之后靠版本号判断不再重复执行。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    本站由链接抽取 + 源码逐条核对生成（本机无 Python 运行库与 defuddle，采用 curl 抓线上原文 + Node 解析 DOM 骨架与常量的降级路径）。功能与数字以线上 index.html 和仓库 README.md 为准。本站不联网、不写入任务数据，主题选择只记在浏览器里。
+  </footer>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
