@@ -1,7 +1,10 @@
 /* 设计令牌 · 第一层 primitive + 第二层 semantic。
-   组件与页面只用 semantic 层；换配色只改这两段。 */
+   组件与页面只用 semantic 层；换配色只改这两段。
+   说明站刻意保持不透明底面：这是文档站，长文排版要的是稳定底色与可读性，
+   不跟线上应用那套「薄荷玻璃」（半透明卡 + backdrop-filter 模糊 + 渐变按钮 + 渐变标题）走。
+   两处的文字对比度都各自按 WCAG AA 校验过，共用的是同一套 teal / gray 色阶，不是同一套组件样式。 */
 :root {
-  /* primitive · 色阶（与线上应用同一套 teal，取值经过 WCAG AA 校验） */
+  /* primitive · 色阶（teal / gray 取值与线上应用 :root 的浅色档一致：teal-50 #f0fdfa、teal-600 #0d9488、teal-700 #0f766e、teal-800 #115e59） */
   --teal-50:#f0fdfa; --teal-100:#ccfbf1; --teal-500:#14b8a6; --teal-600:#0d9488; --teal-700:#0f766e; --teal-800:#115e59;
   --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-300:#d1d5db; --gray-400:#9ca3af; --gray-500:#6b7280; --gray-600:#4b5563; --gray-700:#374151; --gray-800:#1f2937;
   --red-50:#fef2f2; --red-100:#fee2e2; --red-500:#ef4444; --red-700:#b91c1c; --red-800:#991b1b;
