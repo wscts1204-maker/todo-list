@@ -38,6 +38,17 @@
     --yellow-100: #fef3c7;
     --yellow-50: #fffbeb;
 
+    /* 分类色：只给分类做数据编码，不是第二套强调色。字色与色点共用同一个值，
+       浅深两主题各实测过：字 ≥4.5:1、色点 ≥3:1（见 README「技术」里的 AA 段落） */
+    --tag-blue: #1e40af;
+    --tag-amber: #92400e;
+    --tag-violet: #6d28d9;
+    --tag-rose: #9f1239;
+    --tag-green: #166534;
+    --tag-indigo: #4338ca;
+    --tag-sky: #075985;
+    --tag-slate: #334155;
+
     /* 语义层：色板变量在深色模式下整体反向，这一段负责真正的表面与投影 */
     --surface: #fff;
     --surface-glass: rgba(255, 255, 255, .66);
@@ -120,6 +131,14 @@
     --yellow-500: #f59e0b;
     --yellow-100: #4a3616;
     --yellow-50: #2e2413;
+    --tag-blue: #93c5fd;
+    --tag-amber: #fcd34d;
+    --tag-violet: #c4b5fd;
+    --tag-rose: #fda4af;
+    --tag-green: #86efac;
+    --tag-indigo: #a5b4fc;
+    --tag-sky: #7dd3fc;
+    --tag-slate: #cbd5e1;
     --surface: #172422;
     --surface-glass: rgba(20, 33, 31, .68);
 
@@ -844,14 +863,38 @@
     gap: 4px;
     align-self: flex-start;
     font-size: 12px;
-    color: var(--gray-600);
+    color: var(--tg, var(--gray-600));
     padding: 3px 8px;
     border-radius: 999px;
     background: var(--surface);
     border: 1px solid var(--gray-200);
+    /* 有分类色（.c-* 会挂上 --tg）时换成同色淡底 + 同色描边；
+       认不得 color-mix 的浏览器停在上面两行，只是没底色，字色照常 */
+    background: color-mix(in srgb, var(--tg, transparent) 12%, var(--surface));
+    border-color: color-mix(in srgb, var(--tg, transparent) 34%, var(--gray-200));
   }
 
-  .done .tg { color: var(--text-muted); }
+  /* 分类色只由这八条赋值，元素类型无关（行内 chip、详情 chip、色点都能用） */
+  .c-blue   { --tg: var(--tag-blue); }
+  .c-amber  { --tg: var(--tag-amber); }
+  .c-violet { --tg: var(--tag-violet); }
+  .c-rose   { --tg: var(--tag-rose); }
+  .c-green  { --tg: var(--tag-green); }
+  .c-indigo { --tg: var(--tag-indigo); }
+  .c-sky    { --tg: var(--tag-sky); }
+  .c-slate  { --tg: var(--tag-slate); }
+
+  /* 筛选行 / 统计 / 分类管理里的圆点：颜色本身就是信息，所以按非文字 3:1 校 */
+  .tdot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--tg, var(--gray-400));
+  }
+
+  /* 已完成行整体淡化：字色压成弱化色，同时把 --tg 收回 transparent，同色淡底/描边退回素色 */
+  .done .tg { color: var(--text-muted); --tg: transparent; }
 
   li.dragging { opacity: .5; }
   li.dragging > .row { background: var(--teal-50); }
@@ -1005,6 +1048,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  /* 带色点的分类行：色点固定不缩，名字单独包一层才截得出省略号 */
+  .st-name.st-tag { display: flex; gap: 5px; }
+  .st-name .st-tx { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+  /* 分类统计行前面多一颗色点 */
+  .st-name.st-tag { display: inline-flex; align-items: center; gap: 5px; }
 
   .st-track {
     flex: 1;
@@ -1880,13 +1930,16 @@
     gap: 4px;
     padding: 4px 6px 4px 8px;
     font-size: 12px;
-    color: var(--teal-800);
+    color: var(--tg, var(--teal-800));
     background: var(--teal-50);
+    /* 同上：有分类色就换成同色淡底，没底色时保持原来的青绿药丸 */
+    background: color-mix(in srgb, var(--tg, var(--teal-600)) 12%, var(--surface));
     border-radius: 6px;
   }
 
-  .tchip-x { display: inline-flex; padding: 2px; color: var(--teal-700); }
-  .tchip-x:hover { color: var(--red-600); }
+  /* 这两个选择器都要压过下面那条 .tags-edit button（0,1,1），否则写了等于没写 */
+  .tags-edit .tchip-x { display: inline-flex; padding: 2px; color: var(--tg, var(--teal-700)); }
+  .tags-edit .tchip-x:hover { color: var(--red-600); }
 
   .tags-edit input {
     width: 110px;
@@ -2007,7 +2060,7 @@
     color: var(--gray-800);
   }
 
-  .tagm-row .tm-name svg { color: var(--teal-600); flex-shrink: 0; }
+  .tagm-row .tm-name svg { color: var(--tg, var(--teal-600)); flex-shrink: 0; }
   .tagm-row .tm-cnt { font-size: 12px; color: var(--gray-600); }
 
   .tagm-row .tm-acts { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; flex: 0 1 auto; min-width: 0; }
@@ -2028,6 +2081,9 @@
   .tm-act.on { color: var(--on-accent); background: linear-gradient(135deg, var(--btn-grad-a), var(--btn-grad-b)); border-color: transparent; }
   .tm-act.danger { color: var(--red-600); }
   .tm-act.danger:hover { background: var(--red-50); }
+
+  /* 换色按钮：把当前色直接画成一颗点 */
+  .tm-act.tm-hue { display: inline-flex; align-items: center; gap: 5px; }
 
   .tm-sel { font-size: 12px; max-width: 132px; }
 
@@ -2921,6 +2977,9 @@
     .row { background: #fff !important; border-bottom: 1px solid #ddd !important; break-inside: avoid; }
     .row, .row * { color: #000 !important; }
     .badge, .due, .tg, .note-flag { border-color: #999 !important; }
+    /* 分类色只是屏幕上的辅助识别，纸上不打彩色底（默认也不打印背景），统一收成素色 */
+    .tg, .tchip, .tchip-x { background: #fff !important; color: #000 !important; }
+    .tdot { display: none !important; }
     .done .txt { text-decoration: line-through; }
   }
 </style>
@@ -3534,6 +3593,25 @@
     return Array.isArray(task.tags) ? task.tags : [];
   }
 
+  // 分类颜色：八种色相只做数据编码，不参与强调色。
+  // 优先级 ① 用户在「管理分类」里手动指定（prefs.tagColors，跟着 prefs 走，不进备份）
+  //         ② 清单里那七个常用分类的固定色  ③ 按名字哈希取一个——同名恒同色，新分类不用挑
+  const TAG_HUES = ['blue', 'amber', 'violet', 'rose', 'green', 'indigo', 'sky', 'slate'];
+  const TAG_AUTO = {
+    '考证备考': 'amber', '理财赚钱': 'green', '健康形象': 'rose', '自媒体': 'violet',
+    '项目开发': 'sky', 'AI工具': 'indigo', '生活杂事': 'slate',
+  };
+  function tagHue(name) {
+    if (!name) return '';
+    const pick = prefs.tagColors && prefs.tagColors[name];
+    if (pick && TAG_HUES.includes(pick)) return pick;
+    if (TAG_AUTO[name]) return TAG_AUTO[name];
+    let h = 0;
+    for (const ch of String(name)) h = (h * 31 + ch.codePointAt(0)) >>> 0;
+    return TAG_HUES[h % TAG_HUES.length];
+  }
+  const tagCls = name => ' c-' + tagHue(name);
+
   // 番茄钟在某条任务上累计的轮数
   function clampFocus(v) {
     const n = Math.round(Number(v));
@@ -3969,7 +4047,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {} };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -3977,6 +4055,11 @@
       if (p.prioFilter !== 'high' && p.prioFilter !== 'mid' && p.prioFilter !== 'low') p.prioFilter = '';
       p.printUndone = !!p.printUndone;
       p.printToday = !!p.printToday;
+      // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
+      const tc = p.tagColors;
+      p.tagColors = tc && typeof tc === 'object' && !Array.isArray(tc)
+        ? Object.fromEntries(Object.entries(tc).filter(([, v]) => TAG_HUES.includes(v)))
+        : {};
       return p;
     } catch {
       return fallback;
@@ -4810,10 +4893,21 @@
     const matchPrio = t => !prefs.prioFilter || level(t) === prefs.prioFilter;
     const inTodayFocus = t => !prefs.focusToday || isTodayTask(t);
     for (const it of items) {
+      const on = prefs.tagFilter === it.key;
+      const real = it.key !== 'all' && it.key !== '';
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'fbtn' + (prefs.tagFilter === it.key ? ' on' : '');
-      b.textContent = it.label;
+      b.className = 'fbtn' + (on ? ' on' : '') + (real ? tagCls(it.key) : '');
+      // 选中态是实心渐变底，色点压在上面反而看不清，只在未选中时当图例用
+      if (real && !on) {
+        const dot = document.createElement('i');
+        dot.className = 'tdot';
+        dot.setAttribute('aria-hidden', 'true');
+        b.append(dot);
+      }
+      const lab = document.createElement('span');
+      lab.textContent = it.label;
+      b.append(lab);
       if (it.key !== 'all') {
         const num = document.createElement('span');
         num.className = 'n';
@@ -4943,6 +5037,12 @@
       backupMsg('没有任务在用「' + from + '」');
       return;
     }
+    // 手动指定的颜色要跟着分类名走：改名/合并就搬过去，去掉标记就删掉这条覆盖
+    if (from in prefs.tagColors) {
+      const hue = prefs.tagColors[from];
+      delete prefs.tagColors[from];
+      if (to && !(to in prefs.tagColors)) prefs.tagColors[to] = hue;
+    }
     save();
     render();
     renderTagList();
@@ -5023,6 +5123,7 @@
       info.className = 'tm-info';
       const nm = document.createElement('span');
       nm.className = 'tm-name';
+      nm.classList.add('c-' + tagHue(name));
       nm.innerHTML = icon('tag', 12);
       nm.append(document.createTextNode(name));
       const cnt = document.createElement('span');
@@ -5032,6 +5133,32 @@
 
       const acts = document.createElement('div');
       acts.className = 'tm-acts';
+
+      // 色板按钮：点一次换下一个色相，转回这个分类的自动色时就把覆盖清掉
+      const swatch = document.createElement('button');
+      swatch.type = 'button';
+      swatch.className = 'tm-act tm-hue';
+      const curHue = tagHue(name);
+      const nextHue = TAG_HUES[(TAG_HUES.indexOf(curHue) + 1) % TAG_HUES.length];
+      const over = name in prefs.tagColors;
+      const backAuto = over && nextHue === TAG_AUTO[name];
+      const dot = document.createElement('i');
+      dot.className = 'tdot c-' + curHue;
+      dot.setAttribute('aria-hidden', 'true');
+      swatch.append(dot);
+      swatch.append(document.createTextNode(backAuto ? '恢复自动' : '换色'));
+      swatch.title = backAuto
+        ? '当前是手动指定的「' + curHue + '」，点这里改回按分类名自动配色'
+        : '当前色：' + curHue + '，点这里换成 ' + nextHue;
+      swatch.setAttribute('aria-label', '给分类「' + name + '」换颜色，当前 ' + curHue);
+      swatch.addEventListener('click', () => {
+        if (backAuto) delete prefs.tagColors[name];
+        else prefs.tagColors[name] = nextHue;
+        save();
+        renderTagList();
+        render();
+      });
+      acts.append(swatch);
 
       const ren = document.createElement('button');
       ren.type = 'button';
@@ -5217,7 +5344,7 @@
         tgs.className = 'tgs';
         for (const tag of tags) {
           const tg = document.createElement('span');
-          tg.className = 'tg';
+          tg.className = 'tg' + tagCls(tag);
           tg.innerHTML = icon('tag', 12);
           tg.append(tag);
           tgs.append(tg);
@@ -5397,7 +5524,7 @@
     tagsEdit.className = 'tags-edit';
     for (const tag of tagsOf(task)) {
       const chip = document.createElement('span');
-      chip.className = 'tchip';
+      chip.className = 'tchip' + tagCls(tag);
       chip.innerHTML = icon('tag', 12);
       chip.append(document.createTextNode(tag));
       const x = document.createElement('button');
@@ -6058,14 +6185,24 @@
     return sec;
   }
 
-  function statRow(label, doneN, totalN, tone) {
+  function statRow(label, doneN, totalN, tone, hue) {
     const row = document.createElement('div');
     row.className = 'st-row';
 
     const name = document.createElement('span');
-    name.className = 'st-name';
+    name.className = 'st-name' + (hue ? ' st-tag' : '');
     name.title = label;
-    name.textContent = label;
+    if (hue) {
+      const dot = document.createElement('i');
+      dot.className = 'tdot c-' + hue;
+      dot.setAttribute('aria-hidden', 'true');
+      name.append(dot);
+    }
+    // 名字单独包一层：inline-flex 里的裸文本不会截断，包了才有省略号
+    const tx = document.createElement('span');
+    tx.className = 'st-tx';
+    tx.textContent = label;
+    name.append(tx);
 
     const track = document.createElement('span');
     track.className = 'st-track';
@@ -6121,7 +6258,7 @@
       const sec = stSection('按分类完成率');
       for (const tag of tags) {
         const g = tasks.filter(t => tagsOf(t).includes(tag));
-        sec.append(statRow(tag, g.filter(t => t.done).length, g.length));
+        sec.append(statRow(tag, g.filter(t => t.done).length, g.length, '', tagHue(tag)));
       }
       const none = tasks.filter(t => !tagsOf(t).length);
       if (none.length) sec.append(statRow('未分类', none.filter(t => t.done).length, none.length, 'gray'));
