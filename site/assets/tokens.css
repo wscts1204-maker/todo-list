@@ -55,6 +55,12 @@
   --radius-chip:999px;
   --hit-min:44px;
 
+  /* semantic · 动效（与线上应用同一套纪律：进场只用 --ease-enter 这一条曲线，悬停是裸的短过渡） */
+  --ease-enter:cubic-bezier(.22,1,.36,1);
+  --dur-enter:.7s;
+  --dur-hover:.2s;
+  --dur-panel:.3s;
+
   color-scheme:light;
 }
 [data-theme="dark"] {

@@ -43,3 +43,10 @@
   .stage { border:none; overflow:visible; }
   .legend { display:none !important; }
 }
+
+/* 连线跑马灯：只给本来就是点线的旁路边加"走线"，实线一律不动 ——
+   这张图里虚线/点线是有含义的（蓝虚线=写存储，灰点线=旁路），
+   选中时把实线临时改成虚线会和图例打架，所以选中只加粗（见 flow.js 的 applySel）。
+   偏移量 -18 是 dasharray "5 4" 周期 9 的整数倍，循环接缝看不出来。 */
+@keyframes dash-march { to { stroke-dashoffset: -18; } }
+.svg-layer path.dash { animation: dash-march 1.2s linear infinite; }

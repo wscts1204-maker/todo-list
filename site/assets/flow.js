@@ -148,7 +148,7 @@
       p.setAttribute('stroke', o.dash ? 'var(--neutral-line)' : (o.thin ? 'var(--primary)' : 'var(--primary-strong)'));
       p.setAttribute('stroke-width', w);
       p.dataset.base = w;
-      if (o.dash) p.setAttribute('stroke-dasharray', '5 4');
+      if (o.dash) { p.setAttribute('stroke-dasharray', '5 4'); p.classList.add('dash'); }
       p.setAttribute('marker-end', o.dash ? 'url(#arr-gray)' : (o.thin ? 'url(#arr-thin)' : 'url(#arr)'));
       p.dataset.from = fid; p.dataset.to = tid;
       wires.append(p);
