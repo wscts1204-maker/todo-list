@@ -767,8 +767,8 @@
     color: var(--text-muted);
     background: none;
     border: none;
-    padding: 8px 10px;
-    min-height: 36px;
+    padding: 10px 14px;
+    min-height: 44px;
   }
 
   .kbd-btn:hover { color: var(--gray-700); }
@@ -1007,7 +1007,17 @@
 
   .hist-head h3 { font-size: 18px; font-weight: 600; color: var(--gray-800); }
 
-  .chev { color: var(--text-muted); padding: 4px; display: flex; transition: color .2s; }
+  .chev {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    margin: -8px -8px -8px 0;
+    transition: color .2s;
+  }
   .chev:hover { color: var(--gray-700); }
 
   /* ---------- stats panel ---------- */
@@ -1820,15 +1830,16 @@
   .cal-nav b { font-size: 15px; color: var(--gray-800); }
 
   .cal-nav-btn {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--gray-600);
     background: var(--surface);
     border: 1px solid var(--gray-300);
-    border-radius: 8px;
+    border-radius: 10px;
     transition: background .15s;
   }
 
@@ -1841,8 +1852,8 @@
     color: var(--gray-600);
     background: var(--surface);
     border: 1px solid var(--gray-300);
-    padding: 6px 12px;
-    min-height: 36px;
+    padding: 8px 14px;
+    min-height: 44px;
     border-radius: 999px;
     transition: background .15s;
   }
@@ -2394,6 +2405,7 @@
     align-items: center;
     justify-content: center;
     padding: 8px 10px;
+    min-width: 44px;
   }
 
   .pomo-pop {
@@ -2813,6 +2825,207 @@
 
   .att-picker { display: none; }
 
+  /* ---------- 附件缩略图与大图查看 ---------- */
+  .att-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 8px; }
+
+  .att-thumb {
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    flex: none;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    background: var(--surface);
+    transition: box-shadow .2s;
+  }
+
+  .att-thumb:hover { box-shadow: var(--shadow-sm-hover); }
+  .att-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* 任务行上的小缩略图：只有图，不带文件名 */
+  .row-thumbs { display: inline-flex; align-items: center; gap: 4px; }
+
+  .row-thumb {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    flex: none;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    transition: box-shadow .2s;
+  }
+
+  .row-thumb:hover { box-shadow: var(--shadow-sm-hover); }
+  .row-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .att-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--scrim);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  .att-viewer[hidden] { display: none; }
+  .att-viewer { animation: fade-in .14s var(--ease-enter); }
+
+  .av-stage { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+  .av-img {
+    max-width: min(92vw, 1000px);
+    max-height: 70vh;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* 说明与按钮都落在实心胶囊上：压在遮罩上直接写字达不到 AA */
+  .av-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 100%;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .av-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+    max-width: min(60vw, 360px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .av-n { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .av-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px;
+    border-radius: 8px;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    border: 1px solid var(--card-border);
+  }
+  .av-btn:hover { color: var(--teal-800); background: var(--gray-100); }
+  .av-btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .av-btn[hidden] { display: none; }
+
+  /* ---------- 列表 / 看板视图切换 ---------- */
+  .view-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px 0;
+  }
+
+  .view-bar .vb-hint { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+
+  .board {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    padding: 2px 12px 14px;
+    max-height: 66vh;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .board[hidden] { display: none; }
+  html[data-view="board"] #list { display: none; }
+
+  .bd-col {
+    flex: 0 0 min(264px, 78vw);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    background: var(--surface-glass);
+    scrollbar-width: thin;
+  }
+
+  .bd-col.drop { border-color: var(--teal-600); box-shadow: inset 0 0 0 1px var(--teal-600); }
+
+  .bd-head { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .bd-head .bd-n { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  .bd-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    touch-action: none;
+  }
+
+  .bd-card:hover { box-shadow: var(--shadow-sm-hover); }
+  .bd-card.dragging { opacity: .5; }
+  .bd-card .bd-txt {
+    font-size: 13px;
+    color: var(--gray-800);
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bd-card.done .bd-txt { color: var(--text-muted); text-decoration: line-through; }
+  .bd-card .bd-due { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .bd-card .bd-due.over { color: var(--red-700); font-weight: 600; }
+  .bd-main { display: flex; flex-direction: column; min-width: 0; }
+  .bd-tick { flex: none; display: inline-flex; color: var(--teal-700); padding: 2px; background: none; border: none; }
+  .bd-tick:hover { color: var(--teal-800); }
+  .bd-empty { font-size: 12px; color: var(--text-muted); padding: 6px 2px; }
+  .bd-ghost {
+    position: fixed;
+    z-index: 56;
+    width: 240px;
+    pointer-events: none;
+    opacity: .94;
+    transform: rotate(-1.5deg);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* 侧栏折叠按钮只属于双栏那一档 */
+  .side-toggle { display: none; }
+
   /* ---------- 撤销条 ---------- */
   .undo-bar {
     position: fixed;
@@ -2947,6 +3160,11 @@
       box-shadow: none;
       transform-origin: top left;
     }
+
+    .side-toggle { display: inline-flex; }
+    /* 折叠 = 主栏吃掉整条网格，窄屏本来就是一栏，所以这道规则只存在于本档 */
+    html[data-side="off"] .dash { grid-template-columns: minmax(0, 1fr); }
+    html[data-side="off"] .side { display: none; }
   }
 
   /* ---------- 打印：只输出清单本身 ---------- */
@@ -2959,7 +3177,10 @@
     .head, .input-card, .toolbar, #calendar-card, #history, #stats, .side,
     #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
     .search-bar, .filter-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
-    .grip, .acts, .detail, .empty, #total { display: none !important; }
+    .grip, .acts, .detail, .empty, #total,
+    .att-viewer, .board, .view-bar, .row-thumbs { display: none !important; }
+    /* 看板视图在屏幕上是靠 html[data-view] 藏住清单的；打印永远输出列表那份 */
+    #list { display: block !important; }
     html[data-pu="1"] li[data-done="1"] { display: none !important; }
     html[data-pt="1"] li[data-today="0"] { display: none !important; }
     .wrap { max-width: none; padding: 0; margin: 0; }
@@ -3098,6 +3319,7 @@
         <button id="clear-done" class="tbtn gray" type="button">清空已完成</button>
         <button id="clear-all" class="tbtn gray" type="button">全部清空</button>
         <button id="trash-btn" class="tbtn gray" type="button">回收站</button>
+        <button id="side-toggle" class="tbtn gray side-toggle" type="button" aria-pressed="false">隐藏侧栏</button>
       </div>
     </section>
 
@@ -3115,7 +3337,13 @@
       <div id="filters" class="filter-bar"></div>
       <div id="tag-filters" class="filter-bar"></div>
       <div id="prio-filters" class="filter-bar"></div>
+      <div id="view-bar" class="view-bar">
+        <button id="view-list" class="fbtn on" type="button" aria-pressed="true">列表</button>
+        <button id="view-board" class="fbtn" type="button" aria-pressed="false">看板</button>
+        <span class="vb-hint">看板：拖动卡片换分类</span>
+      </div>
       <ul id="list"></ul>
+      <div id="board" class="board" hidden></div>
       <div id="empty" class="empty">
         <span class="ring" id="empty-ico"></span>
         <h3>还没有任务</h3>
@@ -3280,13 +3508,30 @@
         <b>Enter</b><span>编辑选中的任务</span>
         <b>Delete</b><span>删除选中的任务（进回收站）</span>
         <b>P</b><span>置顶 / 取消置顶选中的任务</span>
+        <b>V</b><span>在列表视图和看板视图之间切换</span>
         <b>Ctrl + Enter</b><span>批量粘贴面板里一次添加全部</span>
         <b>粘贴多行</b><span>在输入框直接粘贴，自动进批量面板</span>
-        <b>Esc</b><span>取消选中 / 关闭弹窗</span>
+        <b>← / →</b><span>附件大图里翻上一张 / 下一张</span>
+        <b>Esc</b><span>取消选中 / 关闭弹窗 / 关闭大图</span>
       </div>
       <div class="dialog-actions">
         <button id="kbd-close" class="dbtn plain" type="button">关闭</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 附件大图：只有这一层用遮罩，文字与按钮都落在实心胶囊上 -->
+  <div id="att-viewer" class="att-viewer" hidden role="dialog" aria-modal="true" aria-label="查看附件大图">
+    <div class="av-stage">
+      <button id="av-prev" class="av-btn" type="button" aria-label="上一张"></button>
+      <img id="av-img" class="av-img" alt="附件图片">
+      <button id="av-next" class="av-btn" type="button" aria-label="下一张"></button>
+    </div>
+    <div class="av-bar">
+      <span class="av-name" id="av-name"></span>
+      <span class="av-n" id="av-n"></span>
+      <button id="av-save" class="av-btn" type="button" aria-label="下载这张图片"></button>
+      <button id="av-close" class="av-btn" type="button" aria-label="关闭大图"></button>
     </div>
   </div>
 
@@ -3309,6 +3554,9 @@
   // 附件的文件本体走 IndexedDB（localStorage 装不下），任务里只存一条元数据
   const ATT_DB = 'todo-files';
   const ATT_STORE = 'files';
+  const ATT_THUMB = 'thumbs';          // 缩略图单独一个仓库：列表行每帧都要读，不能去翻几 MB 的原图
+  const THUMB_PX = 160;                 // 缩略图最长边
+  const THUMB_CACHE_MAX = 240;          // 内存里缓存多少个 objectURL，超了就淘汰最老的
   const ATT_MAX = 8;                    // 单条任务最多几个附件
   const ATT_SIZE_MAX = 5 * 1024 * 1024; // 单个文件最大 5MB
   const ATT_EMBED_MAX = 2 * 1024 * 1024; // 导出备份时，超过这个体积的文件不写进 JSON
@@ -3540,6 +3788,19 @@
   const tagmClose = $('tagm-close');
   const tagmDone = $('tagm-done');
   const tagmList = $('tagm-list');
+  const attViewer = $('att-viewer');
+  const avImg = $('av-img');
+  const avPrev = $('av-prev');
+  const avNext = $('av-next');
+  const avName = $('av-name');
+  const avN = $('av-n');
+  const avSave = $('av-save');
+  const avClose = $('av-close');
+  const viewBar = $('view-bar');
+  const viewListBtn = $('view-list');
+  const viewBoardBtn = $('view-board');
+  const board = $('board');
+  const sideToggle = $('side-toggle');
 
   let lists = loadLists();
   let tasks = loadList(lists.active);
@@ -3571,6 +3832,12 @@
   let reminded = loadReminded(); // 已经响过的精确提醒 { 任务id: 那一刻 }，刷新页面也不重复弹
   const ringing = [];            // 到点了但用户还没处理完的提醒，显示在提醒横幅里
   let renamingTag = '';          // 分类管理面板里正在改名的那一个（不跨会话保存）
+  let viewerItems = null;        // 大图查看器当前这组图片附件（不跨会话保存）
+  let viewerTaskId = '';         // 查看器绑在哪条任务上，图片清单每次从它现取
+  let viewerIdx = 0;
+  let viewerUrl = '';            // 正在展示的图片 objectURL，切换/关闭时必须 revoke
+  let viewerSeq = 0;             // 翻图序号：异步回来的旧图直接丢弃，免得慢图盖掉刚选的那张
+  let boardDropAt = 0;           // 刚拖完看板卡片的时间戳，紧随的那次 click 要忽略
   const _now = new Date();
   let calY = _now.getFullYear();
   let calM = _now.getMonth();
@@ -3708,6 +3975,7 @@
     expanded.clear();
     pomoTaskId = '';
     closeListMenu();
+    closeViewer();
     if (!tagModal.hidden) openTagModal(false);
     if (!keepUndo) closeUndo();
   }
@@ -4047,7 +4315,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {} };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -4055,6 +4323,8 @@
       if (p.prioFilter !== 'high' && p.prioFilter !== 'mid' && p.prioFilter !== 'low') p.prioFilter = '';
       p.printUndone = !!p.printUndone;
       p.printToday = !!p.printToday;
+      if (p.view !== 'board') p.view = 'list';   // 只有看板一个例外值，别的都回到列表
+      p.sideCollapsed = !!p.sideCollapsed;
       // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
       const tc = p.tagColors;
       p.tagColors = tc && typeof tc === 'object' && !Array.isArray(tc)
@@ -5255,6 +5525,10 @@
     searchBar.hidden = tasks.length === 0;
     searchClear.hidden = !query;
 
+    syncView();
+    if (prefs.view === 'board') renderBoard(shown);
+    else board.textContent = '';
+
     renderFilters();
     renderTagFilters();
     renderPrioFilters();
@@ -5275,6 +5549,214 @@
     statDone.classList.toggle('active', prefs.hideCompleted);
     clearDoneBtn.hidden = done.length === 0;
   }
+
+  // ---------- 看板视图：按分类分列，卡片拖动换分类 ----------
+  function syncView() {
+    const isBoard = prefs.view === 'board';
+    document.documentElement.dataset.view = isBoard ? 'board' : 'list';
+    viewBar.hidden = tasks.length === 0;
+    board.hidden = !isBoard;
+    viewListBtn.classList.toggle('on', !isBoard);
+    viewListBtn.setAttribute('aria-pressed', String(!isBoard));
+    viewBoardBtn.classList.toggle('on', isBoard);
+    viewBoardBtn.setAttribute('aria-pressed', String(isBoard));
+  }
+
+  function setView(v) {
+    const next = v === 'board' ? 'board' : 'list';
+    if (next === prefs.view) return;
+    prefs.view = next;
+    save();
+    render();
+  }
+
+  function boardColumns(shown) {
+    const cols = usedTags().map(tag => ({ tag, items: [] }));
+    const none = { tag: '', items: [] };
+    const byTag = new Map(cols.map(c => [c.tag, c]));
+    for (const t of shown) {
+      const tags = tagsOf(t).filter(x => byTag.has(x));
+      if (!tags.length) { none.items.push(t); continue; }
+      // 多分类的任务在每一列都出现一次：看板要的是「这一类下有哪几件事」
+      for (const x of tags) byTag.get(x).items.push(t);
+    }
+    // 空列不占屏，但「未分类」永远留着——它是「把分类摘掉」这个动作的落点
+    const keep = cols.filter(c => c.items.length);
+    keep.push(none);
+    return keep;
+  }
+
+  function renderBoard(shown) {
+    board.textContent = '';
+    for (const col of boardColumns(shown)) {
+      const el = document.createElement('div');
+      el.className = 'bd-col' + (col.tag ? tagCls(col.tag) : '');
+      el.dataset.tag = col.tag;
+
+      const head = document.createElement('div');
+      head.className = 'bd-head';
+      if (col.tag) {
+        const dot = document.createElement('span');
+        dot.className = 'tdot';
+        head.append(dot);
+      }
+      const nm = document.createElement('span');
+      nm.textContent = col.tag || '未分类';
+      head.append(nm);
+      const n = document.createElement('span');
+      n.className = 'bd-n';
+      n.textContent = String(col.items.length);
+      head.append(n);
+      el.append(head);
+
+      if (!col.items.length) {
+        const tip = document.createElement('div');
+        tip.className = 'bd-empty';
+        tip.textContent = '把卡片拖到这里' + (col.tag ? '＝归入「' + col.tag + '」' : '＝去掉分类');
+        el.append(tip);
+      }
+      for (const t of col.items) el.append(boardCard(t, col.tag));
+      board.append(el);
+    }
+  }
+
+  function boardCard(task, colTag) {
+    const card = document.createElement('div');
+    card.className = 'bd-card' + (task.done ? ' done' : '');
+    card.dataset.id = task.id;
+    card.dataset.tag = colTag;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', (task.done ? '放回未完成：' : '完成：') + clip(task.text));
+
+    const tick = document.createElement('button');
+    tick.type = 'button';
+    tick.className = 'bd-tick';
+    tick.innerHTML = icon(task.done ? 'undo' : 'circle', 16);
+    tick.title = task.done ? '放回未完成' : '标记完成';
+    tick.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (Date.now() - boardDropAt < 300) return;
+      toggle(task.id);
+    });
+
+    const main = document.createElement('div');
+    main.className = 'bd-main';
+    const tx = document.createElement('span');
+    tx.className = 'bd-txt';
+    tx.textContent = task.text;
+    main.append(tx);
+    const d = dueInDays(task);
+    if (d !== null && !task.done) {
+      const dd = document.createElement('span');
+      dd.className = 'bd-due' + (d < 0 ? ' over' : '');
+      dd.textContent = dueText(task);
+      main.append(dd);
+    }
+
+    card.append(tick, main);
+    card.addEventListener('pointerdown', (e) => startBoardDrag(e, card, task.id));
+    card.addEventListener('click', (e) => {
+      if (e.target.closest && e.target.closest('.bd-tick')) return;
+      if (Date.now() - boardDropAt < 300) return;   // 刚拖完的那次 click 不算「点开」
+      boardReveal(task.id);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      boardReveal(task.id);
+    });
+    return card;
+  }
+
+  // 点卡片 = 回到列表并定位这一条（看板的列不能改顺序，排序还得在列表里拖）
+  function boardReveal(id) {
+    setView('list');
+    render();
+    const li = list.querySelector('li[data-id="' + CSS.escape(id) + '"]');
+    if (!li) return;
+    kbId = id;
+    for (const el of kbdRows()) el.classList.toggle('kb-cursor', el.dataset.id === id);
+    li.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  function startBoardDrag(ev, card, id) {
+    if (dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
+    if (ev.target.closest && ev.target.closest('.bd-tick')) return;
+    ev.preventDefault();
+
+    const cols = [...board.children].filter(el => el.classList.contains('bd-col'));
+    const from = card.dataset.tag;
+    const startX = ev.clientX, startY = ev.clientY;
+    let ghost = null, target = null, moved = false;
+
+    const mark = () => {
+      for (const el of cols) el.classList.toggle('drop', el === target);
+    };
+
+    // 命中哪一列按列的矩形算，不用 elementFromPoint：
+    // 指针落在列的 padding、列头那一行、或卡片之间的缝隙时，elementFromPoint 拿到的不是这列的子孙。
+    const hit = (x, y) => {
+      for (const el of cols) {
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top - 10 && y <= r.bottom + 10) return el;
+      }
+      return null;
+    };
+
+    const onMove = (e) => {
+      if (!moved) {
+        if (Math.abs(e.clientX - startX) < 6 && Math.abs(e.clientY - startY) < 6) return;
+        moved = true;
+        dragging = true;
+        card.classList.add('dragging');
+        ghost = card.cloneNode(true);
+        ghost.className = 'bd-card bd-ghost' + (card.classList.contains('done') ? ' done' : '');
+        document.body.append(ghost);
+      }
+      ghost.style.left = (e.clientX - 24) + 'px';
+      ghost.style.top = (e.clientY - 16) + 'px';
+      target = hit(e.clientX, e.clientY);
+      mark();
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      card.classList.remove('dragging');
+      for (const el of cols) el.classList.remove('drop');
+      if (ghost) ghost.remove();
+      dragging = null;
+      if (!moved) return;
+      boardDropAt = Date.now();
+      const to = target ? target.dataset.tag : null;
+      if (to === null || to === from) render();
+      else boardMoveTag(id, from, to);
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
+  }
+
+  // 换列 = 把「拖出来那一列」的分类换成「落下那一列」，其它分类原样保留
+  function boardMoveTag(id, fromTag, toTag) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) { render(); return; }
+    const before = tagsOf(task).slice();
+    const next = before.filter(x => x !== fromTag);
+    if (toTag && !next.includes(toTag)) next.push(toTag);
+    const after = normTags(next);
+    if (after.join('\u0001') === before.join('\u0001')) { render(); return; }
+    snapshot('已把「' + clip(task.text) + '」归入' + (toTag ? '「' + toTag + '」' : '未分类'), tasks);
+    task.tags = after;
+    save();
+    render();
+  }
+
+  viewListBtn.addEventListener('click', () => setView('list'));
+  viewBoardBtn.addEventListener('click', () => setView('board'));
 
   function renderRow(task) {
     const li = document.createElement('li');
@@ -5409,11 +5891,45 @@
 
       const atts = attOf(task);
       if (atts.length) {
-        const af = document.createElement('span');
-        af.className = 'att-flag';
-        af.innerHTML = icon('paperclip', 14);
-        af.title = atts.length + ' 个附件：' + atts.map(a => a.name).join('、');
-        line.append(af);
+        const rowImgs = atts.filter(a => /^image\//.test(a.type));
+        if (rowImgs.length) {
+          // 行内只挂最多两张小图，剩下的收进 +N；点开还是走同一个大图查看器
+          const strip = document.createElement('span');
+          strip.className = 'row-thumbs';
+          const shownImgs = rowImgs.slice(0, 2);
+          shownImgs.forEach((a, i) => {
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'row-thumb';
+            cell.title = '看大图：' + a.name;
+            cell.setAttribute('aria-label', '查看附件大图 ' + a.name);
+            const im = document.createElement('img');
+            im.alt = '';
+            cell.append(im);
+            ensureThumbUrl(a).then(u => { im.src = u; }).catch(() => { cell.remove(); });
+            cell.addEventListener('click', () => openViewer(task.id, i));
+            strip.append(cell);
+          });
+          if (rowImgs.length > shownImgs.length) {
+            const more = document.createElement('button');
+            more.type = 'button';
+            more.className = 'row-thumb more';
+            more.textContent = '+' + (rowImgs.length - shownImgs.length);
+            more.title = rowImgs.length + ' 张图片，点开看大图';
+            more.setAttribute('aria-label', '查看这条任务的 ' + rowImgs.length + ' 张附件图片');
+            more.addEventListener('click', () => openViewer(task.id, shownImgs.length));
+            strip.append(more);
+          }
+          line.append(strip);
+        }
+        const files = atts.length - rowImgs.length;
+        if (files) {
+          const af = document.createElement('span');
+          af.className = 'att-flag';
+          af.innerHTML = icon('paperclip', 14);
+          af.title = files + ' 个文件附件：' + atts.filter(a => !/^image\//.test(a.type)).map(a => a.name).join('、');
+          line.append(af);
+        }
       }
 
       body.append(line);
@@ -5668,12 +6184,39 @@
         rmRow.append(rmOff);
       }
 
-      const soonDate = new Date();
-      soonDate.setHours(9, 0, 0, 0);
-      const quicks = [
-        { label: '1 小时后', ms: Math.ceil((Date.now() + 3600000) / 60000) * 60000 },
-        { label: '明天 9 点', ms: new Date(soonDate.getFullYear(), soonDate.getMonth(), soonDate.getDate() + 1, 9, 0, 0, 0).getTime() },
-      ];
+      const nowMs = Date.now();
+      const quicks = [];
+      // 只列还没过去的时刻；点了照样要按「设提醒」，这里只是把输入框填好
+      const pushQuick = (label, ms) => {
+        const t = Math.ceil(ms / 60000) * 60000;   // 对齐到整分钟，免得填进 20:00:00.347
+        if (t > nowMs && !quicks.some((q) => q.ms === t)) quicks.push({ label, ms: t });
+      };
+      const at = (dayOffset, hour) => {
+        const d = new Date();
+        d.setDate(d.getDate() + dayOffset);
+        d.setHours(hour, 0, 0, 0);
+        return d.getTime();
+      };
+      pushQuick('1 小时后', nowMs + 3600000);
+      pushQuick('今晚 8 点', at(0, 20));
+      pushQuick('明天 9 点', at(1, 9));
+      pushQuick('明晚 8 点', at(1, 20));
+      {
+        // 「下周一」= 下一个星期一；今天正好是周一也指下周，不指刚过去的这一刻
+        const d = new Date();
+        d.setHours(9, 0, 0, 0);
+        d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
+        pushQuick('下周一 9 点', d.getTime());
+      }
+      if (task.due) {
+        const dueDay = parseDay(task.due);
+        if (dueDay) {
+          const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+          const span = Math.round((dueDay.getTime() - today0.getTime()) / 86400000);
+          if (span >= 3) pushQuick('到期前 3 天', new Date(dueDay.getFullYear(), dueDay.getMonth(), dueDay.getDate() - 3, 9).getTime());
+          if (span >= 1) pushQuick('到期前 1 天', new Date(dueDay.getFullYear(), dueDay.getMonth(), dueDay.getDate() - 1, 9).getTime());
+        }
+      }
       for (const q of quicks) {
         const qb = document.createElement('button');
         qb.type = 'button';
@@ -5825,7 +6368,7 @@
     idbPromise = new Promise((resolve, reject) => {
       let req;
       try {
-        req = indexedDB.open(ATT_DB, 1);
+        req = indexedDB.open(ATT_DB, 2);
       } catch (e) {
         reject(e);
         return;
@@ -5833,6 +6376,7 @@
       req.onupgradeneeded = () => {
         const db = req.result;
         if (!db.objectStoreNames.contains(ATT_STORE)) db.createObjectStore(ATT_STORE, { keyPath: 'id' });
+        if (!db.objectStoreNames.contains(ATT_THUMB)) db.createObjectStore(ATT_THUMB, { keyPath: 'id' });
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error || new Error('打不开本地存储'));
@@ -5884,6 +6428,92 @@
     });
   }
 
+  // ---------- 缩略图仓库：键跟附件同名，坏了只是没图，不影响附件本身 ----------
+  function thumbGet(id) {
+    return openDb().then(db => wrapReq(db.transaction(ATT_THUMB, 'readonly').objectStore(ATT_THUMB).get(id)));
+  }
+
+  function thumbPut(id, blob) {
+    return openDb().then(db => {
+      const t = db.transaction(ATT_THUMB, 'readwrite');
+      t.objectStore(ATT_THUMB).put({ id, blob });
+      return txDone(t);
+    });
+  }
+
+  function thumbDel(ids) {
+    if (!ids.length) return Promise.resolve(true);
+    return openDb().then(db => {
+      const t = db.transaction(ATT_THUMB, 'readwrite');
+      const store = t.objectStore(ATT_THUMB);
+      for (const id of ids) store.delete(id);
+      return txDone(t);
+    });
+  }
+
+  function thumbGetAll() {
+    return openDb().then(db => wrapReq(db.transaction(ATT_THUMB, 'readonly').objectStore(ATT_THUMB).getAll()));
+  }
+
+  // 原图 -> 最长边 THUMB_PX 的小图。优先 webp，webkit 老版本回 jpeg
+  function makeThumb(blob) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        try {
+          const scale = Math.min(1, THUMB_PX / Math.max(img.width || 1, img.height || 1));
+          const w = Math.max(1, Math.round((img.width || 1) * scale));
+          const h = Math.max(1, Math.round((img.height || 1) * scale));
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          const ctx = cv.getContext('2d');
+          if (!ctx) { reject(new Error('画不出缩略图')); return; }
+          ctx.drawImage(img, 0, 0, w, h);
+          const done = (b) => (b ? resolve(b) : reject(new Error('缩略图编码失败')));
+          cv.toBlob(done, 'image/webp', 0.8);
+        } catch (e) { reject(e); }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('这张图读不出来')); };
+      img.src = url;
+    });
+  }
+
+  // 附件 id -> objectURL。同一张图在行内和详情面板共用一个 URL，别每次 render 都造新的
+  const thumbUrls = new Map();
+  function thumbUrl(id, blob) {
+    const hit = thumbUrls.get(id);
+    if (hit) return hit;
+    const u = URL.createObjectURL(blob);
+    if (thumbUrls.size >= THUMB_CACHE_MAX) {
+      // Map 按插入序遍历，淘汰最老的一个；留着不 revoke 会一直占着内存
+      const oldest = thumbUrls.keys().next().value;
+      if (oldest) { URL.revokeObjectURL(thumbUrls.get(oldest)); thumbUrls.delete(oldest); }
+    }
+    thumbUrls.set(id, u);
+    return u;
+  }
+
+  function dropThumbUrl(id) {
+    const u = thumbUrls.get(id);
+    if (!u) return;
+    URL.revokeObjectURL(u);
+    thumbUrls.delete(id);
+  }
+
+  // 拿缩略图的 URL：仓库里有就用，没有就从原图现做一张并回填（老数据/回填失败的附件走这条路）
+  function ensureThumbUrl(att) {
+    if (!att || !/^image\//.test(att.type)) return Promise.reject(new Error('不是图片'));
+    return thumbGet(att.id).then(rec => {
+      if (rec && rec.blob) return thumbUrl(att.id, rec.blob);
+      return idbGet(att.id).then(full => {
+        if (!full || !full.blob) throw new Error('原图不在了');
+        return makeThumb(full.blob).then(b => thumbPut(att.id, b).then(() => thumbUrl(att.id, b), () => thumbUrl(att.id, b)));
+      });
+    });
+  }
+
   // 所有清单的任务 + 回收站引用到的附件 id；引用不到的文件才算孤儿
   function referencedAttIds() {
     const set = new Set();
@@ -5896,11 +6526,18 @@
   }
 
   function gcAttachments() {
+    const keep = referencedAttIds();
     idbGetAll().then(all => {
-      const keep = referencedAttIds();
       const dead = all.filter(r => r && !keep.has(r.id)).map(r => r.id);
-      return dead.length ? idbDel(dead) : null;
+      if (dead.length) { dead.forEach(dropThumbUrl); return idbDel(dead); }
+      return null;
     }).catch(() => { /* 存不了附件的环境，回收也就无从谈起 */ });
+    // 缩略图跟附件同一套引用规则；原图删干净了，缩略图留着只是占地方
+    thumbGetAll().then(all => {
+      const dead = all.filter(r => r && !keep.has(r.id)).map(r => r.id);
+      if (dead.length) { dead.forEach(dropThumbUrl); return thumbDel(dead); }
+      return null;
+    }).catch(() => { });
   }
 
   let gcTimer = null;
@@ -5954,6 +6591,10 @@
         failed = '这个浏览器存不了附件（无痕模式或存储被拒）';
         break;
       }
+      // 图片顺手生成缩略图；失败不拦附件，行内会走「现做一张」的兜底路径
+      if (/^image\//.test(meta.type)) {
+        try { await thumbPut(id, await makeThumb(f)); } catch (e) { /* 没缩略图就只显示回形针 */ }
+      }
       list.push(meta);
     }
     task.att = list;
@@ -5987,6 +6628,87 @@
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
+  // ---------- 附件大图查看器 ----------
+  // 只记任务 id，图片清单每次从任务现取：附件在查看期间被增删也能跟得上
+  function viewerImgs(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return null;
+    const imgs = attOf(task).filter(a => a && /^image\//.test(a.type));
+    return imgs.length ? imgs : null;
+  }
+
+  function openViewer(taskId, idx) {
+    const imgs = viewerImgs(taskId);
+    if (!imgs) return;
+    viewerTaskId = taskId;
+    viewerItems = imgs;
+    viewerIdx = Math.min(imgs.length - 1, Math.max(0, idx | 0));
+    attViewer.hidden = false;
+    showViewerItem();
+    avClose.focus();
+  }
+
+  function closeViewer() {
+    if (attViewer.hidden) return;
+    attViewer.hidden = true;
+    viewerTaskId = '';
+    viewerItems = null;
+    viewerIdx = 0;
+    viewerSeq++;              // 让还在路上的异步加载作废，别再往隐藏的图上挂 URL
+    if (viewerUrl) { URL.revokeObjectURL(viewerUrl); viewerUrl = ''; }
+    avImg.removeAttribute('src');
+  }
+
+  function viewerStep(delta) {
+    const n = viewerItems ? viewerItems.length : 0;
+    if (n < 2) return;
+    viewerIdx = (viewerIdx + delta + n) % n;
+    showViewerItem();
+  }
+
+  function showViewerItem() {
+    const fresh = viewerImgs(viewerTaskId);
+    if (!fresh) { closeViewer(); return; }   // 任务没了 / 图片被删光：没有可看的，直接收
+    viewerItems = fresh;
+    viewerIdx = Math.min(fresh.length - 1, Math.max(0, viewerIdx));
+    const att = viewerItems[viewerIdx];
+    const seq = ++viewerSeq;
+    if (viewerUrl) { URL.revokeObjectURL(viewerUrl); viewerUrl = ''; }
+    avImg.removeAttribute('src');
+    const multi = fresh.length > 1;
+    avPrev.hidden = !multi;
+    avNext.hidden = !multi;
+    avName.textContent = att.name;
+    avN.textContent = (multi ? (viewerIdx + 1) + ' / ' + fresh.length + ' · ' : '') + fmtSize(att.size);
+    withAttFile(att, (rec) => {
+      if (seq !== viewerSeq) return;   // 已经翻到别张 / 关掉了
+      viewerUrl = URL.createObjectURL(rec.blob);
+      avImg.src = viewerUrl;
+      avImg.alt = '附件图片：' + att.name;
+    }, (txt) => { if (seq === viewerSeq) avName.textContent = txt; });
+  }
+
+  avPrev.addEventListener('click', () => viewerStep(-1));
+  avNext.addEventListener('click', () => viewerStep(1));
+  avClose.addEventListener('click', closeViewer);
+  avSave.addEventListener('click', () => {
+    const att = viewerItems && viewerItems[viewerIdx];
+    if (!att) return;
+    withAttFile(att, (rec) => saveAsBlob(rec.blob, att.name), (txt) => { avName.textContent = txt; });
+  });
+  attViewer.addEventListener('click', (e) => {
+    // 点图片外面的遮罩关闭；点在胶囊和图片上不算
+    if (e.target === attViewer || e.target.classList.contains('av-stage')) closeViewer();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (attViewer.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeViewer(); return; }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); viewerStep(-1); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); viewerStep(1); return; }
+    if (e.key === 'PageDown') { e.preventDefault(); viewerStep(1); return; }
+    if (e.key === 'PageUp') { e.preventDefault(); viewerStep(-1); return; }
+  });
+
   function attSection(task, box) {
     const label = document.createElement('span');
     label.className = 'd-label';
@@ -6002,6 +6724,26 @@
     };
 
     const list = attOf(task);
+    const imgs = list.filter(a => /^image\//.test(a.type));
+
+    // 图片先排一排缩略图，点任意一张进大图查看器；非图片还是下面那串列表行
+    const grid = document.createElement('div');
+    grid.className = 'att-grid';
+    grid.hidden = !imgs.length;
+    imgs.forEach((a, i) => {
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'att-thumb';
+      cell.title = '看大图：' + a.name;
+      cell.setAttribute('aria-label', '查看附件大图 ' + a.name);
+      const im = document.createElement('img');
+      im.alt = '';
+      cell.append(im);
+      ensureThumbUrl(a).then(u => { im.src = u; }).catch(() => { cell.remove(); });
+      cell.addEventListener('click', () => openViewer(task.id, i));
+      grid.append(cell);
+    });
+
     const wrap = document.createElement('div');
     wrap.className = 'att-list';
     for (const a of list) {
@@ -6028,16 +6770,8 @@
       view.title = /^image\//.test(a.type) ? '看图' : '下载文件';
       view.setAttribute('aria-label', (/^image\//.test(a.type) ? '预览附件 ' : '下载附件 ') + a.name);
       view.addEventListener('click', () => {
-        withAttFile(a, (rec) => {
-          if (/^image\//.test(a.type)) {
-            const url = URL.createObjectURL(rec.blob);
-            setTimeout(() => URL.revokeObjectURL(url), 60000);
-            const w = window.open(url, '_blank');
-            if (!w) saveAsBlob(rec.blob, a.name);   // 弹窗被拦就直接下载，别什么都不发生
-          } else {
-            saveAsBlob(rec.blob, a.name);
-          }
-        }, say);
+        if (/^image\//.test(a.type)) { openViewer(task.id, imgs.indexOf(a)); return; }
+        withAttFile(a, (rec) => saveAsBlob(rec.blob, a.name), say);
       });
 
       const dl = document.createElement('button');
@@ -6059,7 +6793,9 @@
       del.addEventListener('click', () => {
         task.att = attOf(task).filter(x => x.id !== a.id);
         save();
+        dropThumbUrl(a.id);
         idbDel([a.id]).catch(() => { /* 删不掉也只是占点空间，回收时会清 */ });
+        thumbDel([a.id]).catch(() => { });
         scheduleGc();
         render();
       });
@@ -6096,7 +6832,7 @@
       : '单个文件 ≤' + fmtSize(ATT_SIZE_MAX) + '，还能加 ' + (ATT_MAX - list.length) + ' 个';
 
     foot.append(add, picker, note);
-    box.append(label, wrap, foot, hint);
+    box.append(label, grid, wrap, foot, hint);
   }
 
   function editControls(task) {
@@ -8060,6 +8796,7 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || !modal.hidden) return;   // 上面还压着确认弹窗时，Esc 只关最上面那个
+    if (!attViewer.hidden) { closeViewer(); return; }   // 大图压在回收站/分类面板之上，Esc 先退它
     if (!trashModal.hidden) openTrash(false);
     // 正在分类管理里改名时，Esc 先交给输入框自己取消改名
     if (!tagModal.hidden && !renamingTag) openTagModal(false);
@@ -8091,7 +8828,7 @@
     const t = e.target;
     const field = t && t.closest && t.closest('input, textarea, select');
     if (field) return;
-    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden) return;
+    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden || !attViewer.hidden) return;
 
     if (e.key === '/') { e.preventDefault(); if (!searchBar.hidden) searchInput.focus(); return; }
     if (e.key === 'n' || e.key === 'N') {
@@ -8103,6 +8840,13 @@
     if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); kbdMove(1); return; }
     if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); kbdMove(-1); return; }
     if (e.key === 'Escape') { kbdClear(); return; }
+    // 切视图跟在任务上没关系，放在「按钮让路」这道闸之前
+    if (e.key === 'v' || e.key === 'V') {
+      e.preventDefault();
+      if (!tasks.length) { backupMsg('先加几条任务，看板才有列可分', true); return; }
+      setView(prefs.view === 'board' ? 'list' : 'board');
+      return;
+    }
 
     // 焦点正好在某个按钮上时空格/回车留给按钮本身
     if (t && t.closest && t.closest('button, a, [role="button"]')) return;
@@ -8172,6 +8916,24 @@
     if (e.key === 'Escape' && !printPop.hidden) openPrintPop(false);
   });
   syncPrintOptions();
+
+  // ---------- 侧栏折叠：状态进 prefs，按钮只在双栏那一档出现 ----------
+  // CSS 里 html[data-side="off"] 的两条规则只写在 min-width:1040px 档内，
+  // 所以窄屏（本来就是一栏）即便 prefs 存着 off 也不会被藏掉任何东西。
+  function syncSide() {
+    const off = !!prefs.sideCollapsed;
+    document.documentElement.dataset.side = off ? 'off' : 'on';
+    sideToggle.textContent = off ? '显示侧栏' : '隐藏侧栏';
+    sideToggle.setAttribute('aria-pressed', String(off));
+    sideToggle.title = off ? '展开右侧的今日专注 / 统计 / 打卡' : '收起右侧栏，任务区占满整行';
+  }
+
+  sideToggle.addEventListener('click', () => {
+    prefs.sideCollapsed = !prefs.sideCollapsed;
+    save();
+    syncSide();
+  });
+  syncSide();
 
   // ---------- 主题：跟随系统 / 浅色 / 深色 三态循环 ----------
   const darkMq = matchMedia('(prefers-color-scheme: dark)');
@@ -8345,6 +9107,10 @@
   undoBtn.innerHTML = icon('undo', 16) + '撤销';
   bgBtn.innerHTML = icon('image', 20);
   kbdIco.innerHTML = icon('keyboard', 24);
+  avPrev.innerHTML = icon('chevronLeft', 20);
+  avNext.innerHTML = icon('chevronRight', 20);
+  avSave.innerHTML = icon('download', 18);
+  avClose.innerHTML = icon('close', 18);
   kbdBtn.innerHTML = icon('keyboard', 16) + '键盘快捷键';
   document.querySelector('.bp-head-ic').innerHTML = icon('palette', 16);
   bgClose.innerHTML = icon('close', 16);
