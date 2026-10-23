@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的待办清单</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Cpath d='M18 33l10 10 18-22' fill='none' stroke='%23fff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   :root {
     color-scheme: light;
@@ -1356,6 +1357,74 @@
   .dialog-input:focus { outline: 2px solid var(--teal-600); outline-offset: 1px; }
 
   .dialog-err { font-size: 13px; color: var(--red-600); margin-bottom: 16px !important; }
+
+  /* ---------- 今日复盘 ---------- */
+  .review-dialog {
+    max-width: 640px;
+    max-height: calc(100dvh - 32px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .review-dialog .dialog-head { margin-bottom: 8px; }
+  .review-dialog .dialog-head .rev-ico { color: var(--teal-600); display: flex; }
+
+  .review-sub { font-size: 12px; color: var(--text-muted); margin: 0 0 12px; }
+
+  .review-text {
+    width: 100%;
+    flex: 1;
+    min-height: clamp(200px, 46vh, 360px);
+    max-height: 52vh;
+    resize: vertical;
+    font-family: ui-monospace, "SF Mono", Consolas, "PingFang SC", "Microsoft YaHei", monospace;
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    outline: none;
+  }
+
+  .review-text:focus { box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .review-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .review-actions .spacer { flex: 1; }
+
+  .rev-btn {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--gray-200);
+    border-radius: 999px;
+    padding: 8px 14px;
+    min-height: 40px;
+    transition: background .2s, color .2s, filter .2s;
+  }
+
+  .rev-btn:hover { background: var(--gray-100); color: var(--gray-800); }
+
+  .rev-btn.main {
+    background: linear-gradient(135deg, var(--btn-grad-a), var(--btn-grad-b));
+    color: var(--on-accent);
+    border-color: transparent;
+  }
+
+  .rev-btn.main:hover { filter: brightness(1.05); color: var(--on-accent); }
+
+  .rev-status {
+    flex: 1 0 100%;
+    min-height: 1.1em;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--teal-700);
+  }
+
+  .rev-status.err { color: var(--red-600); }
 
   /* ---------- 多清单切换条 ---------- */
   .list-tabs { margin-bottom: 12px; }
@@ -3027,6 +3096,71 @@
     box-shadow: var(--shadow-card);
   }
 
+  /* ---------- 矩阵视图：优先级 × 到期日 四象限 ---------- */
+  .matrix {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 2px 12px 14px;
+  }
+
+  .matrix[hidden] { display: none; }
+  html[data-view="matrix"] #list { display: none; }
+
+  .mx-q {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 168px;
+    max-height: 44vh;
+    overflow: auto;
+    padding: 10px;
+    border: 1px solid var(--card-border);
+    border-top-width: 3px;
+    border-radius: 14px;
+    background: var(--surface-glass);
+    scrollbar-width: thin;
+  }
+
+  .mx-q[data-q="iu"] { border-top-color: var(--red-500); }
+  .mx-q[data-q="in"] { border-top-color: var(--teal-600); }
+  .mx-q[data-q="nu"] { border-top-color: var(--yellow-500); }
+  .mx-q[data-q="nn"] { border-top-color: var(--gray-400); }
+  .mx-q.drop { border-color: var(--teal-600); box-shadow: inset 0 0 0 1px var(--teal-600); }
+
+  .mx-head { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .mx-name { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .mx-sub { font-size: 11px; color: var(--text-muted); }
+  .mx-n { margin-left: auto; font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .mx-card { touch-action: none; }
+  .mx-card .bd-txt { -webkit-line-clamp: 2; }
+  .mx-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 3px; }
+  .mx-p { font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 999px; }
+  .mx-p.high { background: var(--red-100); color: var(--red-800); }
+  .mx-p.mid { background: var(--yellow-100); color: var(--yellow-800); }
+  .mx-p.low { background: var(--green-100); color: var(--green-800); }
+  .matrix-empty { grid-column: 1 / -1; padding: 28px 12px; }
+
+  .mx-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 12px 4px;
+    border: 1px dashed var(--gray-200);
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .vb-sep { width: 1px; height: 20px; background: var(--gray-200); margin: 0 2px; }
+  .vb-review { color: var(--teal-700); box-shadow: inset 0 0 0 1px var(--teal-600); }
+  .vb-review:hover { background: var(--teal-50); }
+
+  @media (max-width: 480px) {
+    .matrix { gap: 8px; padding: 2px 8px 12px; }
+    .mx-q { min-height: 150px; padding: 8px; }
+    .mx-sub { display: none; }
+    .mx-name { font-size: 12px; }
+  }
+
   /* 侧栏折叠按钮只属于双栏那一档 */
   .side-toggle { display: none; }
 
@@ -3182,7 +3316,7 @@
     #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
     .search-bar, .filter-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total,
-    .att-viewer, .board, .view-bar, .row-thumbs { display: none !important; }
+    .att-viewer, .board, .matrix, .view-bar, .row-thumbs { display: none !important; }
     /* 看板视图在屏幕上是靠 html[data-view] 藏住清单的；打印永远输出列表那份 */
     #list { display: block !important; }
     html[data-pu="1"] li[data-done="1"] { display: none !important; }
@@ -3344,10 +3478,14 @@
       <div id="view-bar" class="view-bar">
         <button id="view-list" class="fbtn on" type="button" aria-pressed="true">列表</button>
         <button id="view-board" class="fbtn" type="button" aria-pressed="false">看板</button>
-        <span class="vb-hint">看板：拖动卡片换分类</span>
+        <button id="view-matrix" class="fbtn" type="button" aria-pressed="false">矩阵</button>
+        <span class="vb-sep" aria-hidden="true"></span>
+        <button id="review-btn" class="fbtn vb-review" type="button">今日复盘</button>
+        <span id="view-hint" class="vb-hint">按 V 切换列表、看板、矩阵</span>
       </div>
       <ul id="list"></ul>
       <div id="board" class="board" hidden></div>
+      <div id="matrix" class="matrix" hidden></div>
       <div id="empty" class="empty">
         <span class="ring" id="empty-ico"></span>
         <h3>还没有任务</h3>
@@ -3498,6 +3636,26 @@
     </div>
   </div>
 
+  <div id="review-modal" class="backdrop" hidden>
+    <div class="dialog review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
+      <div class="dialog-head">
+        <span class="rev-ico" id="review-ico"></span>
+        <h3 id="review-title">今日复盘</h3>
+        <button type="button" class="bp-x" id="review-close" aria-label="关闭今日复盘"></button>
+      </div>
+      <p class="review-sub" id="review-sub">把今天完成的、还欠着的和明天要接的，整理成一段能直接发出去的文字。</p>
+      <textarea id="review-text" class="review-text" spellcheck="false" aria-label="今日复盘内容，可直接编辑"></textarea>
+      <div class="review-actions">
+        <button id="review-copy" class="rev-btn main" type="button">复制 Markdown</button>
+        <button id="review-ai" class="rev-btn" type="button">复制给 AI 润色</button>
+        <button id="review-download" class="rev-btn" type="button">下载 .md</button>
+        <span class="spacer"></span>
+        <button id="review-done" class="rev-btn" type="button">关闭</button>
+        <span class="rev-status" id="review-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+
   <div id="kbd-modal" class="backdrop" hidden>
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="kbd-title">
       <div class="dialog-head">
@@ -3512,7 +3670,9 @@
         <b>Enter</b><span>编辑选中的任务</span>
         <b>Delete</b><span>删除选中的任务（进回收站）</span>
         <b>P</b><span>置顶 / 取消置顶选中的任务</span>
-        <b>V</b><span>在列表视图和看板视图之间切换</span>
+        <b>V</b><span>在列表、看板、矩阵视图之间切换</span>
+        <b>R</b><span>打开今日复盘</span>
+        <b>1 ~ 4</b><span>矩阵里把选中的卡片归到对应象限</span>
         <b>Ctrl + Enter</b><span>批量粘贴面板里一次添加全部</span>
         <b>粘贴多行</b><span>在输入框直接粘贴，自动进批量面板</span>
         <b>← / →</b><span>附件大图里翻上一张 / 下一张</span>
@@ -3803,7 +3963,21 @@
   const viewBar = $('view-bar');
   const viewListBtn = $('view-list');
   const viewBoardBtn = $('view-board');
+  const viewMatrixBtn = $('view-matrix');
+  const viewHint = $('view-hint');
   const board = $('board');
+  const matrix = $('matrix');
+  const reviewBtn = $('review-btn');
+  const reviewModal = $('review-modal');
+  const reviewIco = $('review-ico');
+  const reviewSub = $('review-sub');
+  const reviewText = $('review-text');
+  const reviewStatus = $('review-status');
+  const reviewClose = $('review-close');
+  const reviewDone = $('review-done');
+  const reviewCopy = $('review-copy');
+  const reviewAi = $('review-ai');
+  const reviewDownload = $('review-download');
   const sideToggle = $('side-toggle');
 
   let lists = loadLists();
@@ -4327,7 +4501,7 @@
       if (p.prioFilter !== 'high' && p.prioFilter !== 'mid' && p.prioFilter !== 'low') p.prioFilter = '';
       p.printUndone = !!p.printUndone;
       p.printToday = !!p.printToday;
-      if (p.view !== 'board') p.view = 'list';   // 只有看板一个例外值，别的都回到列表
+      if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
       p.sideCollapsed = !!p.sideCollapsed;
       // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
       const tc = p.tagColors;
@@ -5530,8 +5704,16 @@
     searchClear.hidden = !query;
 
     syncView();
-    if (prefs.view === 'board') renderBoard(shown);
-    else board.textContent = '';
+    if (prefs.view === 'board') {
+      renderBoard(shown);
+      matrix.textContent = '';
+    } else if (prefs.view === 'matrix') {
+      renderMatrix(shown);
+      board.textContent = '';
+    } else {
+      board.textContent = '';
+      matrix.textContent = '';
+    }
 
     renderFilters();
     renderTagFilters();
@@ -5554,20 +5736,27 @@
     clearDoneBtn.hidden = done.length === 0;
   }
 
-  // ---------- 看板视图：按分类分列，卡片拖动换分类 ----------
+  // ---------- 列表 / 看板 / 矩阵三视图 ----------
   function syncView() {
-    const isBoard = prefs.view === 'board';
-    document.documentElement.dataset.view = isBoard ? 'board' : 'list';
-    viewBar.hidden = tasks.length === 0;
-    board.hidden = !isBoard;
-    viewListBtn.classList.toggle('on', !isBoard);
-    viewListBtn.setAttribute('aria-pressed', String(!isBoard));
-    viewBoardBtn.classList.toggle('on', isBoard);
-    viewBoardBtn.setAttribute('aria-pressed', String(isBoard));
+    const view = prefs.view === 'board' || prefs.view === 'matrix' ? prefs.view : 'list';
+    const has = tasks.length > 0;
+    document.documentElement.dataset.view = view;
+    viewBar.hidden = !has;
+    board.hidden = view !== 'board' || !has;
+    matrix.hidden = view !== 'matrix' || !has;
+    viewListBtn.classList.toggle('on', view === 'list');
+    viewListBtn.setAttribute('aria-pressed', String(view === 'list'));
+    viewBoardBtn.classList.toggle('on', view === 'board');
+    viewBoardBtn.setAttribute('aria-pressed', String(view === 'board'));
+    viewMatrixBtn.classList.toggle('on', view === 'matrix');
+    viewMatrixBtn.setAttribute('aria-pressed', String(view === 'matrix'));
+    viewHint.textContent = view === 'board' ? '看板：拖动卡片换分类'
+      : view === 'matrix' ? '矩阵只放未完成：中/高优先级算重要，今天到期或已逾期算紧急'
+      : '按 V 切换列表、看板、矩阵';
   }
 
   function setView(v) {
-    const next = v === 'board' ? 'board' : 'list';
+    const next = v === 'board' || v === 'matrix' ? v : 'list';
     if (next === prefs.view) return;
     prefs.view = next;
     save();
@@ -5663,18 +5852,18 @@
     card.addEventListener('click', (e) => {
       if (e.target.closest && e.target.closest('.bd-tick')) return;
       if (Date.now() - boardDropAt < 300) return;   // 刚拖完的那次 click 不算「点开」
-      boardReveal(task.id);
+      revealInList(task.id);
     });
     card.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       e.preventDefault();
-      boardReveal(task.id);
+      revealInList(task.id);
     });
     return card;
   }
 
-  // 点卡片 = 回到列表并定位这一条（看板的列不能改顺序，排序还得在列表里拖）
-  function boardReveal(id) {
+  // 点卡片 = 回到列表并定位这一条（看板/矩阵不改顺序，排序还得在列表里拖）
+  function revealInList(id) {
     setView('list');
     render();
     const li = list.querySelector('li[data-id="' + CSS.escape(id) + '"]');
@@ -5759,8 +5948,421 @@
     render();
   }
 
+  // ---------- 矩阵视图：优先级 × 到期日，拖动换象限 ----------
+  // 四象限不另建字段：重要 = 中/高优先级，紧急 = 今天到期或已逾期。
+  // 拖到新象限就直接改这两个字段，跟列表里编辑共用同一份数据，不引入第二套真相。
+  const QUADS = [
+    { key: 'iu', name: '重要且紧急', hint: '先做' },
+    { key: 'in', name: '重要不紧急', hint: '排期' },
+    { key: 'nu', name: '紧急不重要', hint: '尽快处理' },
+    { key: 'nn', name: '不重要不紧急', hint: '有空再说' },
+  ];
+
+  const P_RANK = { high: 0, mid: 1, low: 2 };
+
+  function isUrgentTask(task) {
+    const d = dueInDays(task);
+    return d !== null && d <= 0;
+  }
+
+  function quadOf(task) {
+    return (level(task) === 'low' ? 'n' : 'i') + (isUrgentTask(task) ? 'u' : 'n');
+  }
+
+  function renderMatrix(shown) {
+    matrix.textContent = '';
+    const open = shown.filter(t => !t.done);
+    if (!open.length) {
+      const tip = document.createElement('div');
+      tip.className = 'mx-empty matrix-empty';
+      tip.textContent = tasks.length ? '当前筛选下没有未完成任务。' : '还没有任务。';
+      matrix.append(tip);
+      return;
+    }
+
+    const groups = new Map(QUADS.map(q => [q.key, []]));
+    for (const t of open) groups.get(quadOf(t)).push(t);
+    for (const group of groups.values()) {
+      group.sort((a, b) => {
+        if (a.pin !== b.pin) return a.pin ? -1 : 1;
+        const da = dueInDays(a), db = dueInDays(b);
+        const va = da === null ? 9999 : da, vb = db === null ? 9999 : db;
+        return va - vb || (P_RANK[level(a)] - P_RANK[level(b)]) || ((a.createdAt || 0) - (b.createdAt || 0));
+      });
+    }
+
+    for (const q of QUADS) {
+      const items = groups.get(q.key);
+      const el = document.createElement('div');
+      el.className = 'mx-q';
+      el.dataset.q = q.key;
+
+      const head = document.createElement('div');
+      head.className = 'mx-head';
+      const nm = document.createElement('span');
+      nm.className = 'mx-name';
+      nm.textContent = q.name;
+      const sub = document.createElement('span');
+      sub.className = 'mx-sub';
+      sub.textContent = q.hint;
+      const n = document.createElement('span');
+      n.className = 'mx-n';
+      n.textContent = String(items.length);
+      head.append(nm, sub, n);
+      el.append(head);
+
+      if (!items.length) {
+        const tip = document.createElement('div');
+        tip.className = 'mx-empty';
+        tip.textContent = '把卡片拖到这里';
+        el.append(tip);
+      }
+      for (const t of items) el.append(matrixCard(t));
+      matrix.append(el);
+    }
+  }
+
+  function matrixCard(task) {
+    const card = document.createElement('div');
+    card.className = 'bd-card mx-card';
+    card.dataset.id = task.id;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', '在列表中打开：' + clip(task.text));
+    card.title = '拖动换象限；键盘 1-4 直接归类；回车回到列表';
+
+    const tick = document.createElement('button');
+    tick.type = 'button';
+    tick.className = 'bd-tick';
+    tick.innerHTML = icon('circle', 16);
+    tick.title = '标记完成';
+    tick.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (Date.now() - boardDropAt < 300) return;
+      toggle(task.id);
+    });
+
+    const main = document.createElement('div');
+    main.className = 'bd-main';
+    const tx = document.createElement('span');
+    tx.className = 'bd-txt';
+    tx.textContent = task.text;
+    main.append(tx);
+
+    const meta = document.createElement('div');
+    meta.className = 'mx-meta';
+    const pr = document.createElement('span');
+    pr.className = 'mx-p ' + level(task);
+    pr.textContent = LEVELS[level(task)].label;
+    pr.title = LEVELS[level(task)].label + '优先级';
+    meta.append(pr);
+    const d = dueInDays(task);
+    if (d !== null) {
+      const dd = document.createElement('span');
+      dd.className = 'bd-due' + (d < 0 ? ' over' : '');
+      dd.textContent = dueText(task);
+      meta.append(dd);
+    }
+    main.append(meta);
+
+    card.append(tick, main);
+    card.addEventListener('pointerdown', (e) => startMatrixDrag(e, card, task.id));
+    card.addEventListener('click', (e) => {
+      if (e.target.closest && e.target.closest('.bd-tick')) return;
+      if (Date.now() - boardDropAt < 300) return;
+      revealInList(task.id);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        matrixMove(task.id, QUADS[Number(e.key) - 1].key, true);
+        return;
+      }
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      revealInList(task.id);
+    });
+    return card;
+  }
+
+  function startMatrixDrag(ev, card, id) {
+    if (dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
+    if (ev.target.closest && ev.target.closest('.bd-tick')) return;
+    ev.preventDefault();
+
+    const cells = [...matrix.children].filter(el => el.classList.contains('mx-q'));
+    const startX = ev.clientX, startY = ev.clientY;
+    let ghost = null, target = null, moved = false;
+
+    const mark = () => {
+      for (const el of cells) el.classList.toggle('drop', el === target);
+    };
+
+    const hit = (x, y) => {
+      for (const el of cells) {
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top - 10 && y <= r.bottom + 10) return el;
+      }
+      return null;
+    };
+
+    const onMove = (e) => {
+      if (!moved) {
+        if (Math.abs(e.clientX - startX) < 6 && Math.abs(e.clientY - startY) < 6) return;
+        moved = true;
+        dragging = true;
+        card.classList.add('dragging');
+        ghost = card.cloneNode(true);
+        ghost.className = 'bd-card bd-ghost';
+        document.body.append(ghost);
+      }
+      ghost.style.left = (e.clientX - 24) + 'px';
+      ghost.style.top = (e.clientY - 16) + 'px';
+      target = hit(e.clientX, e.clientY);
+      mark();
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      card.classList.remove('dragging');
+      for (const el of cells) el.classList.remove('drop');
+      if (ghost) ghost.remove();
+      dragging = null;
+      if (!moved) return;
+      boardDropAt = Date.now();
+      if (!target) { render(); return; }
+      matrixMove(id, target.dataset.q);
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
+  }
+
+  function matrixMove(id, qKey, keepFocus) {
+    const task = tasks.find(t => t.id === id);
+    const q = QUADS.find(x => x.key === qKey);
+    if (!task || !q || task.done) return;
+
+    const wantImp = q.key[0] === 'i';
+    const wantUrg = q.key[1] === 'u';
+    const wasImp = level(task) !== 'low';
+    const wasUrg = isUrgentTask(task);
+
+    let nextPriority = task.priority;
+    let nextDue = task.due;
+    if (wantImp !== wasImp) nextPriority = wantImp ? 'high' : 'low';
+    if (wantUrg !== wasUrg) {
+      if (wantUrg) nextDue = dayKey(Date.now());
+      else if (isUrgentTask(task)) nextDue = dayKey(shiftDays(1).getTime());
+    }
+
+    if (nextPriority === task.priority && nextDue === task.due) return;
+    // 快照必须在改数据之前拍，否则撤销拿到的就是改后的状态
+    snapshot('已把「' + clip(task.text) + '」移到「' + q.name + '」', tasks);
+    task.priority = nextPriority;
+    task.due = nextDue;
+    save();
+    render();
+    // 键盘归类后新 DOM 会丢焦点，把它接回去才能连按 1–4
+    if (keepFocus) {
+      const again = [...matrix.querySelectorAll('.bd-card')].find(el => el.dataset.id === id);
+      if (again) again.focus();
+    }
+  }
+
+  // ---------- 今日复盘：把一天的结果整理成能直接发出去的文字 ----------
+  const REVIEW_AI_RULES = [
+    '只使用复盘里的信息，不要编造数据、进度或人名。',
+    '结构固定为「今日完成」「进行中」「明日计划」三段。',
+    '每条一句话，动词开头，去掉空话和情绪词。',
+    '保留任务里的专有名词和数字。',
+    '总长不超过 300 字，用中文输出。',
+  ];
+
+  function reviewLine(task, done) {
+    const bits = [];
+    if (done && task.completedAt) {
+      const at = new Date(task.completedAt);
+      const p2 = (n) => String(n).padStart(2, '0');
+      bits.push(p2(at.getHours()) + ':' + p2(at.getMinutes()));
+    }
+    if (!done) {
+      const d = dueInDays(task);
+      if (d !== null) bits.push(dueText(task));
+    }
+    bits.push(LEVELS[level(task)].label + '优先级');
+    for (const tag of tagsOf(task).slice(0, 3)) bits.push('#' + tag);
+    const subs = Array.isArray(task.subs) ? task.subs : [];
+    if (subs.length) bits.push('子任务 ' + subs.filter(s => s.done).length + '/' + subs.length);
+    if (task.repeat) bits.push('重复：' + REPEAT_LABEL[task.repeat]);
+    const text = String(task.text || '').replace(/\s*\n\s*/g, ' ').trim();
+    return '- [' + (done ? 'x' : ' ') + '] ' + text + (bits.length ? ' — ' + bits.join(' · ') : '');
+  }
+
+  function buildReview() {
+    const now = new Date();
+    const today = dayKey(now.getTime());
+    const p2 = (n) => String(n).padStart(2, '0');
+    const stamp = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate());
+    const mine = tasks;
+    const doneToday = mine
+      .filter(t => t.done && t.completedAt && dayKey(t.completedAt) === today)
+      .sort((a, b) => a.completedAt - b.completedAt);
+    const open = mine.filter(t => !t.done);
+    const overdue = open
+      .filter(t => { const d = dueInDays(t); return d !== null && d < 0; })
+      .sort((a, b) => dueInDays(a) - dueInDays(b));
+    const dueToday = open.filter(t => dueInDays(t) === 0);
+    const dueTomorrow = open.filter(t => dueInDays(t) === 1);
+    const highOpen = open.filter(t => {
+      if (level(t) !== 'high') return false;
+      const d = dueInDays(t);
+      return d === null || d > 1;
+    });
+    const dueTodayAll = mine.filter(t => t.due === today);
+    const dueTodayDone = dueTodayAll.filter(t => t.done);
+    const createdToday = mine.filter(t => t.createdAt && dayKey(t.createdAt) === today);
+    const focusN = pomoToday();
+    const restN = pomoRest();
+
+    const lines = [];
+    lines.push('# 今日复盘 · ' + stamp + ' ' + WEEKDAY_NAME[now.getDay()]);
+    lines.push('');
+    const summary = ['完成 ' + doneToday.length, '未完成 ' + open.length, '逾期 ' + overdue.length];
+    if (createdToday.length) summary.push('新建 ' + createdToday.length);
+    if (focusN) summary.push('专注 ' + focusN + ' 轮');
+    lines.push('> 清单「' + currentList().name + '」 · ' + summary.join(' · '));
+    if (dueTodayAll.length) {
+      lines.push('> 今日到期 ' + dueTodayDone.length + '/' + dueTodayAll.length + ' 已完成');
+    }
+    lines.push('');
+
+    lines.push('## 今天完成', '');
+    if (doneToday.length) {
+      for (const t of doneToday) lines.push(reviewLine(t, true));
+    } else {
+      lines.push('_今天还没有完成任务。_');
+    }
+    lines.push('');
+
+    lines.push('## 还在路上', '');
+    if (!open.length) {
+      lines.push('_当前清单没有未完成任务。_');
+      lines.push('');
+    } else {
+      const section = (title, items, empty) => {
+        lines.push('### ' + title, '');
+        if (items.length) for (const t of items) lines.push(reviewLine(t, false));
+        else lines.push(empty);
+        lines.push('');
+      };
+      section('已逾期', overdue, '没有逾期任务。');
+      section('今天到期', dueToday, '没有今天到期的任务。');
+      section('其它高优先级', highOpen, '没有额外的高优先级任务。');
+    }
+
+    lines.push('## 明天到期', '');
+    if (dueTomorrow.length) for (const t of dueTomorrow) lines.push(reviewLine(t, false));
+    else lines.push('_明天没有已排期的任务。_');
+    lines.push('');
+
+    if (focusN) {
+      lines.push('## 今日专注', '');
+      lines.push('- 完成 ' + focusN + ' 轮番茄钟' + (restN ? '，休息 ' + restN + ' 次' : '') + '。');
+      lines.push('');
+    }
+
+    while (lines.length && lines[lines.length - 1] === '') lines.pop();
+    return lines.join('\n') + '\n';
+  }
+
+  // file:// 下没有剪贴板权限时，退回 textarea + execCommand，保证双击打开也能复制
+  function copyPlain(text) {
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      document.body.append(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); }
+      catch (e) { ok = false; }
+      ta.remove();
+      return ok;
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(() => true).catch(fallback);
+    }
+    return Promise.resolve().then(fallback);
+  }
+
+  function reviewFlash(text, bad) {
+    reviewStatus.textContent = text;
+    reviewStatus.classList.toggle('err', !!bad);
+  }
+
+  function openReview(open) {
+    if (open) {
+      reviewText.value = buildReview();
+      reviewSub.textContent = '清单「' + currentList().name + '」 · 内容可以直接改，改完再复制';
+      reviewFlash('');
+      reviewModal.hidden = false;
+      reviewClose.focus();
+      reviewText.scrollTop = 0;
+    } else {
+      reviewModal.hidden = true;
+      reviewBtn.focus();
+    }
+  }
+
+  function reviewAiText() {
+    return [
+      '请把下面这份今日复盘整理成一段可以直接发给上级的日报。',
+      '',
+      '要求：',
+      ...REVIEW_AI_RULES.map((x, i) => (i + 1) + '. ' + x),
+      '',
+      '---',
+      '',
+      reviewText.value.trim(),
+    ].join('\n');
+  }
+
   viewListBtn.addEventListener('click', () => setView('list'));
   viewBoardBtn.addEventListener('click', () => setView('board'));
+  viewMatrixBtn.addEventListener('click', () => setView('matrix'));
+
+  reviewIco.innerHTML = icon('pencil', 20);
+  reviewClose.innerHTML = icon('close', 16);
+  reviewBtn.addEventListener('click', () => openReview(true));
+  reviewClose.addEventListener('click', () => openReview(false));
+  reviewDone.addEventListener('click', () => openReview(false));
+  reviewModal.addEventListener('click', (e) => {
+    if (e.target === reviewModal) openReview(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !reviewModal.hidden) openReview(false);
+  });
+  reviewCopy.addEventListener('click', () => {
+    copyPlain(reviewText.value).then((ok) => {
+      reviewFlash(ok ? '已复制 Markdown' : '复制失败，请手动全选复制', !ok);
+    });
+  });
+  reviewAi.addEventListener('click', () => {
+    copyPlain(reviewAiText()).then((ok) => {
+      reviewFlash(ok ? '已复制 AI 提示词' : '复制失败，请手动全选复制', !ok);
+    });
+  });
+  reviewDownload.addEventListener('click', () => {
+    const name = '今日复盘-' + dayKey(Date.now()) + '.md';
+    saveAsBlob(new Blob([reviewText.value], { type: 'text/markdown;charset=utf-8' }), name);
+    reviewFlash('已下载 ' + name);
+  });
 
   function renderRow(task) {
     const li = document.createElement('li');
@@ -8832,7 +9434,7 @@
     const t = e.target;
     const field = t && t.closest && t.closest('input, textarea, select');
     if (field) return;
-    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden || !attViewer.hidden) return;
+    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden || !attViewer.hidden || !reviewModal.hidden || !tagModal.hidden) return;
 
     if (e.key === '/') { e.preventDefault(); if (!searchBar.hidden) searchInput.focus(); return; }
     if (e.key === 'n' || e.key === 'N') {
@@ -8844,11 +9446,17 @@
     if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); kbdMove(1); return; }
     if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); kbdMove(-1); return; }
     if (e.key === 'Escape') { kbdClear(); return; }
-    // 切视图跟在任务上没关系，放在「按钮让路」这道闸之前
+    // 切视图 / 开复盘跟在任务上没关系，放在「按钮让路」这道闸之前
     if (e.key === 'v' || e.key === 'V') {
       e.preventDefault();
-      if (!tasks.length) { backupMsg('先加几条任务，看板才有列可分', true); return; }
-      setView(prefs.view === 'board' ? 'list' : 'board');
+      if (!tasks.length) { backupMsg('先加几条任务，视图才有东西可分', true); return; }
+      const order = ['list', 'board', 'matrix'];
+      setView(order[(order.indexOf(prefs.view) + 1) % order.length]);
+      return;
+    }
+    if (e.key === 'r' || e.key === 'R') {
+      e.preventDefault();
+      openReview(true);
       return;
     }
 
