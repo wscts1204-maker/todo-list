@@ -202,6 +202,10 @@
     --bgl: radial-gradient(52% 44% at 6% 0%, rgba(148, 163, 184, .20), transparent 62%), radial-gradient(46% 40% at 96% 2%, rgba(203, 213, 225, .22), transparent 64%), radial-gradient(64% 50% at 50% 110%, rgba(100, 116, 139, .13), transparent 66%), linear-gradient(165deg, #f6f7f8 0%, #eaecef 52%, #d9dde2 100%);
     --bgd: radial-gradient(52% 44% at 8% 0%, rgba(148, 163, 184, .10), transparent 62%), radial-gradient(46% 40% at 94% 4%, rgba(100, 116, 139, .08), transparent 64%), radial-gradient(64% 52% at 50% 112%, rgba(71, 85, 105, .11), transparent 68%), linear-gradient(165deg, #101214 0%, #171a1e 52%, #1e2228 100%);
   }
+  [data-bg="liquid"] {
+    --bgl: radial-gradient(52% 44% at 6% 0%, rgba(34, 211, 238, .24), transparent 62%), radial-gradient(46% 40% at 96% 2%, rgba(139, 92, 246, .20), transparent 64%), radial-gradient(64% 50% at 50% 110%, rgba(244, 114, 182, .15), transparent 66%), linear-gradient(165deg, #eff8fd 0%, #e0eef9 52%, #cfe2f2 100%);
+    --bgd: radial-gradient(52% 44% at 8% 0%, rgba(34, 211, 238, .14), transparent 62%), radial-gradient(46% 40% at 94% 4%, rgba(167, 139, 250, .12), transparent 64%), radial-gradient(64% 52% at 50% 112%, rgba(244, 114, 182, .10), transparent 68%), linear-gradient(165deg, #091318 0%, #0e1a24 52%, #141f30 100%);
+  }
 
   /* 自定义背景图：铺一层图 + 一层主题色遮罩，压暗/压亮到文字仍达 WCAG AA */
   html[data-bgimg="1"] body::before {
@@ -333,7 +337,7 @@
   }
 
   /* ---------- header ---------- */
-  .head { position: relative; text-align: center; margin-bottom: 24px; padding-top: 12px; }
+  .head { position: relative; z-index: 41; text-align: center; margin-bottom: 24px; padding-top: 12px; } /* 玻璃卡的 backdrop-filter 各自成层叠上下文，页头不抬层会被后面的卡盖住背景面板 */
 
   .head-top {
     display: flex;
@@ -8967,6 +8971,7 @@
     { key: 'rose', label: '玫瑰' },
     { key: 'sand', label: '米砂' },
     { key: 'slate', label: '石墨' },
+    { key: 'liquid', label: '液态玻璃' },
   ];
   let bgImg = '';
 
