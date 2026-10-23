@@ -232,6 +232,6 @@ var EDGES = [
 var SITE_META = {
   source:'https://wscts1204-maker.github.io/todo-list/',
   repo:'https://github.com/wscts1204-maker/todo-list',
-  verified:'核验：第二十九版 index.html 366,749 字节 / 10,163 行 / md5 9f53d20b…9f4185；发布后与线上逐字节复核',
+  verified:'核验：线上 index.html 366,749 字节 / 10,163 行 / md5 9f53d20b…9f4185，与仓库源文件逐字节一致',
   extracted:'抽取时间：2026-10-12 15:26；外观、配色与分类颜色于 2026-10-15 复核，第二十七版的看板、缩略图、提醒快捷与侧栏折叠于 2026-10-21 复核，第二十八版的液态玻璃预设与第二十九版的矩阵视图、今日复盘于 2026-10-23 复核（北京时间）'
 };
