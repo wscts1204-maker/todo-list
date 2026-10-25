@@ -669,6 +669,8 @@
 
   .grip:hover { color: var(--gray-700); }
   li.dragging .grip { cursor: grabbing; }
+  .grip.off { cursor: default; opacity: .38; }
+  .grip.off:hover { color: inherit; }
 
   .tick {
     color: var(--teal-600);
@@ -1370,6 +1372,36 @@
   .review-dialog .dialog-head .rev-ico { color: var(--teal-600); display: flex; }
 
   .review-sub { font-size: 12px; color: var(--text-muted); margin: 0 0 12px; }
+
+  .rev-tabs {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 4px;
+    padding: 3px;
+    margin-bottom: 10px;
+    border-radius: 999px;
+    background: var(--gray-100);
+  }
+
+  .rev-tab {
+    min-height: 36px;
+    padding: 0 14px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+  }
+
+  .rev-tab:hover { color: var(--gray-800); }
+
+  .rev-tab.on {
+    color: var(--teal-800);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
 
   .review-text {
     width: 100%;
@@ -2426,6 +2458,116 @@
 
   .bulk-sum { font-size: 12px; color: var(--gray-600); flex: 1; min-width: 120px; }
 
+  /* ---------- 任务模板 ---------- */
+  .tpl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 264px;
+    overflow: auto;
+    scrollbar-width: thin;
+  }
+
+  .tpl-empty {
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    padding: 4px 2px;
+  }
+
+  .tpl-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+
+  .tpl-main { flex: 1; min-width: 0; }
+
+  .tpl-name {
+    display: block;
+    font-size: 13px;
+    color: var(--gray-800);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tpl-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+
+  .tpl-meta span { display: inline-flex; align-items: center; gap: 2px; }
+  .tpl-meta svg { flex: none; }
+
+  .tpl-acts { display: flex; align-items: center; gap: 6px; flex: none; }
+
+  .tpl-use {
+    min-height: 36px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--on-accent);
+    background: linear-gradient(135deg, var(--btn-grad-a), var(--btn-grad-b));
+    border: none;
+    border-radius: 8px;
+  }
+
+  .tpl-use:hover { color: var(--on-accent); filter: brightness(1.06); }
+
+  .tpl-del {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--gray-600);
+    background: transparent;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+  }
+
+  .tpl-del:hover { color: var(--red-700); background: var(--red-50); }
+
+  .tpl-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--gray-200);
+  }
+
+  .tpl-row .tpl-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--teal-700);
+    background: var(--surface);
+    border: 1px solid var(--teal-600);
+    border-radius: 8px;
+  }
+
+  .tpl-row .tpl-save:hover { background: var(--teal-50); color: var(--teal-800); }
+
+  .tpl-row .tpl-say { font-size: 12px; color: var(--text-muted); }
+
+  .tpl-row .tpl-say.bad { color: var(--red-700); }
+
   /* ---------- 今日专注 ---------- */
   .today-strip {
     position: relative;
@@ -3021,6 +3163,29 @@
 
   .view-bar .vb-hint { font-size: 12px; color: var(--text-muted); margin-left: auto; }
 
+  .sort-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .sort-sel {
+    height: 36px;
+    padding: 0 8px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+    outline: none;
+  }
+
+  .sort-sel:focus { box-shadow: 0 0 0 2px var(--teal-600); }
+  .sort-wrap[hidden] { display: none; }
+
   .board {
     display: flex;
     align-items: stretch;
@@ -3070,6 +3235,8 @@
 
   .bd-card:hover { box-shadow: var(--shadow-sm-hover); }
   .bd-card.dragging { opacity: .5; }
+  .bd-card.drop-above { box-shadow: inset 0 3px 0 0 var(--teal-600); }
+  .bd-card.drop-below { box-shadow: inset 0 -3px 0 0 var(--teal-600); }
   .bd-card .bd-txt {
     font-size: 13px;
     color: var(--gray-800);
@@ -3411,6 +3578,7 @@
       </form>
       <div class="bulk-bar">
         <button type="button" class="bb-btn" id="bulk-toggle" aria-expanded="false" aria-controls="bulk-box"></button>
+        <button type="button" class="bb-btn" id="tpl-toggle" aria-expanded="false" aria-controls="tpl-box"></button>
         <span class="bb-hint">粘贴多行文字可一次建多条</span>
       </div>
       <div class="bulk-box" id="bulk-box" hidden>
@@ -3422,6 +3590,13 @@
           <button type="button" class="bb-btn" id="bulk-close">收起</button>
         </div>
       </div>
+      <div class="bulk-box" id="tpl-box" hidden>
+        <div class="tpl-list" id="tpl-list"></div>
+        <div class="bulk-foot">
+          <span class="bulk-sum" id="tpl-sum"></span>
+          <button type="button" class="bb-btn" id="tpl-close">收起</button>
+        </div>
+      </div>
       <div id="quick-hint" class="quick-hint" role="status" aria-live="polite"></div>
       <div class="prio-row">
         <span class="prio-label">优先级：</span>
@@ -3431,7 +3606,7 @@
         <span class="prio-label">到期日：</span>
         <input type="date" id="new-due" class="date-input">
         <button type="button" id="new-due-clear" class="due-clear">清除</button>
-        <span class="prio-label" style="margin-left:auto">提示：拖动左侧把手可排序</span>
+        <span class="prio-label" style="margin-left:auto" id="drag-hint">提示：拖动左侧把手可排序</span>
       </div>
       <div class="due-row">
         <span class="prio-label">分类：</span>
@@ -3480,7 +3655,16 @@
         <button id="view-board" class="fbtn" type="button" aria-pressed="false">看板</button>
         <button id="view-matrix" class="fbtn" type="button" aria-pressed="false">矩阵</button>
         <span class="vb-sep" aria-hidden="true"></span>
-        <button id="review-btn" class="fbtn vb-review" type="button">今日复盘</button>
+        <button id="review-btn" class="fbtn vb-review" type="button">复盘</button>
+        <label class="sort-wrap" id="sort-wrap">
+          <span>排序</span>
+          <select id="sort-sel" class="sort-sel" aria-label="列表排序方式">
+            <option value="manual">手动</option>
+            <option value="due">到期日</option>
+            <option value="priority">优先级</option>
+            <option value="created">最近创建</option>
+          </select>
+        </label>
         <span id="view-hint" class="vb-hint">按 V 切换列表、看板、矩阵</span>
       </div>
       <ul id="list"></ul>
@@ -3644,7 +3828,12 @@
         <button type="button" class="bp-x" id="review-close" aria-label="关闭今日复盘"></button>
       </div>
       <p class="review-sub" id="review-sub">把今天完成的、还欠着的和明天要接的，整理成一段能直接发出去的文字。</p>
-      <textarea id="review-text" class="review-text" spellcheck="false" aria-label="今日复盘内容，可直接编辑"></textarea>
+      <div class="rev-tabs" id="rev-tabs" role="tablist" aria-label="复盘周期">
+        <button type="button" class="rev-tab on" id="rev-tab-day" role="tab" aria-selected="true" data-period="day">今日</button>
+        <button type="button" class="rev-tab" id="rev-tab-week" role="tab" aria-selected="false" data-period="week">本周</button>
+        <button type="button" class="rev-tab" id="rev-tab-month" role="tab" aria-selected="false" data-period="month">本月</button>
+      </div>
+      <textarea id="review-text" class="review-text" spellcheck="false" aria-label="复盘内容，可直接编辑"></textarea>
       <div class="review-actions">
         <button id="review-copy" class="rev-btn main" type="button">复制 Markdown</button>
         <button id="review-ai" class="rev-btn" type="button">复制给 AI 润色</button>
@@ -3671,7 +3860,7 @@
         <b>Delete</b><span>删除选中的任务（进回收站）</span>
         <b>P</b><span>置顶 / 取消置顶选中的任务</span>
         <b>V</b><span>在列表、看板、矩阵视图之间切换</span>
-        <b>R</b><span>打开今日复盘</span>
+        <b>R</b><span>打开复盘（今日 / 本周 / 本月）</span>
         <b>1 ~ 4</b><span>矩阵里把选中的卡片归到对应象限</span>
         <b>Ctrl + Enter</b><span>批量粘贴面板里一次添加全部</span>
         <b>粘贴多行</b><span>在输入框直接粘贴，自动进批量面板</span>
@@ -3709,6 +3898,9 @@
   const TRASH_KEEP = 30 * 86400000;   // 回收站保留 30 天
   const TRASH_MAX = 200;
   const POMO_KEY = 'todo.pomo';        // 番茄钟：今天的完成轮数 / 休息次数
+  const POMO_LOG = 'todo.pomolog';     // 每日轮数流水，周/月复盘要按天求和
+  const TPL_KEY = 'todo.templates';    // 任务模板：不含日期，只留反复用的那部分
+  const TPL_MAX = 30;
   const BREAK_MIN = 5;                 // 一轮专注后的短休息时长（分钟）
   const BASE_TITLE = document.title;
   const LISTS_KEY = 'todo.lists';      // 清单元数据（名字与当前选中项）
@@ -3947,6 +4139,11 @@
   const bulkSum = $('bulk-sum');
   const bulkAddBtn = $('bulk-add');
   const bulkCloseBtn = $('bulk-close');
+  const tplToggle = $('tpl-toggle');
+  const tplBox = $('tpl-box');
+  const tplList = $('tpl-list');
+  const tplSum = $('tpl-sum');
+  const tplClose = $('tpl-close');
   const tagModal = $('tag-modal');
   const tagmIco = $('tagm-ico');
   const tagmClose = $('tagm-close');
@@ -3965,11 +4162,16 @@
   const viewBoardBtn = $('view-board');
   const viewMatrixBtn = $('view-matrix');
   const viewHint = $('view-hint');
+  const sortWrap = $('sort-wrap');
+  const sortSel = $('sort-sel');
+  const dragHint = $('drag-hint');
   const board = $('board');
   const matrix = $('matrix');
   const reviewBtn = $('review-btn');
   const reviewModal = $('review-modal');
   const reviewIco = $('review-ico');
+  const reviewTitle = $('review-title');
+  const reviewTabs = $('rev-tabs');
   const reviewSub = $('review-sub');
   const reviewText = $('review-text');
   const reviewStatus = $('review-status');
@@ -3983,6 +4185,7 @@
   let lists = loadLists();
   let tasks = loadList(lists.active);
   let trash = loadTrash();
+  let templates = loadTemplates();
   let prefs = loadPrefs();
   let newPriority = 'mid';
   let newRepeat = '';
@@ -3995,8 +4198,10 @@
   let undoSnap = null;
   let undoTrash = null;         // 只有导入备份会带回收站快照
   let undoLists = null;         // 导入备份换掉整个清单结构时的快照，撤销要连清单一起回滚
+  let undoTpl = null;           // 导入备份覆盖模板时的快照
   let undoTimer = null;
   let batchOn = false;          // 批量整理模式（只活在当前页面，不进 prefs）
+  let reviewDirty = false;      // 复盘内容被改过：切周期前要问一声
   const batchSel = new Set();   // 批量模式下勾选的任务 id
   let kbId = null;              // 键盘光标停在哪个任务上
   let pomoEndAt = 0;            // 番茄钟结束时间戳，0 = 没在计时
@@ -4492,8 +4697,56 @@
     saveTrash();
   }
 
+  // 模板只保留「反复用的那部分」：文字、优先级、分类、重复、备注、子任务；到期日不存
+  function normTemplate(x) {
+    if (!x || typeof x !== 'object' || typeof x.text !== 'string' || !x.text.trim()) return null;
+    return {
+      id: typeof x.id === 'string' && x.id ? x.id : uid(),
+      text: x.text.trim().slice(0, 200),
+      priority: LEVELS[x.priority] ? x.priority : 'mid',
+      tags: normTags(x.tags, typeof x.tag === 'string' ? x.tag.trim() : ''),
+      repeat: typeof x.repeat === 'string' && x.repeat in REPEAT_LABEL ? x.repeat : '',
+      note: typeof x.note === 'string' ? x.note.slice(0, 500) : '',
+      subs: (Array.isArray(x.subs) ? x.subs : [])
+        .filter(s => s && typeof s.text === 'string' && s.text.trim())
+        .slice(0, 50)
+        .map(s => s.text.trim().slice(0, 120)),
+    };
+  }
+
+  function normalizeTemplates(raw) {
+    if (!Array.isArray(raw)) return null;
+    const seen = new Set();
+    const out = [];
+    for (const x of raw) {
+      const t = normTemplate(x);
+      if (!t) continue;
+      if (seen.has(t.id)) t.id = uid();
+      seen.add(t.id);
+      out.push(t);
+      if (out.length >= TPL_MAX) break;
+    }
+    return out;
+  }
+
+  function loadTemplates() {
+    try {
+      return normalizeTemplates(JSON.parse(localStorage.getItem(TPL_KEY))) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveTemplates() {
+    try {
+      localStorage.setItem(TPL_KEY, JSON.stringify(templates));
+    } catch {
+      /* 模板很小，存不下只会是整站存储满了，交给调用方提示 */
+    }
+  }
+
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day' };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -4503,6 +4756,8 @@
       p.printToday = !!p.printToday;
       if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
       p.sideCollapsed = !!p.sideCollapsed;
+      if (!['manual', 'due', 'priority', 'created'].includes(p.sort)) p.sort = 'manual';
+      if (!['day', 'week', 'month'].includes(p.reviewPeriod)) p.reviewPeriod = 'day';
       // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
       const tc = p.tagColors;
       p.tagColors = tc && typeof tc === 'object' && !Array.isArray(tc)
@@ -4638,6 +4893,38 @@
 
   function visibleTasks() {
     return activeTasks().filter(matchFilter);
+  }
+
+  // 列表排序只影响显示顺序，不动 tasks 里的手动次序
+  function listOrder(shown) {
+    if (prefs.sort === 'manual') return shown;
+    const arr = shown.slice();
+    const prio = (t) => { const l = level(t); return l === 'high' ? 0 : l === 'mid' ? 1 : 2; };
+    arr.sort((a, b) => {
+      if (a.pin !== b.pin) return a.pin ? -1 : 1;
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      if (prefs.sort === 'due') {
+        const da = dueInDays(a), db = dueInDays(b);
+        if (da === null || db === null) {
+          if (da === db) return 0;
+          return da === null ? 1 : -1;
+        }
+        if (da !== db) return da - db;
+      } else if (prefs.sort === 'priority') {
+        const p = prio(a) - prio(b);
+        if (p) return p;
+      }
+      if (prefs.sort === 'created') return (b.createdAt || 0) - (a.createdAt || 0);
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
+    return arr;
+  }
+
+  function applySortUI() {
+    sortSel.value = prefs.sort;
+    sortWrap.hidden = prefs.view !== 'list';
+    const manual = prefs.sort === 'manual';
+    dragHint.textContent = manual ? '提示：拖动左侧把手可排序' : '当前按' + sortSel.options[sortSel.selectedIndex].text + '排序，切回「手动」才能拖动';
   }
 
   function usedTags() {
@@ -4946,6 +5233,39 @@
       localStorage.setItem(POMO_KEY, JSON.stringify({ day: dayKey(Date.now()), n, br: pomoRest() }));
     } catch {
       /* 存不下这轮就不记 */
+    }
+    pomoLogAdd(dayKey(Date.now()), 1);
+    return n;
+  }
+
+  // 按天留一份轮数流水，只给周 / 月复盘汇总用；最多留 400 天
+  function pomoLogData() {
+    try {
+      const o = JSON.parse(localStorage.getItem(POMO_LOG));
+      return o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function pomoLogAdd(day, n) {
+    const o = pomoLogData();
+    o[day] = (Number(o[day]) || 0) + (Number(n) || 0);
+    const keys = Object.keys(o).sort();
+    while (keys.length > 400) delete o[keys.shift()];
+    try {
+      localStorage.setItem(POMO_LOG, JSON.stringify(o));
+    } catch {
+      /* 存不下就算了，复盘里少几轮 */
+    }
+  }
+
+  // [startDay, endDay) 两个日键之间的轮数
+  function pomoRoundsBetween(startDay, endDay) {
+    const o = pomoLogData();
+    let n = 0;
+    for (const k of Object.keys(o)) {
+      if (k >= startDay && k < endDay) n += Number(o[k]) || 0;
     }
     return n;
   }
@@ -5675,7 +5995,7 @@
     const done = tasks.filter(t => t.done);
     const shown = visibleTasks();
 
-    for (const task of shown) {
+    for (const task of listOrder(shown)) {
       list.append(renderRow(task));
     }
 
@@ -5704,6 +6024,7 @@
     searchClear.hidden = !query;
 
     syncView();
+    applySortUI();
     if (prefs.view === 'board') {
       renderBoard(shown);
       matrix.textContent = '';
@@ -5750,7 +6071,7 @@
     viewBoardBtn.setAttribute('aria-pressed', String(view === 'board'));
     viewMatrixBtn.classList.toggle('on', view === 'matrix');
     viewMatrixBtn.setAttribute('aria-pressed', String(view === 'matrix'));
-    viewHint.textContent = view === 'board' ? '看板：拖动卡片换分类'
+    viewHint.textContent = view === 'board' ? '看板：拖动卡片在本列排序，拖到别的列即换分类'
       : view === 'matrix' ? '矩阵只放未完成：中/高优先级算重要，今天到期或已逾期算紧急'
       : '按 V 切换列表、看板、矩阵';
   }
@@ -5881,10 +6202,21 @@
     const cols = [...board.children].filter(el => el.classList.contains('bd-col'));
     const from = card.dataset.tag;
     const startX = ev.clientX, startY = ev.clientY;
-    let ghost = null, target = null, moved = false;
+    let ghost = null, target = null, insertBefore = null, moved = false;
 
     const mark = () => {
       for (const el of cols) el.classList.toggle('drop', el === target);
+      for (const el of board.querySelectorAll('.bd-card')) el.classList.remove('drop-above', 'drop-below');
+      if (!target) return;
+      const beforeEl = insertBefore
+        ? [...target.querySelectorAll('.bd-card')].find(el => el.dataset.id === insertBefore)
+        : null;
+      if (beforeEl) {
+        beforeEl.classList.add('drop-above');
+        return;
+      }
+      const cards = [...target.querySelectorAll('.bd-card')].filter(el => el.dataset.id !== id);
+      if (cards.length) cards[cards.length - 1].classList.add('drop-below');
     };
 
     // 命中哪一列按列的矩形算，不用 elementFromPoint：
@@ -5895,6 +6227,16 @@
         if (x >= r.left && x <= r.right && y >= r.top - 10 && y <= r.bottom + 10) return el;
       }
       return null;
+    };
+
+    // 列内落点：指针在某个卡片上半部分 = 插到它前面，否则排到末尾
+    const dropPos = (col, y) => {
+      const cards = [...col.querySelectorAll('.bd-card')].filter(el => el.dataset.id !== id);
+      for (const el of cards) {
+        const r = el.getBoundingClientRect();
+        if (y < r.top + r.height / 2) return el.dataset.id;
+      }
+      return '';
     };
 
     const onMove = (e) => {
@@ -5910,6 +6252,7 @@
       ghost.style.left = (e.clientX - 24) + 'px';
       ghost.style.top = (e.clientY - 16) + 'px';
       target = hit(e.clientX, e.clientY);
+      insertBefore = target ? dropPos(target, e.clientY) : null;
       mark();
     };
 
@@ -5919,13 +6262,15 @@
       document.removeEventListener('pointercancel', finish);
       card.classList.remove('dragging');
       for (const el of cols) el.classList.remove('drop');
+      for (const el of board.querySelectorAll('.bd-card')) el.classList.remove('drop-above', 'drop-below');
       if (ghost) ghost.remove();
       dragging = null;
       if (!moved) return;
       boardDropAt = Date.now();
-      const to = target ? target.dataset.tag : null;
-      if (to === null || to === from) render();
-      else boardMoveTag(id, from, to);
+      if (!target) { render(); return; }
+      const to = target.dataset.tag;
+      if (to === from) boardReorder(id, from, insertBefore === null ? '' : insertBefore);
+      else boardMoveTag(id, from, to, insertBefore === null ? '' : insertBefore);
     };
 
     document.addEventListener('pointermove', onMove);
@@ -5933,8 +6278,41 @@
     document.addEventListener('pointercancel', finish);
   }
 
-  // 换列 = 把「拖出来那一列」的分类换成「落下那一列」，其它分类原样保留
-  function boardMoveTag(id, fromTag, toTag) {
+  // 某一列里有哪些任务（未分类列看「没有分类」）
+  function boardHas(task, tag) {
+    return tag ? tagsOf(task).includes(tag) : tagsOf(task).length === 0;
+  }
+
+  // 把 id 放到 tag 这一列的 beforeId 之前（'' = 末尾），只重写这一列成员占用的数组槽位
+  function boardPlace(id, tag, beforeId) {
+    const slots = [];
+    const members = [];
+    tasks.forEach((t, i) => { if (boardHas(t, tag)) { members.push(t); slots.push(i); } });
+    const ids = members.map(t => t.id).filter(x => x !== id);
+    let at = beforeId ? ids.indexOf(beforeId) : ids.length;
+    if (at < 0) at = ids.length;
+    ids.splice(at, 0, id);
+    const byId = new Map(tasks.map(t => [t.id, t]));
+    const next = tasks.slice();
+    slots.forEach((slot, k) => { next[slot] = byId.get(ids[k]); });
+    tasks = next;
+  }
+
+  // 同一列内上下拖动：只改这一列成员的先后，别的列与筛选隐藏的项都不动
+  function boardReorder(id, tag, beforeId) {
+    const before = tasks.filter(t => boardHas(t, tag)).map(t => t.id);
+    const beforeSnap = tasks;
+    boardPlace(id, tag, beforeId);
+    const after = tasks.filter(t => boardHas(t, tag)).map(t => t.id);
+    if (before.join('\u0001') === after.join('\u0001')) { render(); return; }
+    const task = tasks.find(t => t.id === id);
+    snapshot('已调整「' + clip(task ? task.text : '') + '」在看板里的顺序', beforeSnap);
+    save();
+    render();
+  }
+
+  // 换列 = 把「拖出来那一列」的分类换成「落下那一列」，其它分类原样保留；同时按落点插进目标列
+  function boardMoveTag(id, fromTag, toTag, beforeId) {
     const task = tasks.find(t => t.id === id);
     if (!task) { render(); return; }
     const before = tagsOf(task).slice();
@@ -5942,8 +6320,11 @@
     if (toTag && !next.includes(toTag)) next.push(toTag);
     const after = normTags(next);
     if (after.join('\u0001') === before.join('\u0001')) { render(); return; }
-    snapshot('已把「' + clip(task.text) + '」归入' + (toTag ? '「' + toTag + '」' : '未分类'), tasks);
+    // 快照必须拍在改标签之前，否则撤销回来还是新标签
+    const beforeSnap = JSON.parse(JSON.stringify(tasks));
     task.tags = after;
+    boardPlace(id, toTag, beforeId === undefined ? '' : beforeId);
+    snapshot('已把「' + clip(task.text) + '」归入' + (toTag ? '「' + toTag + '」' : '未分类'), beforeSnap);
     save();
     render();
   }
@@ -6182,12 +6563,13 @@
     '总长不超过 300 字，用中文输出。',
   ];
 
-  function reviewLine(task, done) {
+  function reviewLine(task, done, withDate) {
     const bits = [];
     if (done && task.completedAt) {
       const at = new Date(task.completedAt);
       const p2 = (n) => String(n).padStart(2, '0');
-      bits.push(p2(at.getHours()) + ':' + p2(at.getMinutes()));
+      bits.push((withDate ? (at.getMonth() + 1) + '/' + at.getDate() + ' ' : '')
+        + p2(at.getHours()) + ':' + p2(at.getMinutes()));
     }
     if (!done) {
       const d = dueInDays(task);
@@ -6202,49 +6584,121 @@
     return '- [' + (done ? 'x' : ' ') + '] ' + text + (bits.length ? ' — ' + bits.join(' · ') : '');
   }
 
-  function buildReview() {
+  const REVIEW_LABELS = {
+    day: { done: '今天完成', next: '明天到期', focus: '今日专注', due: '今日到期' },
+    week: { done: '本周期完成', next: '下周到期', focus: '本周期专注', due: '本周到期' },
+    month: { done: '本月完成', next: '下月到期', focus: '本月专注', due: '本月到期' },
+  };
+
+  // 复盘周期：今天 / 本周（周一起算）/ 本月，都含头不含尾
+  function reviewRange(period) {
     const now = new Date();
-    const today = dayKey(now.getTime());
+    const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (period === 'week') {
+      const start = weekStart();
+      const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 7);
+      return {
+        period, start, end,
+        prevStart: new Date(start.getFullYear(), start.getMonth(), start.getDate() - 7),
+        prevEnd: start,
+        nextEnd: new Date(end.getFullYear(), end.getMonth(), end.getDate() + 7),
+      };
+    }
+    if (period === 'month') {
+      return {
+        period,
+        start: new Date(now.getFullYear(), now.getMonth(), 1),
+        end: new Date(now.getFullYear(), now.getMonth() + 1, 1),
+        prevStart: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+        prevEnd: new Date(now.getFullYear(), now.getMonth(), 1),
+        nextEnd: new Date(now.getFullYear(), now.getMonth() + 2, 1),
+      };
+    }
+    const end = new Date(today0.getFullYear(), today0.getMonth(), today0.getDate() + 1);
+    return {
+      period: 'day', start: today0, end,
+      prevStart: new Date(today0.getFullYear(), today0.getMonth(), today0.getDate() - 1),
+      prevEnd: today0,
+      nextEnd: new Date(today0.getFullYear(), today0.getMonth(), today0.getDate() + 2),
+    };
+  }
+
+  function reviewPeriodDesc(period) {
+    const r = reviewRange(period);
+    const now = new Date();
+    const md = d => (d.getMonth() + 1) + '/' + d.getDate();
+    if (period === 'week') return '本周 ' + md(r.start) + ' ~ ' + md(new Date(r.end.getTime() - 86400000));
+    if (period === 'month') return '本月 · ' + now.getFullYear() + ' 年 ' + (now.getMonth() + 1) + ' 月';
+    return '今天 ' + md(now) + ' ' + WEEKDAY_NAME[now.getDay()];
+  }
+
+  function buildReview(period) {
+    const p = ['day', 'week', 'month'].includes(period) ? period : (prefs.reviewPeriod || 'day');
+    const r = reviewRange(p);
+    const L = REVIEW_LABELS[p];
+    const now = new Date();
     const p2 = (n) => String(n).padStart(2, '0');
     const stamp = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate());
+    const startMs = r.start.getTime();
+    const endMs = r.end.getTime();
+    const startDay = dayKey(startMs);
+    const endDay = dayKey(endMs);
+    const nextEndDay = dayKey(r.nextEnd.getTime());
+    const inPeriod = (ms) => typeof ms === 'number' && ms >= startMs && ms < endMs;
     const mine = tasks;
-    const doneToday = mine
-      .filter(t => t.done && t.completedAt && dayKey(t.completedAt) === today)
+
+    const doneIn = mine
+      .filter(t => t.done && inPeriod(t.completedAt))
       .sort((a, b) => a.completedAt - b.completedAt);
+    const prevDoneN = mine.filter(t => t.done && typeof t.completedAt === 'number'
+      && t.completedAt >= r.prevStart.getTime() && t.completedAt < r.prevEnd.getTime()).length;
     const open = mine.filter(t => !t.done);
     const overdue = open
       .filter(t => { const d = dueInDays(t); return d !== null && d < 0; })
       .sort((a, b) => dueInDays(a) - dueInDays(b));
     const dueToday = open.filter(t => dueInDays(t) === 0);
-    const dueTomorrow = open.filter(t => dueInDays(t) === 1);
+    const dueInPeriod = mine.filter(t => t.due && t.due >= startDay && t.due < endDay);
+    const dueInDone = dueInPeriod.filter(t => t.done).length;
+    const createdIn = mine.filter(t => typeof t.createdAt === 'number' && inPeriod(t.createdAt));
     const highOpen = open.filter(t => {
       if (level(t) !== 'high') return false;
       const d = dueInDays(t);
       return d === null || d > 1;
     });
-    const dueTodayAll = mine.filter(t => t.due === today);
-    const dueTodayDone = dueTodayAll.filter(t => t.done);
-    const createdToday = mine.filter(t => t.createdAt && dayKey(t.createdAt) === today);
-    const focusN = pomoToday();
-    const restN = pomoRest();
+    const nextDue = open
+      .filter(t => t.due && t.due >= endDay && t.due < nextEndDay)
+      .sort((a, b) => (a.due === b.due ? 0 : a.due < b.due ? -1 : 1));
+    const focusN = Math.max(pomoRoundsBetween(startDay, endDay), p === 'day' ? pomoToday() : 0);
+    const restN = p === 'day' ? pomoRest() : 0;
+
+    const title = p === 'week'
+      ? '# 本周复盘 · ' + startDay + ' ~ ' + dayKey(r.end.getTime() - 86400000).slice(5)
+      : p === 'month'
+        ? '# 本月复盘 · ' + now.getFullYear() + ' 年 ' + (now.getMonth() + 1) + ' 月'
+        : '# 今日复盘 · ' + stamp + ' ' + WEEKDAY_NAME[now.getDay()];
 
     const lines = [];
-    lines.push('# 今日复盘 · ' + stamp + ' ' + WEEKDAY_NAME[now.getDay()]);
+    lines.push(title);
     lines.push('');
-    const summary = ['完成 ' + doneToday.length, '未完成 ' + open.length, '逾期 ' + overdue.length];
-    if (createdToday.length) summary.push('新建 ' + createdToday.length);
+    const summary = ['完成 ' + doneIn.length];
+    if (p !== 'day') {
+      const diff = doneIn.length - prevDoneN;
+      summary.push('比上' + (p === 'week' ? '周' : '月') + ' ' + (diff > 0 ? '+' + diff : diff < 0 ? String(diff) : '持平'));
+    }
+    summary.push('未完成 ' + open.length, '逾期 ' + overdue.length);
+    if (createdIn.length) summary.push('新建 ' + createdIn.length);
     if (focusN) summary.push('专注 ' + focusN + ' 轮');
     lines.push('> 清单「' + currentList().name + '」 · ' + summary.join(' · '));
-    if (dueTodayAll.length) {
-      lines.push('> 今日到期 ' + dueTodayDone.length + '/' + dueTodayAll.length + ' 已完成');
+    if (dueInPeriod.length) {
+      lines.push('> ' + L.due + ' ' + dueInDone + '/' + dueInPeriod.length + ' 已完成');
     }
     lines.push('');
 
-    lines.push('## 今天完成', '');
-    if (doneToday.length) {
-      for (const t of doneToday) lines.push(reviewLine(t, true));
+    lines.push('## ' + L.done, '');
+    if (doneIn.length) {
+      for (const t of doneIn) lines.push(reviewLine(t, true, p !== 'day'));
     } else {
-      lines.push('_今天还没有完成任务。_');
+      lines.push(p === 'day' ? '_今天还没有完成任务。_' : '_' + (p === 'week' ? '本周' : '本月') + '还没有完成任务。_');
     }
     lines.push('');
 
@@ -6253,8 +6707,8 @@
       lines.push('_当前清单没有未完成任务。_');
       lines.push('');
     } else {
-      const section = (title, items, empty) => {
-        lines.push('### ' + title, '');
+      const section = (secTitle, items, empty) => {
+        lines.push('### ' + secTitle, '');
         if (items.length) for (const t of items) lines.push(reviewLine(t, false));
         else lines.push(empty);
         lines.push('');
@@ -6264,13 +6718,13 @@
       section('其它高优先级', highOpen, '没有额外的高优先级任务。');
     }
 
-    lines.push('## 明天到期', '');
-    if (dueTomorrow.length) for (const t of dueTomorrow) lines.push(reviewLine(t, false));
-    else lines.push('_明天没有已排期的任务。_');
+    lines.push('## ' + L.next, '');
+    if (nextDue.length) for (const t of nextDue) lines.push(reviewLine(t, false));
+    else lines.push(p === 'day' ? '_明天没有已排期的任务。_' : p === 'week' ? '_下周没有已排期的任务。_' : '_下月没有已排期的任务。_');
     lines.push('');
 
     if (focusN) {
-      lines.push('## 今日专注', '');
+      lines.push('## ' + L.focus, '');
       lines.push('- 完成 ' + focusN + ' 轮番茄钟' + (restN ? '，休息 ' + restN + ' 次' : '') + '。');
       lines.push('');
     }
@@ -6306,10 +6760,23 @@
     reviewStatus.classList.toggle('err', !!bad);
   }
 
+  function syncReviewTabs() {
+    for (const b of reviewTabs.querySelectorAll('.rev-tab')) {
+      const on = b.dataset.period === prefs.reviewPeriod;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', String(on));
+    }
+  }
+
   function openReview(open) {
     if (open) {
-      reviewText.value = buildReview();
-      reviewSub.textContent = '清单「' + currentList().name + '」 · 内容可以直接改，改完再复制';
+      syncReviewTabs();
+      reviewText.value = buildReview(prefs.reviewPeriod);
+      reviewDirty = false;
+      reviewTitle.textContent = '复盘';
+      reviewClose.setAttribute('aria-label', '关闭复盘');
+      reviewSub.textContent = '清单「' + currentList().name + '」 · ' + reviewPeriodDesc(prefs.reviewPeriod)
+        + ' · 内容可以直接改，改完再复制';
       reviewFlash('');
       reviewModal.hidden = false;
       reviewClose.focus();
@@ -6320,12 +6787,38 @@
     }
   }
 
+  function switchReviewPeriod(period) {
+    const apply = () => {
+      prefs.reviewPeriod = period;
+      save();
+      syncReviewTabs();
+      reviewText.value = buildReview(period);
+      reviewDirty = false;
+      reviewSub.textContent = '清单「' + currentList().name + '」 · ' + reviewPeriodDesc(period)
+        + ' · 内容可以直接改，改完再复制';
+      reviewFlash('');
+      reviewText.scrollTop = 0;
+    };
+    if (reviewDirty && reviewText.value.trim()) {
+      askConfirm('切换周期', '当前复盘内容已经改过，切换后会用新周期重新生成，改动会丢失。继续吗？', apply);
+    } else {
+      apply();
+    }
+  }
+
   function reviewAiText() {
+    const p = prefs.reviewPeriod;
+    const isDay = p === 'day';
+    const kind = isDay ? '日报' : p === 'week' ? '周报' : '月报';
+    const name = isDay ? '今日复盘' : p === 'week' ? '本周复盘' : '本月复盘';
+    const sections = isDay ? '「今日完成」「进行中」「明日计划」' : '「本周期完成」「进行中」「下周期计划」';
+    const rules = REVIEW_AI_RULES.slice();
+    rules[1] = '结构固定为' + sections + '三段。';
     return [
-      '请把下面这份今日复盘整理成一段可以直接发给上级的日报。',
+      '请把下面这份' + name + '整理成一段可以直接发给上级的' + kind + '。',
       '',
       '要求：',
-      ...REVIEW_AI_RULES.map((x, i) => (i + 1) + '. ' + x),
+      ...rules.map((x, i) => (i + 1) + '. ' + x),
       '',
       '---',
       '',
@@ -6337,16 +6830,33 @@
   viewBoardBtn.addEventListener('click', () => setView('board'));
   viewMatrixBtn.addEventListener('click', () => setView('matrix'));
 
+  sortSel.addEventListener('change', () => {
+    const v = sortSel.value;
+    prefs.sort = ['manual', 'due', 'priority', 'created'].includes(v) ? v : 'manual';
+    save();
+    render();
+  });
+
   reviewIco.innerHTML = icon('pencil', 20);
   reviewClose.innerHTML = icon('close', 16);
+  reviewBtn.title = '今日 / 本周 / 本月复盘（R）';
+  reviewBtn.setAttribute('aria-label', '打开复盘（今日 / 本周 / 本月）');
   reviewBtn.addEventListener('click', () => openReview(true));
   reviewClose.addEventListener('click', () => openReview(false));
   reviewDone.addEventListener('click', () => openReview(false));
   reviewModal.addEventListener('click', (e) => {
     if (e.target === reviewModal) openReview(false);
   });
+  reviewTabs.addEventListener('click', (e) => {
+    const b = e.target.closest('.rev-tab');
+    if (!b) return;
+    const p = b.dataset.period;
+    if (!['day', 'week', 'month'].includes(p) || p === prefs.reviewPeriod) return;
+    switchReviewPeriod(p);
+  });
+  reviewText.addEventListener('input', () => { reviewDirty = true; });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !reviewModal.hidden) openReview(false);
+    if (e.key === 'Escape' && !reviewModal.hidden && modal.hidden) openReview(false);
   });
   reviewCopy.addEventListener('click', () => {
     copyPlain(reviewText.value).then((ok) => {
@@ -6359,7 +6869,11 @@
     });
   });
   reviewDownload.addEventListener('click', () => {
-    const name = '今日复盘-' + dayKey(Date.now()) + '.md';
+    const p = prefs.reviewPeriod;
+    const r = reviewRange(p);
+    const name = p === 'week' ? '本周复盘-' + dayKey(r.start.getTime()) + '.md'
+      : p === 'month' ? '本月复盘-' + dayKey(r.start.getTime()).slice(0, 7) + '.md'
+      : '今日复盘-' + dayKey(Date.now()) + '.md';
     saveAsBlob(new Blob([reviewText.value], { type: 'text/markdown;charset=utf-8' }), name);
     reviewFlash('已下载 ' + name);
   });
@@ -6376,9 +6890,17 @@
     const grip = document.createElement('span');
     grip.className = 'grip';
     grip.innerHTML = icon('grip', 18);
-    grip.setAttribute('aria-label', '拖动排序');
-    if (task.id === editingId) grip.style.visibility = 'hidden';
-    else grip.addEventListener('pointerdown', (e) => startDrag(e, li, task.id));
+    if (prefs.sort === 'manual') {
+      grip.setAttribute('aria-label', '拖动排序');
+      grip.title = '按住拖动排序';
+      if (task.id === editingId) grip.style.visibility = 'hidden';
+      else grip.addEventListener('pointerdown', (e) => startDrag(e, li, task.id));
+    } else {
+      grip.classList.add('off');
+      grip.setAttribute('aria-label', '当前不是手动排序');
+      grip.title = '切回「手动」排序后才能拖动';
+      if (task.id === editingId) grip.style.visibility = 'hidden';
+    }
     row.append(grip);
 
     const tick = document.createElement('button');
@@ -6869,6 +7391,25 @@
       moveRow.append(mvSel, mvHint);
       box.append(moveRow);
     }
+
+    // 模板：把这条任务的结构存下来，以后一键新建（到期日不存）
+    const tplRow = document.createElement('div');
+    tplRow.className = 'tpl-row';
+    const tplSaveBtn = document.createElement('button');
+    tplSaveBtn.type = 'button';
+    tplSaveBtn.className = 'tpl-save';
+    tplSaveBtn.innerHTML = icon('copy', 14) + '存为模板';
+    tplSaveBtn.setAttribute('aria-label', '把「' + clip(task.text) + '」存为模板');
+    const tplSay = document.createElement('span');
+    tplSay.className = 'tpl-say';
+    tplSay.textContent = '存优先级、分类、重复、备注和子任务，不存到期日';
+    tplSaveBtn.addEventListener('click', () => {
+      const r = saveTaskTemplate(task);
+      tplSay.textContent = r.msg;
+      tplSay.classList.toggle('bad', !r.ok);
+    });
+    tplRow.append(tplSaveBtn, tplSay);
+    box.append(tplRow);
 
     box.append(noteLabel, note, tagLabel, tagsEdit, subLabel);
 
@@ -7932,7 +8473,7 @@
 
   // ---------- 拖拽排序（pointer 事件，鼠标与触摸通用） ----------
   function startDrag(ev, li, id) {
-    if (dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
+    if (prefs.sort !== 'manual' || dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
     ev.preventDefault();
 
     const els = [...list.children].filter(el => el.dataset.id);
@@ -8133,13 +8674,15 @@
     undoSnap = null;
     undoTrash = null;
     undoLists = null;
+    undoTpl = null;
     undoBar.hidden = true;
   }
 
-  function snapshot(label, snap, snapTrash, snapLists) {
+  function snapshot(label, snap, snapTrash, snapLists, snapTpl) {
     undoSnap = JSON.parse(JSON.stringify(snap));
     undoTrash = snapTrash === undefined ? null : JSON.parse(JSON.stringify(snapTrash));
     undoLists = snapLists === undefined ? null : JSON.parse(JSON.stringify(snapLists));
+    undoTpl = snapTpl === undefined ? null : JSON.parse(JSON.stringify(snapTpl));
     undoText.textContent = label;
     undoBar.hidden = false;
     clearTimeout(undoTimer);
@@ -8178,10 +8721,15 @@
       const ids = new Set(tasks.map(t => t.id));
       trash = trash.filter(x => !ids.has(x.id));
     }
+    if (undoTpl) {
+      templates = undoTpl;
+      saveTemplates();
+    }
     saveTrash();
     closeUndo();
     save();
     render();
+    if (!tplBox.hidden) renderTemplates();
     if (!trashModal.hidden) renderTrashList();
     if (!tagModal.hidden) renderTagList();
   }
@@ -8466,7 +9014,7 @@
       tasks: l.id === lists.active ? tasks : loadList(l.id),
     }));
     const total = groups.reduce((n, g) => n + g.tasks.length, 0);
-    if (!total && !trash.length) {
+    if (!total && !trash.length && !templates.length) {
       backupMsg('还没有任务可导出', true);
       return;
     }
@@ -8497,6 +9045,7 @@
       lists: groups.map(g => ({ id: g.id, name: g.name, tasks: g.tasks })),
       trash,
     };
+    if (templates.length) data.templates = templates;
     if (files && Object.keys(files).length) data.files = files;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -8509,7 +9058,8 @@
     backupMsg('已导出 ' + total + ' 条任务（' + groups.length + ' 个清单）'
       + (files && Object.keys(files).length ? '，含 ' + Object.keys(files).length + ' 个附件' : '')
       + (skipped ? '，' + skipped + ' 个大附件没打包' : '')
-      + (trash.length ? '，回收站另有 ' + trash.length + ' 条' : ''));
+      + (trash.length ? '，回收站另有 ' + trash.length + ' 条' : '')
+      + (templates.length ? '，模板 ' + templates.length + ' 个' : ''));
   }
 
   // 备份里的 trash 数组：条目 = 任务 + deletedAt，同样要走一遍归一化
@@ -8680,15 +9230,23 @@
         };
         const prevTasks = tasks;
         const prevTrash = trash;
+        const prevTpl = templates;
+        const impTpl = normalizeTemplates(parsed.templates);
         const impTrash = normalizeTrash(parsed);
         applyImportedLists(incoming);
+        if (impTpl) {
+          templates = impTpl;
+          saveTemplates();
+          renderTemplates();
+        }
         if (impTrash) {
           trash = impTrash;
           saveTrash();
           if (!trashModal.hidden) renderTrashList();
         }
-        snapshot('已导入备份，' + incoming.length + ' 个清单共 ' + total + ' 条任务', prevTasks, prevTrash, prevLists);
-        backupMsg('已导入 ' + total + ' 条任务（' + incoming.length + ' 个清单）');
+        snapshot('已导入备份，' + incoming.length + ' 个清单共 ' + total + ' 条任务', prevTasks, prevTrash, prevLists, impTpl ? prevTpl : undefined);
+        backupMsg('已导入 ' + total + ' 条任务（' + incoming.length + ' 个清单）'
+          + (impTpl ? '、模板 ' + impTpl.length + ' 个' : ''));
         storeImportedFiles(parsed, incoming, impTrash).then((r) => {
           if (!r.want) return;
           if (r.got) {
@@ -8816,6 +9374,7 @@
   }
 
   function openBulk(text) {
+    if (!tplBox.hidden) closeTpl();
     bulkBox.hidden = false;
     bulkToggle.setAttribute('aria-expanded', 'true');
     if (typeof text === 'string') bulkText.value = text;
@@ -8858,6 +9417,135 @@
     closeBulk();
     save();
     render();
+  }
+
+  // ---------- 任务模板：只存结构（优先级/分类/重复/备注/子任务），不存到期日 ----------
+  function tplKey(x) {
+    return [x.text, x.priority, x.tags.join('|'), x.repeat, x.note, x.subs.join('|')].join('\u0000');
+  }
+
+  function saveTaskTemplate(task) {
+    const tpl = {
+      id: uid(),
+      text: task.text,
+      priority: level(task),
+      tags: tagsOf(task).slice(0, 4),
+      repeat: task.repeat || '',
+      note: task.note || '',
+      subs: (task.subs || []).filter(s => s && typeof s.text === 'string' && s.text.trim())
+        .slice(0, 50).map(s => s.text.trim().slice(0, 120)),
+    };
+    if (templates.some(x => tplKey(x) === tplKey(tpl))) return { ok: false, msg: '这条任务已经存成模板了' };
+    if (templates.length >= TPL_MAX) return { ok: false, msg: '模板最多 ' + TPL_MAX + ' 个，先删掉一个再存' };
+    snapshot('已把「' + clip(task.text) + '」存为模板', tasks, undefined, undefined, templates);
+    templates.push(tpl);
+    saveTemplates();
+    renderTemplates();
+    return { ok: true, msg: '已存为模板，点「模板」可一键新建' };
+  }
+
+  function useTemplate(tpl) {
+    snapshot('已用模板「' + clip(tpl.text) + '」新建一条任务', tasks);
+    tasks.push({
+      id: uid(),
+      text: tpl.text,
+      priority: tpl.priority,
+      due: '',
+      tags: normTags(tpl.tags),
+      repeat: tpl.repeat,
+      note: tpl.note,
+      subs: tpl.subs.map(x => ({ id: uid(), text: x, done: false })),
+      pin: false,
+      att: [],
+      focus: 0,
+      remind: 0,
+      done: false,
+      completedAt: null,
+      createdAt: Date.now(),
+    });
+    save();
+    render();
+    backupMsg('已按模板新建「' + clip(tpl.text) + '」，6 秒内可撤销');
+  }
+
+  function deleteTemplate(tpl) {
+    snapshot('已删除模板「' + clip(tpl.text) + '」', tasks, undefined, undefined, templates);
+    templates = templates.filter(x => x.id !== tpl.id);
+    saveTemplates();
+    renderTemplates();
+    backupMsg('已删除模板「' + clip(tpl.text) + '」，6 秒内可撤销');
+  }
+
+  function renderTemplates() {
+    tplToggle.innerHTML = icon('copy', 14) + '<span>模板' + (templates.length ? '（' + templates.length + '）' : '') + '</span>';
+    tplList.textContent = '';
+    if (!templates.length) {
+      const e = document.createElement('div');
+      e.className = 'tpl-empty';
+      e.textContent = '还没有模板：展开任意一条任务的详情，点「存为模板」，就会把这条的优先级、分类、重复、备注和子任务存下来（不存到期日）。';
+      tplList.append(e);
+    } else {
+      for (const tpl of templates) {
+        const item = document.createElement('div');
+        item.className = 'tpl-item';
+
+        const main = document.createElement('div');
+        main.className = 'tpl-main';
+        const name = document.createElement('span');
+        name.className = 'tpl-name';
+        name.textContent = tpl.text;
+        name.title = tpl.text;
+        const meta = document.createElement('div');
+        meta.className = 'tpl-meta';
+        const addMeta = (iconName, text) => {
+          const s = document.createElement('span');
+          s.innerHTML = icon(iconName, 11);
+          s.append(document.createTextNode(text));
+          meta.append(s);
+        };
+        addMeta(LEVELS[tpl.priority].icon, LEVELS[tpl.priority].label + '优先级');
+        for (const tag of tpl.tags) addMeta('tag', tag);
+        if (tpl.repeat) addMeta('repeat', REPEAT_LABEL[tpl.repeat]);
+        if (tpl.subs.length) addMeta('listChecks', tpl.subs.length + ' 个子任务');
+        if (tpl.note) addMeta('note', '有备注');
+        main.append(name, meta);
+
+        const acts = document.createElement('div');
+        acts.className = 'tpl-acts';
+        const use = document.createElement('button');
+        use.type = 'button';
+        use.className = 'tpl-use';
+        use.textContent = '使用';
+        use.setAttribute('aria-label', '按模板「' + clip(tpl.text) + '」新建任务');
+        use.addEventListener('click', () => useTemplate(tpl));
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'tpl-del';
+        del.innerHTML = icon('trash', 16);
+        del.title = '删除这个模板';
+        del.setAttribute('aria-label', '删除模板「' + clip(tpl.text) + '」');
+        del.addEventListener('click', () => deleteTemplate(tpl));
+        acts.append(use, del);
+
+        item.append(main, acts);
+        tplList.append(item);
+      }
+    }
+    tplSum.textContent = templates.length
+      ? '共 ' + templates.length + ' 个模板 · 最多 ' + TPL_MAX + ' 个 · 只存结构不存日期'
+      : '模板只存结构，不存到期日';
+  }
+
+  function openTpl() {
+    if (!bulkBox.hidden) closeBulk();
+    tplBox.hidden = false;
+    tplToggle.setAttribute('aria-expanded', 'true');
+    renderTemplates();
+  }
+
+  function closeTpl() {
+    tplBox.hidden = true;
+    tplToggle.setAttribute('aria-expanded', 'false');
   }
 
   // ---------- 到期提醒：横幅 + 每天首次打开的浏览器通知 ----------
@@ -9770,6 +10458,12 @@
     else closeBulk();
   });
   bulkCloseBtn.addEventListener('click', closeBulk);
+  tplToggle.addEventListener('click', () => {
+    if (tplBox.hidden) openTpl();
+    else closeTpl();
+  });
+  tplClose.addEventListener('click', closeTpl);
+  renderTemplates();
   bulkText.addEventListener('input', scheduleBulk);
   bulkAddBtn.addEventListener('click', bulkCommit);
   bulkText.addEventListener('keydown', (e) => {
@@ -9911,6 +10605,10 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !bulkBox.hidden) closeBulk();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !tplBox.hidden) closeTpl();
   });
 
   renderPrioPicker();
