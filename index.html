@@ -383,6 +383,19 @@
 
   .head p { font-size: 14px; color: var(--gray-600); letter-spacing: .02em; }
 
+  .head-clock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .head-clock .hc-dot { opacity: .55; }
+
   /* ---------- input card ---------- */
   .input-card { padding: 16px; margin-bottom: 16px; }
 
@@ -500,6 +513,25 @@
 
   .due-clear { font-size: 13px; color: var(--text-muted); padding: 8px; min-height: 44px; }
   .due-clear:hover { color: var(--gray-700); }
+
+  .goal-input {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    flex: 1 1 220px;
+    min-width: 0;
+    padding: 8px 12px;
+    min-height: 44px;
+    border: 1px solid var(--gray-300);
+    border-radius: 10px;
+    outline: none;
+    background: var(--surface);
+  }
+
+  .goal-input:focus,
+  .start-input:focus { box-shadow: 0 0 0 2px var(--teal-600); border-color: transparent; }
+
+  #new-start { width: 200px; }
 
   /* 隐藏 datalist 原生黑箭头（date 输入框无 list 属性不受影响），换成与整体图标一致的 chevron */
   input[list]::-webkit-calendar-picker-indicator { opacity: 0; }
@@ -833,6 +865,25 @@
     text-decoration: line-through;
   }
 
+  .goal-line {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .goal-line svg { flex: none; opacity: .8; }
+
+  .goal-line span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .badge {
     display: inline-flex;
     align-items: center;
@@ -890,6 +941,8 @@
   .c-indigo { --tg: var(--tag-indigo); }
   .c-sky    { --tg: var(--tag-sky); }
   .c-slate  { --tg: var(--tag-slate); }
+
+  .tg.st { --tg: var(--teal-700); }
 
   /* 筛选行 / 统计 / 分类管理里的圆点：颜色本身就是信息，所以按非文字 3:1 校 */
   .tdot {
@@ -1026,6 +1079,138 @@
     transition: color .2s;
   }
   .chev:hover { color: var(--gray-700); }
+
+  /* ---------- work log（今日流水） ---------- */
+  .log-card { padding: 16px; margin-bottom: 16px; }
+
+  .log-head { margin-bottom: 12px; }
+
+  .log-title { display: flex; align-items: center; gap: 8px; }
+
+  .log-title h3 { font-size: 18px; font-weight: 600; color: var(--gray-800); }
+
+  .log-count {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--teal-50);
+    color: var(--teal-700);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .log-add { display: flex; flex-direction: column; gap: 8px; }
+
+  #log-input {
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--gray-800);
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: 10px;
+    outline: none;
+    background: var(--surface);
+  }
+
+  #log-input:focus { box-shadow: 0 0 0 2px var(--teal-600); border-color: transparent; }
+
+  #log-add {
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--btn-grad-a), var(--btn-grad-b));
+    color: var(--on-accent);
+    font-size: 14px;
+    font-weight: 600;
+    transition: filter .2s, transform .15s;
+  }
+
+  #log-add:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  #log-add:active { transform: translateY(0); filter: brightness(.98); }
+
+  .log-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .log-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 4px 2px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .log-item:last-child { border-bottom: 0; }
+
+  .log-tick {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 999px;
+    color: var(--text-muted);
+    transition: color .2s, background .2s;
+  }
+
+  .log-tick:hover { color: var(--teal-700); background: var(--teal-50); }
+
+  .log-item.done .log-tick { color: var(--green-600); }
+
+  .log-tick[data-state="unchecked"] svg { opacity: .55; }
+
+  .log-time {
+    flex: none;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .log-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-800);
+    overflow-wrap: anywhere;
+  }
+
+  .log-item.done .log-text { color: var(--text-muted); text-decoration: line-through; }
+
+  .log-del {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 10px;
+    color: var(--text-muted);
+    transition: color .2s, background .2s;
+  }
+
+  .log-del:hover { color: var(--red-700); background: var(--red-100); }
+
+  .log-empty {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--gray-600);
+  }
+
+  .log-empty[hidden] { display: none; }
+
+  .log-hint { margin-top: 12px; font-size: 12px; color: var(--text-muted); }
+
+  @media (min-width: 640px) {
+    .log-add { flex-direction: row; }
+    #log-add { flex: none; }
+  }
 
   /* ---------- stats panel ---------- */
   .st-grid {
@@ -2876,6 +3061,33 @@
   .note-input::placeholder { color: var(--text-muted); }
   .note-input:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
 
+  .goal-edit {
+    width: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 44px;
+    outline: none;
+  }
+
+  .goal-edit::placeholder { color: var(--text-muted); }
+  .goal-edit:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .start-edit-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .start-edit-row .date-input { min-height: 44px; }
+
+  .start-edit-hint { font-size: 12px; color: var(--text-muted); }
+
   .sub {
     display: flex;
     align-items: center;
@@ -3479,7 +3691,7 @@
     .dot-grid { display: none !important; }
     /* 打印时可能正撞上进场半途，强制落到终态 */
     .head, .input-card, .list-card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
-    .head, .input-card, .toolbar, #calendar-card, #history, #stats, .side,
+    .head, .input-card, .log-card, .toolbar, #calendar-card, #history, #stats, .side,
     #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
     .search-bar, .filter-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total,
@@ -3537,6 +3749,7 @@
         <h1>我的待办清单</h1>
       </div>
       <p>管理您的日常任务</p>
+      <p class="head-clock" aria-hidden="true"><span id="head-date"></span><span class="hc-dot">·</span><span id="head-clock"></span></p>
       <div class="head-tools">
         <button id="bg-btn" class="hbtn" type="button" aria-label="更换背景" aria-expanded="false" aria-controls="bg-panel"></button>
         <button id="theme-btn" class="hbtn" type="button" aria-label="切换深色或浅色主题"></button>
@@ -3598,6 +3811,10 @@
         </div>
       </div>
       <div id="quick-hint" class="quick-hint" role="status" aria-live="polite"></div>
+      <div class="due-row goal-row">
+        <span class="prio-label">目标：</span>
+        <input id="new-goal" class="goal-input" type="text" maxlength="120" placeholder="做到什么程度算完成（可空）" aria-label="目标要求">
+      </div>
       <div class="prio-row">
         <span class="prio-label">优先级：</span>
         <div class="prio-btns" id="prio-btns"></div>
@@ -3609,6 +3826,11 @@
         <span class="prio-label" style="margin-left:auto" id="drag-hint">提示：拖动左侧把手可排序</span>
       </div>
       <div class="due-row">
+        <span class="prio-label">开始：</span>
+        <input type="datetime-local" id="new-start" class="date-input start-input" aria-label="开始时间（可空）">
+        <span class="tag-hint">只记排期，不影响到期筛选</span>
+      </div>
+      <div class="due-row">
         <span class="prio-label">分类：</span>
         <input type="text" id="new-tag" class="tag-input" list="tag-list" maxlength="12" placeholder="学习 / 生活">
         <datalist id="tag-list"></datalist>
@@ -3618,6 +3840,25 @@
         <span class="prio-label">重复：</span>
         <div class="prio-btns" id="rep-btns"></div>
         <span class="tag-hint">勾选完成后自动排下一次</span>
+      </div>
+    </section>
+
+    <section id="log-card" class="card log-card">
+      <div class="hist-head log-head">
+        <div class="log-title">
+          <h3>今天做了什么</h3>
+          <span id="log-count" class="log-count">0 条</span>
+        </div>
+        <button id="log-toggle" class="chev" type="button" title="展开/收起"></button>
+      </div>
+      <div id="log-body">
+        <form id="log-form" class="log-add" autocomplete="off">
+          <input id="log-input" type="text" maxlength="200" placeholder="刚做完什么？回车记下（例：核完供应商对账表）" aria-label="记一条今天做了什么">
+          <button id="log-add" type="submit">记下</button>
+        </form>
+        <ul id="log-list" class="log-list"></ul>
+        <p id="log-empty" class="log-empty">还没记东西。想到什么写一句就行，晚上出日报时自动整理。</p>
+        <p class="log-hint"><span id="log-sum">今天 0 条</span> · 勾选 = 已完成，会进日报「已完成」；Ctrl + Enter 随时记一条</p>
       </div>
     </section>
 
@@ -3862,7 +4103,7 @@
         <b>V</b><span>在列表、看板、矩阵视图之间切换</span>
         <b>R</b><span>打开复盘（今日 / 本周 / 本月）</span>
         <b>1 ~ 4</b><span>矩阵里把选中的卡片归到对应象限</span>
-        <b>Ctrl + Enter</b><span>批量粘贴面板里一次添加全部</span>
+        <b>Ctrl + Enter</b><span>记一条今日流水；批量粘贴面板里一次添加全部</span>
         <b>粘贴多行</b><span>在输入框直接粘贴，自动进批量面板</span>
         <b>← / →</b><span>附件大图里翻上一张 / 下一张</span>
         <b>Esc</b><span>取消选中 / 关闭弹窗 / 关闭大图</span>
@@ -3901,6 +4142,8 @@
   const POMO_LOG = 'todo.pomolog';     // 每日轮数流水，周/月复盘要按天求和
   const TPL_KEY = 'todo.templates';    // 任务模板：不含日期，只留反复用的那部分
   const TPL_MAX = 30;
+  const WORKLOG_KEY = 'todo.worklog';  // 今日流水：今天做过什么，一天一句，跟任务分开记
+  const LOG_MAX = 5000;                // 流水只留最近 5000 条，超出丢最老的
   const BREAK_MIN = 5;                 // 一轮专注后的短休息时长（分钟）
   const BASE_TITLE = document.title;
   const LISTS_KEY = 'todo.lists';      // 清单元数据（名字与当前选中项）
@@ -4006,6 +4249,7 @@
     move: '<path d="m17 2 4 4-4 4"/><path d="M3 6h18"/><path d="m7 22-4-4 4-4"/><path d="M21 18H3"/>',
     bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
     clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
   };
 
   function icon(name, size) {
@@ -4035,7 +4279,20 @@
   const input = $('new-task');
   const prioBox = $('prio-btns');
   const newDue = $('new-due');
+  const newStart = $('new-start');
+  const newGoal = $('new-goal');
   const newTag = $('new-tag');
+  const logCard = $('log-card');
+  const logForm = $('log-form');
+  const logBody = $('log-body');
+  const logInput = $('log-input');
+  const logList = $('log-list');
+  const logEmpty = $('log-empty');
+  const logCount = $('log-count');
+  const logToggle = $('log-toggle');
+  const logSum = $('log-sum');
+  const headDate = $('head-date');
+  const headClock = $('head-clock');
   const tagList = $('tag-list');
   const repBox = $('rep-btns');
   const searchBar = $('search-bar');
@@ -4186,6 +4443,7 @@
   let tasks = loadList(lists.active);
   let trash = loadTrash();
   let templates = loadTemplates();
+  let worklog = loadWorklog();
   let prefs = loadPrefs();
   let newPriority = 'mid';
   let newRepeat = '';
@@ -4199,6 +4457,7 @@
   let undoTrash = null;         // 只有导入备份会带回收站快照
   let undoLists = null;         // 导入备份换掉整个清单结构时的快照，撤销要连清单一起回滚
   let undoTpl = null;           // 导入备份覆盖模板时的快照
+  let undoLog = null;           // 删除流水 / 导入备份时的流水快照
   let undoTimer = null;
   let batchOn = false;          // 批量整理模式（只活在当前页面，不进 prefs）
   let reviewDirty = false;      // 复盘内容被改过：切周期前要问一声
@@ -4274,6 +4533,17 @@
     return Number.isFinite(n) && n > 0 ? Math.round(n) : 0;
   }
 
+  // 目标要求：和备注分开——备注写补充说明，目标写「做到什么程度算完成」
+  function normGoal(v) {
+    return typeof v === 'string' ? v.trim().slice(0, 120) : '';
+  }
+
+  // 开始时间：只作排期标记，不参与到期筛选
+  function clampStart(v) {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? Math.round(n) : 0;
+  }
+
   const FILTERS = [
     { key: 'all', label: '全部' },
     { key: 'overdue', label: '已逾期' },
@@ -4291,10 +4561,12 @@
     }
     if (!Array.isArray(raw)) return [];
     return raw.map(t => {
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], ...t };
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], goal: '', startAt: 0, ...t };
       if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
       if (typeof o.note !== 'string') o.note = '';
       o.pin = !!o.pin;
+      o.goal = normGoal(o.goal);
+      o.startAt = clampStart(o.startAt);
       o.focus = clampFocus(o.focus);
       o.remind = clampRemind(o.remind);
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
@@ -4663,8 +4935,10 @@
     for (const x of raw) {
       if (!x || typeof x.text !== 'string' || typeof x.deletedAt !== 'number') continue;
       if (now - x.deletedAt > TRASH_KEEP) continue;
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], ...x };
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], goal: '', startAt: 0, ...x };
       o.pin = !!o.pin;
+      o.goal = normGoal(o.goal);
+      o.startAt = clampStart(o.startAt);
       o.focus = clampFocus(o.focus);
       o.remind = clampRemind(o.remind);
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
@@ -4707,6 +4981,7 @@
       tags: normTags(x.tags, typeof x.tag === 'string' ? x.tag.trim() : ''),
       repeat: typeof x.repeat === 'string' && x.repeat in REPEAT_LABEL ? x.repeat : '',
       note: typeof x.note === 'string' ? x.note.slice(0, 500) : '',
+      goal: normGoal(x.goal),
       subs: (Array.isArray(x.subs) ? x.subs : [])
         .filter(s => s && typeof s.text === 'string' && s.text.trim())
         .slice(0, 50)
@@ -4745,8 +5020,142 @@
     }
   }
 
+  // 今日流水：{ id, text, at, done }。done=false 表示这件事还没收尾，会进日报的「未完成」。
+  function normalizeWorklog(raw) {
+    if (!Array.isArray(raw)) return null;
+    const out = [];
+    for (const x of raw) {
+      if (!x || typeof x.text !== 'string' || !x.text.trim()) continue;
+      const at = Math.round(Number(x.at));
+      if (!Number.isFinite(at) || at <= 0) continue;
+      out.push({
+        id: typeof x.id === 'string' && x.id ? x.id : uid(),
+        text: x.text.trim().slice(0, 200),
+        at,
+        done: x.done !== false,
+      });
+    }
+    out.sort((a, b) => a.at - b.at);
+    return out.length > LOG_MAX ? out.slice(out.length - LOG_MAX) : out;
+  }
+
+  function loadWorklog() {
+    try {
+      return normalizeWorklog(JSON.parse(localStorage.getItem(WORKLOG_KEY))) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveWorklog() {
+    try {
+      localStorage.setItem(WORKLOG_KEY, JSON.stringify(worklog));
+    } catch {
+      backupMsg('流水没能存进这个浏览器，可能是存储空间满了', true);
+    }
+  }
+
+  function logHm(at) {
+    const d = new Date(at);
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function renderWorklog() {
+    const open = prefs.logOpen !== false;
+    logBody.hidden = !open;
+    logToggle.innerHTML = icon(open ? 'chevronUp' : 'chevronDown', 20);
+    logToggle.setAttribute('aria-label', open ? '收起今日流水' : '展开今日流水');
+
+    const todayKey = dayKey(Date.now());
+    const items = worklog
+      .filter(x => dayKey(x.at) === todayKey)
+      .sort((a, b) => b.at - a.at);
+    const doneN = items.filter(x => x.done).length;
+
+    logCount.textContent = items.length + ' 条';
+    logSum.textContent = '今天 ' + items.length + ' 条'
+      + (items.length ? ' · 已完成 ' + doneN : '');
+    logEmpty.hidden = items.length > 0;
+    logList.textContent = '';
+
+    for (const entry of items) {
+      const li = document.createElement('li');
+      li.className = 'log-item' + (entry.done ? ' done' : '');
+
+      const tick = document.createElement('button');
+      tick.type = 'button';
+      tick.className = 'log-tick';
+      tick.innerHTML = icon(entry.done ? 'checkCircle' : 'circle', 20);
+      tick.setAttribute('aria-pressed', String(entry.done));
+      tick.setAttribute('aria-label', (entry.done ? '把「' : '把「') + clip(entry.text) + '」改成'
+        + (entry.done ? '未完成' : '已完成'));
+      tick.title = entry.done ? '已完成（点一下改成未完成）' : '未完成（点一下改成已完成）';
+      tick.addEventListener('click', () => toggleLog(entry.id));
+
+      const time = document.createElement('span');
+      time.className = 'log-time';
+      time.textContent = logHm(entry.at);
+
+      const text = document.createElement('span');
+      text.className = 'log-text';
+      text.textContent = entry.text;
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'log-del';
+      del.innerHTML = icon('trash', 16);
+      del.title = '删除这条流水';
+      del.setAttribute('aria-label', '删除流水「' + clip(entry.text) + '」');
+      del.addEventListener('click', () => deleteLog(entry.id));
+
+      li.append(tick, time, text, del);
+      logList.append(li);
+    }
+  }
+
+  function addLog(text) {
+    const s = String(text || '').trim().slice(0, 200);
+    if (!s) return false;
+    worklog.push({ id: uid(), text: s, at: Date.now(), done: true });
+    if (worklog.length > LOG_MAX) worklog = worklog.slice(worklog.length - LOG_MAX);
+    saveWorklog();
+    renderWorklog();
+    return true;
+  }
+
+  function submitLog() {
+    if (!addLog(logInput.value)) return;
+    logInput.value = '';
+    logInput.focus();
+  }
+
+  function toggleLog(id) {
+    const entry = worklog.find(x => x.id === id);
+    if (!entry) return;
+    entry.done = !entry.done;
+    saveWorklog();
+    renderWorklog();
+  }
+
+  function deleteLog(id) {
+    const gone = worklog.find(x => x.id === id);
+    if (!gone) return;
+    snapshot('已删除流水「' + clip(gone.text) + '」', tasks, undefined, undefined, undefined, worklog);
+    worklog = worklog.filter(x => x.id !== id);
+    saveWorklog();
+    renderWorklog();
+  }
+
+  function syncHeadClock() {
+    const now = new Date();
+    const p2 = (n) => String(n).padStart(2, '0');
+    headDate.textContent = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日 '
+      + WEEKDAY_NAME[now.getDay()];
+    headClock.textContent = p2(now.getHours()) + ':' + p2(now.getMinutes()) + ':' + p2(now.getSeconds());
+  }
+
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -4756,6 +5165,7 @@
       p.printToday = !!p.printToday;
       if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
       p.sideCollapsed = !!p.sideCollapsed;
+      p.logOpen = p.logOpen !== false;
       if (!['manual', 'due', 'priority', 'created'].includes(p.sort)) p.sort = 'manual';
       if (!['day', 'week', 'month'].includes(p.reviewPeriod)) p.reviewPeriod = 'day';
       // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
@@ -4871,11 +5281,14 @@
     return tagsOf(task).includes(key);
   }
 
-  // 搜索：任务文字与任一分类名都算命中，不区分大小写
+  // 搜索：任务文字、目标、备注与任一分类名都算命中，不区分大小写
   function matchQuery(task) {
     if (!query) return true;
     const q = query.toLowerCase();
-    return task.text.toLowerCase().includes(q) || tagsOf(task).some(t => t.toLowerCase().includes(q));
+    return task.text.toLowerCase().includes(q)
+      || (task.goal || '').toLowerCase().includes(q)
+      || (task.note || '').toLowerCase().includes(q)
+      || tagsOf(task).some(t => t.toLowerCase().includes(q));
   }
 
   function matchFilter(task) {
@@ -4941,6 +5354,12 @@
     if (d === 1) return '明天到期';
     if (d <= 6) return d + ' 天后到期';
     return task.due.slice(5).replace('-', '/') + ' 到期';
+  }
+
+  function startText(ms) {
+    const d = new Date(ms);
+    const p2 = (n) => String(n).padStart(2, '0');
+    return '开始 ' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
   }
 
   // 逾期一键顺延：把到期日改成今天
@@ -6043,6 +6462,7 @@
     renderRemind();
     renderAlarms();
     renderToday();
+    renderWorklog();
     renderCalendar();
     renderHistory(done);
     renderStats(done);
@@ -6559,7 +6979,7 @@
     '只使用复盘里的信息，不要编造数据、进度或人名。',
     '结构固定为「今日完成」「进行中」「明日计划」三段。',
     '每条一句话，动词开头，去掉空话和情绪词。',
-    '保留任务里的专有名词和数字。',
+    '保留任务里的专有名词和数字；流水里的时间、数量、专有名词原样保留，不要合并掉。',
     '总长不超过 300 字，用中文输出。',
   ];
 
@@ -6670,6 +7090,10 @@
       .sort((a, b) => (a.due === b.due ? 0 : a.due < b.due ? -1 : 1));
     const focusN = Math.max(pomoRoundsBetween(startDay, endDay), p === 'day' ? pomoToday() : 0);
     const restN = p === 'day' ? pomoRest() : 0;
+    const logs = worklog
+      .filter(x => inPeriod(x.at))
+      .sort((a, b) => a.at - b.at);
+    const logsDoneN = logs.filter(x => x.done).length;
 
     const title = p === 'week'
       ? '# 本周复盘 · ' + startDay + ' ~ ' + dayKey(r.end.getTime() - 86400000).slice(5)
@@ -6688,6 +7112,7 @@
     summary.push('未完成 ' + open.length, '逾期 ' + overdue.length);
     if (createdIn.length) summary.push('新建 ' + createdIn.length);
     if (focusN) summary.push('专注 ' + focusN + ' 轮');
+    if (logs.length) summary.push('流水 ' + logs.length + ' 条（已完成 ' + logsDoneN + '）');
     lines.push('> 清单「' + currentList().name + '」 · ' + summary.join(' · '));
     if (dueInPeriod.length) {
       lines.push('> ' + L.due + ' ' + dueInDone + '/' + dueInPeriod.length + ' 已完成');
@@ -6701,6 +7126,30 @@
       lines.push(p === 'day' ? '_今天还没有完成任务。_' : '_' + (p === 'week' ? '本周' : '本月') + '还没有完成任务。_');
     }
     lines.push('');
+
+    lines.push(p === 'day' ? '## 今日流水' : p === 'week' ? '## 本周流水' : '## 本月流水', '');
+    if (!logs.length) {
+      lines.push(p === 'day' ? '_今天还没有记流水。_' : '_' + (p === 'week' ? '本周' : '本月') + '还没有记流水。_');
+      lines.push('');
+    } else {
+      const logLine = (x) => '- ' + logHm(x.at) + '　'
+        + String(x.text).replace(/\s*\n\s*/g, ' ') + (x.done ? '' : '（未完成）');
+      if (p === 'day') {
+        for (const x of logs) lines.push(logLine(x));
+        lines.push('');
+      } else {
+        let curDay = '';
+        for (const x of logs) {
+          const k = dayKey(x.at);
+          if (k !== curDay) {
+            curDay = k;
+            lines.push('### ' + k.slice(5).replace('-', '/') + ' ' + WEEKDAY_NAME[new Date(x.at).getDay()], '');
+          }
+          lines.push(logLine(x));
+        }
+        lines.push('');
+      }
+    }
 
     lines.push('## 还在路上', '');
     if (!open.length) {
@@ -6948,6 +7397,16 @@
         line.append(due);
       }
 
+      const stAt = clampStart(task.startAt);
+      if (stAt) {
+        const sc = document.createElement('span');
+        sc.className = 'tg st';
+        sc.innerHTML = icon('clock', 12);
+        sc.append(startText(stAt));
+        sc.title = '开始时间：' + new Date(stAt).toLocaleString('zh-CN') + '（只作排期，不影响到期筛选）';
+        line.append(sc);
+      }
+
       const tags = tagsOf(task);
       if (tags.length) {
         const tgs = document.createElement('span');
@@ -7061,6 +7520,17 @@
       }
 
       body.append(line);
+      const goalTxt = normGoal(task.goal);
+      if (goalTxt) {
+        const gl = document.createElement('div');
+        gl.className = 'goal-line';
+        gl.innerHTML = icon('target', 12);
+        const gt = document.createElement('span');
+        gt.textContent = goalTxt;
+        gt.title = '目标：' + goalTxt;
+        gl.append(gt);
+        body.append(gl);
+      }
       row.append(body);
 
       const acts = document.createElement('div');
@@ -7410,6 +7880,60 @@
     });
     tplRow.append(tplSaveBtn, tplSay);
     box.append(tplRow);
+
+    const goalLabel = document.createElement('span');
+    goalLabel.className = 'd-label';
+    goalLabel.textContent = '目标要求';
+
+    const goalEdit = document.createElement('input');
+    goalEdit.type = 'text';
+    goalEdit.className = 'goal-edit';
+    goalEdit.maxLength = 120;
+    goalEdit.placeholder = '做到什么程度算完成，例：三家报价差价控制在 5% 以内';
+    goalEdit.setAttribute('aria-label', '目标要求');
+    goalEdit.value = task.goal || '';
+    goalEdit.addEventListener('input', () => {
+      task.goal = normGoal(goalEdit.value);
+      save();
+      const gl = goalEdit.closest('li').querySelector('.goal-line span');
+      if (gl) gl.textContent = task.goal;
+    });
+
+    const startLabel = document.createElement('span');
+    startLabel.className = 'd-label';
+    startLabel.textContent = '开始时间';
+
+    const startRow = document.createElement('div');
+    startRow.className = 'start-edit-row';
+    const startIn = document.createElement('input');
+    startIn.type = 'datetime-local';
+    startIn.className = 'date-input';
+    startIn.value = localInput(clampStart(task.startAt));
+    startIn.setAttribute('aria-label', '开始时间');
+    startIn.addEventListener('change', () => {
+      task.startAt = fromLocalInput(startIn.value);
+      save();
+      render();
+    });
+    const startHint = document.createElement('span');
+    startHint.className = 'start-edit-hint';
+    startHint.textContent = '只作排期标记，不影响到期筛选';
+    startRow.append(startIn);
+    if (clampStart(task.startAt)) {
+      const startClear = document.createElement('button');
+      startClear.type = 'button';
+      startClear.className = 'd-act';
+      startClear.innerHTML = icon('close', 14) + '清空开始时间';
+      startClear.addEventListener('click', () => {
+        task.startAt = 0;
+        save();
+        render();
+      });
+      startRow.append(startClear);
+    }
+    startRow.append(startHint);
+
+    box.append(goalLabel, goalEdit, startLabel, startRow);
 
     box.append(noteLabel, note, tagLabel, tagsEdit, subLabel);
 
@@ -8547,8 +9071,13 @@
     tasks = next;
   }
 
-  function add(text, priority, due, tags, repeat) {
-    tasks.push({ id: uid(), text, priority, due: due || '', tags: normTags(tags), repeat: repeat || '', note: '', subs: [], pin: false, done: false, completedAt: null, createdAt: Date.now() });
+  function add(text, priority, due, tags, repeat, extra) {
+    const x = extra || {};
+    tasks.push({
+      id: uid(), text, priority, due: due || '', tags: normTags(tags), repeat: repeat || '',
+      note: '', goal: normGoal(x.goal), startAt: clampStart(x.startAt),
+      subs: [], pin: false, done: false, completedAt: null, createdAt: Date.now(),
+    });
     save();
     render();
   }
@@ -8582,6 +9111,8 @@
       tags: tagsOf(task).slice(),
       repeat: task.repeat,
       note: task.note || '',
+      goal: task.goal || '',
+      startAt: 0,   // 下一轮还没排期，开始时间不跟着复制
       subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
       pin: !!task.pin,
       done: false,
@@ -8675,14 +9206,16 @@
     undoTrash = null;
     undoLists = null;
     undoTpl = null;
+    undoLog = null;
     undoBar.hidden = true;
   }
 
-  function snapshot(label, snap, snapTrash, snapLists, snapTpl) {
+  function snapshot(label, snap, snapTrash, snapLists, snapTpl, snapLog) {
     undoSnap = JSON.parse(JSON.stringify(snap));
     undoTrash = snapTrash === undefined ? null : JSON.parse(JSON.stringify(snapTrash));
     undoLists = snapLists === undefined ? null : JSON.parse(JSON.stringify(snapLists));
     undoTpl = snapTpl === undefined ? null : JSON.parse(JSON.stringify(snapTpl));
+    undoLog = snapLog === undefined ? null : JSON.parse(JSON.stringify(snapLog));
     undoText.textContent = label;
     undoBar.hidden = false;
     clearTimeout(undoTimer);
@@ -8724,6 +9257,10 @@
     if (undoTpl) {
       templates = undoTpl;
       saveTemplates();
+    }
+    if (undoLog) {
+      worklog = undoLog;
+      saveWorklog();
     }
     saveTrash();
     closeUndo();
@@ -9014,7 +9551,7 @@
       tasks: l.id === lists.active ? tasks : loadList(l.id),
     }));
     const total = groups.reduce((n, g) => n + g.tasks.length, 0);
-    if (!total && !trash.length && !templates.length) {
+    if (!total && !trash.length && !templates.length && !worklog.length) {
       backupMsg('还没有任务可导出', true);
       return;
     }
@@ -9046,6 +9583,7 @@
       trash,
     };
     if (templates.length) data.templates = templates;
+    if (worklog.length) data.worklog = worklog;
     if (files && Object.keys(files).length) data.files = files;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -9059,7 +9597,8 @@
       + (files && Object.keys(files).length ? '，含 ' + Object.keys(files).length + ' 个附件' : '')
       + (skipped ? '，' + skipped + ' 个大附件没打包' : '')
       + (trash.length ? '，回收站另有 ' + trash.length + ' 条' : '')
-      + (templates.length ? '，模板 ' + templates.length + ' 个' : ''));
+      + (templates.length ? '，模板 ' + templates.length + ' 个' : '')
+      + (worklog.length ? '，今日流水 ' + worklog.length + ' 条' : ''));
   }
 
   // 备份里的 trash 数组：条目 = 任务 + deletedAt，同样要走一遍归一化
@@ -9096,6 +9635,8 @@
         tags: normTags(t.tags, typeof t.tag === 'string' ? t.tag.trim() : ''),
         repeat: typeof t.repeat === 'string' && t.repeat in REPEAT_LABEL ? t.repeat : '',
         note: typeof t.note === 'string' ? t.note.slice(0, 500) : '',
+        goal: normGoal(t.goal),
+        startAt: clampStart(t.startAt),
         subs: (Array.isArray(t.subs) ? t.subs : [])
           .filter(s => s && typeof s.text === 'string' && s.text.trim())
           .slice(0, 50)
@@ -9231,8 +9772,10 @@
         const prevTasks = tasks;
         const prevTrash = trash;
         const prevTpl = templates;
+        const prevLog = worklog;
         const impTpl = normalizeTemplates(parsed.templates);
         const impTrash = normalizeTrash(parsed);
+        const impLog = normalizeWorklog(parsed.worklog);
         applyImportedLists(incoming);
         if (impTpl) {
           templates = impTpl;
@@ -9244,9 +9787,17 @@
           saveTrash();
           if (!trashModal.hidden) renderTrashList();
         }
-        snapshot('已导入备份，' + incoming.length + ' 个清单共 ' + total + ' 条任务', prevTasks, prevTrash, prevLists, impTpl ? prevTpl : undefined);
+        if (impLog && impLog.length) {
+          worklog = impLog;
+          saveWorklog();
+          renderWorklog();
+        }
+        snapshot('已导入备份，' + incoming.length + ' 个清单共 ' + total + ' 条任务',
+          prevTasks, prevTrash, prevLists, impTpl ? prevTpl : undefined,
+          impLog && impLog.length ? prevLog : undefined);
         backupMsg('已导入 ' + total + ' 条任务（' + incoming.length + ' 个清单）'
-          + (impTpl ? '、模板 ' + impTpl.length + ' 个' : ''));
+          + (impTpl ? '、模板 ' + impTpl.length + ' 个' : '')
+          + (impLog && impLog.length ? '、流水 ' + impLog.length + ' 条' : ''));
         storeImportedFiles(parsed, incoming, impTrash).then((r) => {
           if (!r.want) return;
           if (r.got) {
@@ -9271,9 +9822,12 @@
       hit.priority || newPriority,
       hit.due || newDue.value,
       hit.tags.length ? hit.tags : normTags([newTag.value.trim()]),
-      hit.repeat || newRepeat);
+      hit.repeat || newRepeat,
+      { goal: newGoal.value, startAt: fromLocalInput(newStart.value) });
     input.value = '';
     newDue.value = '';
+    newGoal.value = '';
+    newStart.value = '';
     renderQuickHint();
     input.focus();
   }
@@ -9421,7 +9975,7 @@
 
   // ---------- 任务模板：只存结构（优先级/分类/重复/备注/子任务），不存到期日 ----------
   function tplKey(x) {
-    return [x.text, x.priority, x.tags.join('|'), x.repeat, x.note, x.subs.join('|')].join('\u0000');
+    return [x.text, x.priority, x.tags.join('|'), x.repeat, x.note, x.goal || '', x.subs.join('|')].join('\u0000');
   }
 
   function saveTaskTemplate(task) {
@@ -9432,6 +9986,7 @@
       tags: tagsOf(task).slice(0, 4),
       repeat: task.repeat || '',
       note: task.note || '',
+      goal: task.goal || '',
       subs: (task.subs || []).filter(s => s && typeof s.text === 'string' && s.text.trim())
         .slice(0, 50).map(s => s.text.trim().slice(0, 120)),
     };
@@ -9454,6 +10009,7 @@
       tags: normTags(tpl.tags),
       repeat: tpl.repeat,
       note: tpl.note,
+      goal: tpl.goal || '',
       subs: tpl.subs.map(x => ({ id: uid(), text: x, done: false })),
       pin: false,
       att: [],
@@ -9506,6 +10062,7 @@
         addMeta(LEVELS[tpl.priority].icon, LEVELS[tpl.priority].label + '优先级');
         for (const tag of tpl.tags) addMeta('tag', tag);
         if (tpl.repeat) addMeta('repeat', REPEAT_LABEL[tpl.repeat]);
+        if (tpl.goal) addMeta('target', '有目标要求');
         if (tpl.subs.length) addMeta('listChecks', tpl.subs.length + ' 个子任务');
         if (tpl.note) addMeta('note', '有备注');
         main.append(name, meta);
@@ -10442,6 +10999,44 @@
 
   input.addEventListener('input', renderQuickHint);
 
+  logForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitLog();
+  });
+
+  logInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing) {
+      e.preventDefault();
+      submitLog();
+    }
+  });
+
+  logToggle.addEventListener('click', () => {
+    prefs.logOpen = prefs.logOpen === false;
+    save();
+    renderWorklog();
+  });
+
+  // 随时记一条：Ctrl/⌘ + Enter 落到今日流水；已经在别的输入框里写的字不会被误吞
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey) || e.isComposing) return;
+    const t = e.target;
+    if (t && t.closest && t.closest('textarea, select')) return;
+    if (!modal.hidden || !reviewModal.hidden || !trashModal.hidden || !kbdModal.hidden || !tagModal.hidden) return;
+    e.preventDefault();
+    if (logInput.value.trim()) {
+      submitLog();
+      return;
+    }
+    if (prefs.logOpen === false) {
+      prefs.logOpen = true;
+      save();
+      renderWorklog();
+    }
+    logCard.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    logInput.focus();
+  });
+
   // 粘贴多行文字时直接进批量面板；单行照旧留在输入框里
   input.addEventListener('paste', (e) => {
     const txt = e.clipboardData ? e.clipboardData.getData('text') : '';
@@ -10618,6 +11213,8 @@
   // 种子任务只进默认清单；当前停在别的清单时不播种，免得整包塞进「工作」里
   if (lists.active === DEFAULT_LIST) seed();
   scheduleGc();   // 上次没清掉的孤儿附件，开机后静悄悄回收
+  syncHeadClock();
+  setInterval(syncHeadClock, 1000);
   render();
   notifyDue(false);
   remindTick();                       // 已经到点的提醒，打开页面就补上处置条
