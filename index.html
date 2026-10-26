@@ -945,6 +945,10 @@
   .tg.st { --tg: var(--teal-700); }
   .tg.sd { --tg: var(--teal-700); }
   .tg.sd.over { --tg: var(--red-700); }
+  /* 计时胶囊：跑着的时候每秒刷新，数字必须等宽，否则整行会抖。
+     底色仍用 teal-700 调，字色再深一档，深色主题下淡底上的小字才够 4.5:1 */
+  .tg.tt { --tg: var(--teal-700); color: var(--teal-800); font-variant-numeric: tabular-nums; }
+  .tg.tt.run { font-weight: 600; }
 
   /* 筛选行 / 统计 / 分类管理里的圆点：颜色本身就是信息，所以按非文字 3:1 校 */
   .tdot {
@@ -997,6 +1001,10 @@
   .ibtn.pin:hover { color: var(--yellow-800); background: var(--yellow-50); }
   .ibtn.pin.on { color: var(--yellow-600); }
   .ibtn.pin.on:hover { color: var(--yellow-800); }
+  .ibtn.tmr { color: var(--teal-600); }
+  .ibtn.tmr:hover { color: var(--teal-700); background: var(--teal-50); }
+  .ibtn.tmr.on { color: var(--teal-700); background: var(--teal-50); }
+  .ibtn.tmr.on:hover { color: var(--teal-800); }
 
   .edit-input {
     flex: 1 1 100%;
@@ -1221,6 +1229,9 @@
     gap: 8px;
   }
 
+  /* 计时只出两格（今日 / 本周），宽屏下也不跟概览的四个挤一排 */
+  .st-grid.tt2 { grid-template-columns: repeat(2, 1fr); }
+
   .st-cell {
     background: var(--surface);
     border: 1px solid var(--gray-100);
@@ -1300,7 +1311,9 @@
   .st-col .d { font-size: 11px; color: var(--text-muted); }
   .st-col.today .bar:not(.zero) { background: linear-gradient(180deg, #22c55e, var(--green-600)); }
 
-  .st-hint { font-size: 12px; color: var(--text-muted); margin-top: 14px; }
+  .st-hint { font-size: 12px; color: var(--gray-700); margin-top: 14px; }
+  /* 深色玻璃上 gray-700 只有 4.19:1，小字再提一档才过 4.5 */
+  [data-theme="dark"] .st-hint { color: var(--gray-800); }
 
   /* ---------- 打卡热力图 ---------- */
   .hm-wrap {
@@ -2123,6 +2136,8 @@
   html[data-off~="review"] .head-clock,
   html[data-off~="review"] #bg-btn,
   html[data-off~="review"] #theme-btn,
+  html[data-off~="timer"] .ibtn.tmr,
+  html[data-off~="timer"] .tg.tt,
   html[data-off~="explore"][data-off~="review"] #view-bar { display: none !important; }
 
   #bg-file { display: none; }
@@ -4454,6 +4469,9 @@
   const TPL_MAX = 30;
   const WORKLOG_KEY = 'todo.worklog';  // 今日流水：今天做过什么，一天一句，跟任务分开记
   const LOG_MAX = 5000;                // 流水只留最近 5000 条，超出丢最老的
+  const TIMELOG_KEY = 'todo.timelog';  // 计时流水：一次计时结束记一条，今日 / 本周按它求和
+  const TIMELOG_MAX = 4000;            // 计时流水上限，按 1 分钟一条也够记好几年的量
+  const SESSION_MAX = 12 * 3600000;    // 单次计时最多记 12 小时：忘了停的表不该把统计拉爆
   const BREAK_MIN = 5;                 // 一轮专注后的短休息时长（分钟）
   const BASE_TITLE = document.title;
   const LISTS_KEY = 'todo.lists';      // 清单元数据（名字与当前选中项）
@@ -4544,6 +4562,8 @@
     palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
     lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     timer: '<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>',
+    play: '<path d="m6 3 14 9-14 9z" fill="currentColor" stroke="none"/>',
+    pause: '<rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/>',
     square: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>',
     checkSquare: '<path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
     keyboard: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M6 12h.01"/><path d="M10 12h.01"/><path d="M14 12h.01"/><path d="M18 12h.01"/><path d="M8 16h8"/>',
@@ -4577,6 +4597,7 @@
     { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵、日历与快捷键' },
     { id: 'detail', name: '任务详情与扩展', icon: 'note', desc: '备注、子任务、附件、任务模板、置顶、拖动排序与逾期顺延' },
     { id: 'remind', name: '提醒与专注', icon: 'bell', desc: '到期横幅、精确提醒、今日专注与番茄钟' },
+    { id: 'timer', name: '时间追踪', icon: 'timer', desc: '给任务计时：开始 / 结束累计实际耗时，统计今日与本周投入' },
     { id: 'dispose', name: '处置与回收', icon: 'checkCircle', core: true, desc: '勾选完成、编辑删除、批量整理、已完成历史、回收站与撤销' },
     { id: 'review', name: '复盘与保障', icon: 'book', desc: '今日流水、复盘、数据统计、导出导入、打印、主题与背景' },
   ];
@@ -4790,6 +4811,7 @@
   let trash = loadTrash();
   let templates = loadTemplates();
   let worklog = loadWorklog();
+  let timelog = loadTimelog();
   let prefs = loadPrefs();
   let newPriority = 'mid';
   let newRepeat = '';
@@ -4804,6 +4826,7 @@
   let undoLists = null;         // 导入备份换掉整个清单结构时的快照，撤销要连清单一起回滚
   let undoTpl = null;           // 导入备份覆盖模板时的快照
   let undoLog = null;           // 删除流水 / 导入备份时的流水快照
+  let undoTime = null;          // 导入备份覆盖计时记录时的快照
   let undoTimer = null;
   let batchOn = false;          // 批量整理模式（只活在当前页面，不进 prefs）
   let reviewDirty = false;      // 复盘内容被改过：切周期前要问一声
@@ -4893,6 +4916,12 @@
     return Number.isFinite(n) && n > 0 ? Math.round(n) : 0;
   }
 
+  // 任务累计的实际用时（毫秒）。上限给得足够大，只是挡掉 NaN / 负数 / 离谱值
+  function clampSpent(v) {
+    const n = Math.round(Number(v));
+    return Number.isFinite(n) && n > 0 ? Math.min(n, 100000 * 3600000) : 0;
+  }
+
   const FILTERS = [
     { key: 'all', label: '全部' },
     { key: 'overdue', label: '已逾期' },
@@ -4932,6 +4961,10 @@
       o.startAt = clampStart(o.startAt);
       o.focus = clampFocus(o.focus);
       o.remind = clampRemind(o.remind);
+      o.spent = clampSpent(o.spent);
+      o.timerAt = clampStart(o.timerAt);
+      // 上次忘了停的表：超过单次上限就当没在计时，别把这次打开的时间也算进去
+      if (o.timerAt && Date.now() - o.timerAt > SESSION_MAX) o.timerAt = 0;
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.att = normAtt(o.att);
@@ -5302,6 +5335,8 @@
       o.startAt = clampStart(o.startAt);
       o.focus = clampFocus(o.focus);
       o.remind = clampRemind(o.remind);
+      o.spent = clampSpent(o.spent);
+      o.timerAt = 0;   // 回收站里的任务不该继续计时
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.att = normAtt(o.att);
@@ -5412,6 +5447,90 @@
     } catch {
       backupMsg('流水没能存进这个浏览器，可能是存储空间满了', true);
     }
+  }
+
+  // 计时流水：一次「结束计时」记一条，今日 / 本周按结束时间归日求和
+  function normalizeTimelog(raw) {
+    if (!Array.isArray(raw)) return [];
+    const out = [];
+    for (const x of raw) {
+      if (!x || typeof x !== 'object') continue;
+      const ms = Math.round(Number(x.ms));
+      const at = Math.round(Number(x.at));
+      if (!Number.isFinite(ms) || ms <= 0 || ms > SESSION_MAX) continue;
+      if (!Number.isFinite(at) || at <= 0) continue;
+      out.push({
+        id: typeof x.id === 'string' && x.id ? x.id : uid(),
+        taskId: typeof x.taskId === 'string' ? x.taskId : '',
+        listId: typeof x.listId === 'string' ? x.listId.slice(0, 40) : '',
+        ms,
+        at,
+      });
+    }
+    out.sort((a, b) => a.at - b.at);
+    return out.length > TIMELOG_MAX ? out.slice(out.length - TIMELOG_MAX) : out;
+  }
+
+  function loadTimelog() {
+    try {
+      return normalizeTimelog(JSON.parse(localStorage.getItem(TIMELOG_KEY))) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveTimelog() {
+    try {
+      localStorage.setItem(TIMELOG_KEY, JSON.stringify(timelog));
+    } catch {
+      backupMsg('计时记录没能存进这个浏览器，可能是存储空间满了', true);
+    }
+  }
+
+  // 本周从周一 00:00 算起，和日历的周一起点保持一致
+  function weekStartTs(ts) {
+    const d = parseDay(dayKey(ts)) || new Date(ts);
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return d.getTime();
+  }
+
+  function timeSums() {
+    const today = dayKey(Date.now());
+    const from = weekStartTs(Date.now());
+    let day = 0, week = 0, all = 0;
+    const ids = new Set();
+    for (const e of timelog) {
+      all += e.ms;
+      if (e.at >= from) week += e.ms;
+      if (dayKey(e.at) === today) day += e.ms;
+      if (e.taskId) ids.add(e.taskId);
+    }
+    return { today: day, week, total: all, tasks: ids.size };
+  }
+
+  function fmtClock(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    const p = n => String(n).padStart(2, '0');
+    return h ? h + ':' + p(m) + ':' + p(s) : m + ':' + p(s);
+  }
+
+  // 统计里说完整（「1 小时 20 分钟」），行内胶囊说短（「1 时 20 分」）
+  function fmtSpan(ms) {
+    if (!ms) return '0 分';
+    const mins = Math.round(ms / 60000);
+    if (mins < 1) return '不足 1 分钟';
+    const h = Math.floor(mins / 60), m = mins % 60;
+    return h ? h + ' 小时' + (m ? ' ' + m + ' 分钟' : '') : mins + ' 分钟';
+  }
+
+  function fmtSpanShort(ms) {
+    const mins = Math.round(ms / 60000);
+    if (mins < 1) return Math.max(1, Math.round(ms / 1000)) + ' 秒';
+    const h = Math.floor(mins / 60), m = mins % 60;
+    return h ? h + ' 时' + (m ? ' ' + m + ' 分' : '') : mins + ' 分';
   }
 
   function logHm(at) {
@@ -6888,6 +7007,10 @@
       document.title = BASE_TITLE;
       ringing.length = 0;
     }
+    if (!pluginOn('timer')) {
+      // 卸载前先把跑着的表结掉：时间是真花掉的，照样记进流水
+      stopTimersEverywhere(null);
+    }
 
     let switched = false;
     if (!pluginOn('lists') && lists.active !== DEFAULT_LIST) {
@@ -8085,6 +8208,26 @@
         line.append(sc);
       }
 
+      const spent = clampSpent(task.spent);
+      if (pluginOn('timer') && task.timerAt) {
+        const tt = document.createElement('span');
+        tt.className = 'tg tt run';
+        tt.innerHTML = icon('timer', 12);
+        const live = document.createElement('span');
+        live.dataset.ttRun = task.id;
+        live.textContent = fmtClock(elapsedOf(task));
+        tt.append(live);
+        tt.title = '正在计时，再点一次右侧按钮结束' + (spent ? '（此前累计 ' + fmtSpan(spent) + '）' : '');
+        line.append(tt);
+      } else if (pluginOn('timer') && spent > 0) {
+        const tt = document.createElement('span');
+        tt.className = 'tg tt';
+        tt.innerHTML = icon('timer', 12);
+        tt.append(fmtSpanShort(spent));
+        tt.title = '累计实际用时：' + fmtSpan(spent);
+        line.append(tt);
+      }
+
       const tags = tagsOf(task);
       if (tags.length) {
         const tgs = document.createElement('span');
@@ -8253,6 +8396,21 @@
       more.addEventListener('click', () => toggleExpanded(task.id));
 
       acts.append(more);
+
+      // 时间追踪：开始 / 结束计时（已完成的任务不再显示）
+      if (pluginOn('timer') && !task.done) {
+        const tmr = document.createElement('button');
+        tmr.type = 'button';
+        tmr.className = 'ibtn tmr' + (task.timerAt ? ' on' : '');
+        tmr.innerHTML = icon(task.timerAt ? 'pause' : 'play', 18);
+        tmr.title = task.timerAt
+          ? '结束计时（已跑 ' + fmtClock(elapsedOf(task)) + '）'
+          : '开始计时' + (spent ? '（累计 ' + fmtSpan(spent) + '）' : '');
+        tmr.setAttribute('aria-label', (task.timerAt ? '结束计时「' : '开始计时「') + clip(task.text) + '」');
+        tmr.setAttribute('aria-pressed', String(!!task.timerAt));
+        tmr.addEventListener('click', () => toggleTimer(task.id));
+        acts.append(tmr);
+      }
 
       // 置顶：点一下钉到列表最前，再点一下取消（位置留在原处，不自动跳）
       const pinB = document.createElement('button');
@@ -9593,6 +9751,26 @@
     overall.append(statRow('已完成', done.length, tasks.length, 'green'));
     statsBody.append(overall);
 
+    // 计时记录：只在本机有过计时的时候出现，数字是所有清单加起来的
+    if (pluginOn('timer')) {
+      const sums = timeSums();
+      if (sums.total > 0) {
+        const tms = stSection('时间记录（跨清单）');
+        const grid2 = document.createElement('div');
+        grid2.className = 'st-grid tt2';
+        grid2.append(
+          statCell('今日计时', sums.today ? fmtSpanShort(sums.today) : '0 分'),
+          statCell('本周计时', sums.week ? fmtSpanShort(sums.week) : '0 分'),
+        );
+        tms.append(grid2);
+        const hint = document.createElement('p');
+        hint.className = 'st-hint';
+        hint.textContent = '累计 ' + fmtSpan(sums.total) + ' · 记过时的任务 ' + sums.tasks + ' 个 · 不受上方筛选影响';
+        tms.append(hint);
+        statsBody.append(tms);
+      }
+    }
+
     const tags = pluginOn('tags') ? usedTags() : [];
     if (tags.length) {
       const sec = stSection('按分类完成率');
@@ -10072,13 +10250,82 @@
     }
   }
 
+  // ---------- 时间追踪：同一时刻只跑一条计时 ----------
+  // 显示和记账都按同一个上限截断，免得胶囊跑过 12 小时还继续往上加、记进流水的却是 12 小时
+  function elapsedOf(task) {
+    const at = Number(task && task.timerAt) || 0;
+    return at > 0 ? Math.min(Math.max(0, Date.now() - at), SESSION_MAX) : 0;
+  }
+
+  function stopTimer(task, record, listId) {
+    if (!task) return 0;
+    const at = Number(task.timerAt) || 0;
+    if (!(at > 0)) return 0;
+    const ms = elapsedOf(task);
+    task.timerAt = 0;
+    if (record !== false && ms >= 1000) {
+      task.spent = clampSpent(task.spent) + ms;
+      timelog.push({ id: uid(), taskId: task.id, listId: listId || lists.active, ms, at: Date.now() });
+      if (timelog.length > TIMELOG_MAX) timelog = timelog.slice(timelog.length - TIMELOG_MAX);
+      saveTimelog();
+    }
+    return ms;
+  }
+
+  // 只允许一条计时在跑：别的清单不在内存里，读出来结掉再原样写回
+  function stopTimersEverywhere(except) {
+    for (const t of tasks) if (t !== except) stopTimer(t);
+    for (const l of lists.items) {
+      if (l.id === lists.active) continue;
+      const arr = loadList(l.id);
+      let touched = false;
+      for (const t of arr) {
+        if (t && t.timerAt) { stopTimer(t, true, l.id); touched = true; }
+      }
+      if (touched) saveListArr(l.id, arr);
+    }
+  }
+
+  function startTimer(task) {
+    if (!task || task.done || !pluginOn('timer')) return;
+    stopTimersEverywhere(task);
+    task.timerAt = Date.now();
+    save();
+    render();
+  }
+
+  function toggleTimer(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    if (task.timerAt) {
+      stopTimer(task);
+      save();
+      render();
+    } else {
+      startTimer(task);
+    }
+  }
+
+  // 每秒只改跑着的那个胶囊的文字，不整页重画
+  function updateTimerChips() {
+    if (!pluginOn('timer')) return;
+    for (const el of list.querySelectorAll('[data-tt-run]')) {
+      const task = tasks.find(t => t.id === el.dataset.ttRun);
+      if (!task || !task.timerAt) continue;
+      el.textContent = fmtClock(elapsedOf(task));
+    }
+  }
+
   function toggle(id) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
     task.done = !task.done;
     task.completedAt = task.done ? Date.now() : null;
     // 重复任务：完成的那条留在历史里（统计要用），紧跟着排出一条新的
-    if (task.done) spliceNextRepeat(task);
+    if (task.done) {
+      stopTimer(task);   // 勾完成时顺手把跑着的表结掉
+      spliceNextRepeat(task);
+    }
     else removeSpawnedClone(task);
     save();
     render();
@@ -10116,6 +10363,7 @@
   function remove(id) {
     const gone = tasks.find(t => t.id === id);
     if (gone) {
+      stopTimer(gone);
       snapshot('已删除「' + clip(gone.text) + '」', tasks);
       trashPush(gone);   // 进回收站保留 30 天，6 秒内也可撤销
     }
@@ -10140,15 +10388,17 @@
     undoLists = null;
     undoTpl = null;
     undoLog = null;
+    undoTime = null;
     undoBar.hidden = true;
   }
 
-  function snapshot(label, snap, snapTrash, snapLists, snapTpl, snapLog) {
+  function snapshot(label, snap, snapTrash, snapLists, snapTpl, snapLog, snapTime) {
     undoSnap = JSON.parse(JSON.stringify(snap));
     undoTrash = snapTrash === undefined ? null : JSON.parse(JSON.stringify(snapTrash));
     undoLists = snapLists === undefined ? null : JSON.parse(JSON.stringify(snapLists));
     undoTpl = snapTpl === undefined ? null : JSON.parse(JSON.stringify(snapTpl));
     undoLog = snapLog === undefined ? null : JSON.parse(JSON.stringify(snapLog));
+    undoTime = snapTime === undefined ? null : JSON.parse(JSON.stringify(snapTime));
     undoText.textContent = label;
     undoBar.hidden = false;
     clearTimeout(undoTimer);
@@ -10194,6 +10444,10 @@
     if (undoLog) {
       worklog = undoLog;
       saveWorklog();
+    }
+    if (undoTime) {
+      timelog = undoTime;
+      saveTimelog();
     }
     saveTrash();
     closeUndo();
@@ -10278,6 +10532,7 @@
   function batchComplete() {
     const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
     if (!ids.length) return;
+    for (const id of ids) stopTimer(tasks.find(t => t.id === id));
     snapshot('已批量完成 ' + ids.length + ' 项任务', tasks);
     for (const id of ids) {
       const task = tasks.find(t => t.id === id);
@@ -10322,6 +10577,7 @@
     const ids = [...batchSel];
     if (!ids.length) return;
     askConfirm('批量删除', '确定把选中的 ' + ids.length + ' 项任务删进回收站吗？保留 30 天，6 秒内也可撤销。', () => {
+      for (const id of ids) stopTimer(tasks.find(t => t.id === id));
       snapshot('已批量删除 ' + ids.length + ' 项任务', tasks);
       const kill = new Set(ids);
       for (const id of ids) {
@@ -10341,6 +10597,7 @@
     const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && t.done; });
     if (!ids.length) return;
     askConfirm('彻底删除', '选中的 ' + ids.length + ' 项已完成任务不会进回收站，直接清掉（6 秒内还能撤销）。', () => {
+      for (const id of ids) stopTimer(tasks.find(t => t.id === id));
       snapshot('已彻底删除 ' + ids.length + ' 项已完成任务', tasks);
       const kill = new Set(ids);
       tasks = tasks.filter(t => !kill.has(t.id));
@@ -10484,7 +10741,7 @@
       tasks: l.id === lists.active ? tasks : loadList(l.id),
     }));
     const total = groups.reduce((n, g) => n + g.tasks.length, 0);
-    if (!total && !trash.length && !templates.length && !worklog.length) {
+    if (!total && !trash.length && !templates.length && !worklog.length && !timelog.length) {
       backupMsg('还没有任务可导出', true);
       return;
     }
@@ -10517,6 +10774,7 @@
     };
     if (templates.length) data.templates = templates;
     if (worklog.length) data.worklog = worklog;
+    if (timelog.length) data.timelog = timelog;
     if (files && Object.keys(files).length) data.files = files;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -10531,7 +10789,8 @@
       + (skipped ? '，' + skipped + ' 个大附件没打包' : '')
       + (trash.length ? '，回收站另有 ' + trash.length + ' 条' : '')
       + (templates.length ? '，模板 ' + templates.length + ' 个' : '')
-      + (worklog.length ? '，今日流水 ' + worklog.length + ' 条' : ''));
+      + (worklog.length ? '，今日流水 ' + worklog.length + ' 条' : '')
+      + (timelog.length ? '，计时记录 ' + timelog.length + ' 条' : ''));
   }
 
   // 备份里的 trash 数组：条目 = 任务 + deletedAt，同样要走一遍归一化
@@ -10574,6 +10833,7 @@
         pin: !!t.pin,
         focus: clampFocus(t.focus),
         remind: clampRemind(t.remind),
+        spent: clampSpent(t.spent),
         att: normAtt(t.att),
         done: !!t.done,
         completedAt: typeof t.completedAt === 'number' ? t.completedAt : null,
@@ -10703,9 +10963,11 @@
         const prevTrash = trash;
         const prevTpl = templates;
         const prevLog = worklog;
+        const prevTime = timelog;
         const impTpl = normalizeTemplates(parsed.templates);
         const impTrash = normalizeTrash(parsed);
         const impLog = normalizeWorklog(parsed.worklog);
+        const impTime = normalizeTimelog(parsed.timelog);
         applyImportedLists(incoming);
         if (impTpl) {
           templates = impTpl;
@@ -10722,12 +10984,18 @@
           saveWorklog();
           renderWorklog();
         }
+        if (impTime && impTime.length) {
+          timelog = impTime;
+          saveTimelog();
+        }
         snapshot('已导入备份，' + incoming.length + ' 个清单共 ' + total + ' 条任务',
           prevTasks, prevTrash, prevLists, impTpl ? prevTpl : undefined,
-          impLog && impLog.length ? prevLog : undefined);
+          impLog && impLog.length ? prevLog : undefined,
+          impTime && impTime.length ? prevTime : undefined);
         backupMsg('已导入 ' + total + ' 条任务（' + incoming.length + ' 个清单）'
           + (impTpl ? '、模板 ' + impTpl.length + ' 个' : '')
-          + (impLog && impLog.length ? '、流水 ' + impLog.length + ' 条' : ''));
+          + (impLog && impLog.length ? '、流水 ' + impLog.length + ' 条' : '')
+          + (impTime && impTime.length ? '、计时记录 ' + impTime.length + ' 条' : ''));
         storeImportedFiles(parsed, incoming, impTrash).then((r) => {
           if (!r.want) return;
           if (r.got) {
@@ -12132,6 +12400,7 @@
   clearDoneBtn.addEventListener('click', () => {
     const n = tasks.filter(t => t.done).length;
     askConfirm('清空已完成', '确定删除 ' + n + ' 条已完成的任务吗？会进回收站保留 30 天，6 秒内也可撤销。', () => {
+      tasks.filter(t => t.done).forEach(t => stopTimer(t));
       snapshot('已清空 ' + n + ' 条已完成任务', tasks);
       tasks.filter(t => t.done).forEach(trashPush);
       tasks = tasks.filter(t => !t.done);
@@ -12141,6 +12410,7 @@
   clearAllBtn.addEventListener('click', () => {
     if (!tasks.length) return;
     askConfirm('确认清空', '确定要清空所有任务吗？会进回收站保留 30 天，6 秒内也可撤销。', () => {
+      tasks.forEach(t => stopTimer(t));
       snapshot('已清空全部 ' + tasks.length + ' 条任务', tasks);
       tasks.slice().forEach(trashPush);
       tasks = [];
@@ -12208,6 +12478,7 @@
   notifyDue(false);
   remindTick();                       // 已经到点的提醒，打开页面就补上处置条
   setInterval(remindTick, 15000);     // 页面开着就按时响
+  setInterval(updateTimerChips, 1000); // 跑着的计时胶囊每秒走字
 </script>
 <script>
 /* 动效层：滚动揭示 + 标题逐字进场 + 点阵背景。零依赖零构建，file:// 双击照用。 */
