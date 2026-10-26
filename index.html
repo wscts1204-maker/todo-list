@@ -943,6 +943,8 @@
   .c-slate  { --tg: var(--tag-slate); }
 
   .tg.st { --tg: var(--teal-700); }
+  .tg.sd { --tg: var(--teal-700); }
+  .tg.sd.over { --tg: var(--red-700); }
 
   /* 筛选行 / 统计 / 分类管理里的圆点：颜色本身就是信息，所以按非文字 3:1 校 */
   .tdot {
@@ -1625,6 +1627,8 @@
 
   .rev-btn:hover { background: var(--gray-100); color: var(--gray-800); }
 
+  #review-undo[hidden] { display: none; }
+
   .rev-btn.main {
     background: linear-gradient(135deg, var(--btn-grad-a), var(--btn-grad-b));
     color: var(--on-accent);
@@ -1632,6 +1636,20 @@
   }
 
   .rev-btn.main:hover { filter: brightness(1.05); color: var(--on-accent); }
+
+  .rev-select {
+    max-width: min(240px, 100%);
+    min-height: 44px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+  }
+
+  .rev-select:focus { outline: none; box-shadow: 0 0 0 2px var(--teal-600); }
 
   .rev-status {
     flex: 1 0 100%;
@@ -3092,7 +3110,69 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    border-radius: 8px;
   }
+
+  .sub:not(.done) .sub-txt { cursor: grab; touch-action: none; }
+  .sub.dragging { opacity: .5; }
+  .sub.drop-above { box-shadow: inset 0 3px 0 0 var(--teal-600); }
+  .sub.drop-below { box-shadow: inset 0 -3px 0 0 var(--teal-600); }
+
+  /* 子任务到期：默认只露一个小胶囊，点开才出现日期框 */
+  .sub-date-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+    min-height: 44px;
+    padding: 0 8px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--teal-700);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  .sub-date-btn:hover { background: var(--teal-50); }
+  .sub-date-btn.over { color: var(--red-700); }
+  .sub-date-btn:not(.has) { color: var(--gray-600); }
+
+  .sub-editor {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 2px 4px 8px 48px;
+  }
+
+  .sub-editor .date-input { min-height: 44px; }
+
+  .sub-editor .d-act {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+  }
+
+  .subs-done-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-top: 2px;
+    padding: 0 8px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--gray-600);
+    background: none;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .subs-done-toggle:hover { color: var(--gray-800); background: var(--gray-100); }
+  .subs-done[hidden] { display: none; }
 
   .sub-tick {
     width: 44px;
@@ -3322,6 +3402,47 @@
     box-shadow: var(--shadow-card);
   }
 
+  .av-frame {
+    width: min(92vw, 1000px);
+    height: 70vh;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .av-text {
+    width: min(92vw, 1000px);
+    max-height: 70vh;
+    margin: 0;
+    padding: 16px 18px;
+    overflow: auto;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    color: var(--gray-800);
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .av-other {
+    max-width: min(92vw, 620px);
+    padding: 22px 24px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    color: var(--gray-800);
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
   /* 说明与按钮都落在实心胶囊上：压在遮罩上直接写字达不到 AA */
   .av-bar {
     display: flex;
@@ -3506,8 +3627,34 @@
   .mx-q[data-q="nu"] { border-top-color: var(--yellow-500); }
   .mx-q[data-q="nn"] { border-top-color: var(--gray-400); }
   .mx-q.drop { border-color: var(--teal-600); box-shadow: inset 0 0 0 1px var(--teal-600); }
+  /* 折叠后只剩标题行；卡片从 DOM 里就不渲染，拖到这一格照样收 */
+  .mx-q.closed { min-height: 0; }
+  .mx-q.closed .mx-empty { display: none; }
 
-  .mx-head { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .mx-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 2px;
+    font-family: inherit;
+    text-align: left;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mx-fold {
+    margin-left: 4px;
+    display: inline-flex;
+    color: var(--gray-600);
+    transition: transform .16s var(--ease-enter);
+  }
+
+  .mx-q.closed .mx-fold { transform: rotate(-90deg); }
   .mx-name { font-size: 13px; font-weight: 600; color: var(--gray-800); }
   .mx-sub { font-size: 11px; color: var(--text-muted); }
   .mx-n { margin-left: auto; font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
@@ -4079,6 +4226,9 @@
         <button id="review-copy" class="rev-btn main" type="button">复制 Markdown</button>
         <button id="review-ai" class="rev-btn" type="button">复制给 AI 润色</button>
         <button id="review-download" class="rev-btn" type="button">下载 .md</button>
+        <select id="review-target" class="rev-select" aria-label="写回目标"></select>
+        <button id="review-write" class="rev-btn" type="button">写回</button>
+        <button id="review-undo" class="rev-btn" type="button" hidden>撤销写回</button>
         <span class="spacer"></span>
         <button id="review-done" class="rev-btn" type="button">关闭</button>
         <span class="rev-status" id="review-status" role="status" aria-live="polite"></span>
@@ -4114,18 +4264,21 @@
     </div>
   </div>
 
-  <!-- 附件大图：只有这一层用遮罩，文字与按钮都落在实心胶囊上 -->
-  <div id="att-viewer" class="att-viewer" hidden role="dialog" aria-modal="true" aria-label="查看附件大图">
+  <!-- 附件预览：只有这一层用遮罩，文字与按钮都落在实心胶囊上 -->
+  <div id="att-viewer" class="att-viewer" hidden role="dialog" aria-modal="true" aria-label="预览附件">
     <div class="av-stage">
       <button id="av-prev" class="av-btn" type="button" aria-label="上一张"></button>
       <img id="av-img" class="av-img" alt="附件图片">
+      <iframe id="av-frame" class="av-frame" title="PDF 附件预览" hidden></iframe>
+      <pre id="av-text" class="av-text" tabindex="0" aria-label="文本附件预览" hidden></pre>
+      <div id="av-other" class="av-other" hidden></div>
       <button id="av-next" class="av-btn" type="button" aria-label="下一张"></button>
     </div>
     <div class="av-bar">
       <span class="av-name" id="av-name"></span>
       <span class="av-n" id="av-n"></span>
-      <button id="av-save" class="av-btn" type="button" aria-label="下载这张图片"></button>
-      <button id="av-close" class="av-btn" type="button" aria-label="关闭大图"></button>
+      <button id="av-save" class="av-btn" type="button" aria-label="下载附件"></button>
+      <button id="av-close" class="av-btn" type="button" aria-label="关闭预览"></button>
     </div>
   </div>
 
@@ -4158,6 +4311,7 @@
   const THUMB_CACHE_MAX = 240;          // 内存里缓存多少个 objectURL，超了就淘汰最老的
   const ATT_MAX = 8;                    // 单条任务最多几个附件
   const ATT_SIZE_MAX = 5 * 1024 * 1024; // 单个文件最大 5MB
+  const ATT_TEXT_MAX = 200 * 1024;      // 文本附件只内联预览前 200KB，再大就只给下载
   const ATT_EMBED_MAX = 2 * 1024 * 1024; // 导出备份时，超过这个体积的文件不写进 JSON
   const ATT_JSON_MAX = 12000000;         // 备份 JSON 里附件数据的总体积上限，免得文件大到导不出去
   const REM_KEY = 'todo.reminded';       // 已经弹过的精确提醒：{ 任务id: 那次提醒的时刻 }
@@ -4408,6 +4562,9 @@
   const tagmList = $('tagm-list');
   const attViewer = $('att-viewer');
   const avImg = $('av-img');
+  const avFrame = $('av-frame');
+  const avText = $('av-text');
+  const avOther = $('av-other');
   const avPrev = $('av-prev');
   const avNext = $('av-next');
   const avName = $('av-name');
@@ -4432,6 +4589,9 @@
   const reviewSub = $('review-sub');
   const reviewText = $('review-text');
   const reviewStatus = $('review-status');
+  const reviewTarget = $('review-target');
+  const reviewWrite = $('review-write');
+  const reviewUndo = $('review-undo');
   const reviewClose = $('review-close');
   const reviewDone = $('review-done');
   const reviewCopy = $('review-copy');
@@ -4461,6 +4621,7 @@
   let undoTimer = null;
   let batchOn = false;          // 批量整理模式（只活在当前页面，不进 prefs）
   let reviewDirty = false;      // 复盘内容被改过：切周期前要问一声
+  let reviewUndoTimer = 0;      // 复盘弹窗里的「撤销写回」按钮到点自动收
   const batchSel = new Set();   // 批量模式下勾选的任务 id
   let kbId = null;              // 键盘光标停在哪个任务上
   let pomoEndAt = 0;            // 番茄钟结束时间戳，0 = 没在计时
@@ -4474,11 +4635,13 @@
   let reminded = loadReminded(); // 已经响过的精确提醒 { 任务id: 那一刻 }，刷新页面也不重复弹
   const ringing = [];            // 到点了但用户还没处理完的提醒，显示在提醒横幅里
   let renamingTag = '';          // 分类管理面板里正在改名的那一个（不跨会话保存）
-  let viewerItems = null;        // 大图查看器当前这组图片附件（不跨会话保存）
-  let viewerTaskId = '';         // 查看器绑在哪条任务上，图片清单每次从它现取
+  let viewerItems = null;        // 查看器当前这组附件（不跨会话保存）
+  let viewerTaskId = '';         // 查看器绑在哪条任务上，清单每次从它现取
   let viewerIdx = 0;
-  let viewerUrl = '';            // 正在展示的图片 objectURL，切换/关闭时必须 revoke
-  let viewerSeq = 0;             // 翻图序号：异步回来的旧图直接丢弃，免得慢图盖掉刚选的那张
+  let viewerUrl = '';            // 正在展示的附件 objectURL，切换/关闭时必须 revoke
+  let viewerSeq = 0;             // 翻页序号：异步回来的旧内容直接丢弃，免得慢内容盖掉刚选的那份
+  let viewerImageOnly = false;   // 图片画廊模式（多张翻页）还是单份预览（PDF / 文本）
+  let viewerSingleId = '';       // 单份预览看的是哪个附件
   let boardDropAt = 0;           // 刚拖完看板卡片的时间戳，紧随的那次 click 要忽略
   const _now = new Date();
   let calY = _now.getFullYear();
@@ -4552,6 +4715,20 @@
     { key: 'nodate', label: '无日期' },
   ];
 
+  // 子任务：文字 ≤120 字，可带自己的到期日（YYYY-MM-DD，非法值直接丢掉）
+  function normSubs(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+      .filter(s => s && typeof s.text === 'string' && s.text.trim())
+      .slice(0, 50)
+      .map(s => ({
+        id: typeof s.id === 'string' && s.id ? s.id : uid(),
+        text: s.text.trim().slice(0, 120),
+        done: !!s.done,
+        due: isDay(s.due) ? s.due : '',
+      }));
+  }
+
   function loadList(id) {
     let raw;
     try {
@@ -4572,9 +4749,7 @@
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.att = normAtt(o.att);
-      o.subs = (Array.isArray(o.subs) ? o.subs : [])
-        .filter(s => s && typeof s.text === 'string' && s.text.trim())
-        .map(s => ({ id: s.id || uid(), text: s.text, done: !!s.done }));
+      o.subs = normSubs(o.subs);
       return o;
     });
   }
@@ -4944,9 +5119,7 @@
       o.tags = normTags(o.tags, typeof o.tag === 'string' ? o.tag : '');
       delete o.tag;
       o.att = normAtt(o.att);
-      o.subs = (Array.isArray(o.subs) ? o.subs : [])
-        .filter(s => s && typeof s.text === 'string' && s.text.trim())
-        .map(s => ({ id: s.id || uid(), text: s.text, done: !!s.done }));
+      o.subs = normSubs(o.subs);
       if (typeof o.listId !== 'string' || !o.listId) delete o.listId;
       out.push(o);
     }
@@ -5155,7 +5328,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [] };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -5166,6 +5339,10 @@
       if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
       p.sideCollapsed = !!p.sideCollapsed;
       p.logOpen = p.logOpen !== false;
+      // 矩阵里被折叠的象限（QUADS 的 key）；QUADS 在下面才定义，这里用字面量校验
+      p.mxClosed = Array.isArray(p.mxClosed)
+        ? [...new Set(p.mxClosed.filter(k => typeof k === 'string' && /^(iu|in|nu|nn)$/.test(k)))]
+        : [];
       if (!['manual', 'due', 'priority', 'created'].includes(p.sort)) p.sort = 'manual';
       if (!['day', 'week', 'month'].includes(p.reviewPeriod)) p.reviewPeriod = 'day';
       // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
@@ -6759,8 +6936,6 @@
     { key: 'nn', name: '不重要不紧急', hint: '有空再说' },
   ];
 
-  const P_RANK = { high: 0, mid: 1, low: 2 };
-
   function isUrgentTask(task) {
     const d = dueInDays(task);
     return d !== null && d <= 0;
@@ -6783,23 +6958,25 @@
 
     const groups = new Map(QUADS.map(q => [q.key, []]));
     for (const t of open) groups.get(quadOf(t)).push(t);
+    // 象限内按存储顺序（数组顺序 = 手动顺序），置顶的永远在最前；不再按到期日重排，
+    // 否则拖出来的顺序下一次渲染就被覆盖了。
     for (const group of groups.values()) {
-      group.sort((a, b) => {
-        if (a.pin !== b.pin) return a.pin ? -1 : 1;
-        const da = dueInDays(a), db = dueInDays(b);
-        const va = da === null ? 9999 : da, vb = db === null ? 9999 : db;
-        return va - vb || (P_RANK[level(a)] - P_RANK[level(b)]) || ((a.createdAt || 0) - (b.createdAt || 0));
-      });
+      group.sort((a, b) => (a.pin === b.pin ? 0 : a.pin ? -1 : 1));
     }
 
+    const closed = new Set(prefs.mxClosed || []);
     for (const q of QUADS) {
       const items = groups.get(q.key);
+      const isClosed = closed.has(q.key);
       const el = document.createElement('div');
-      el.className = 'mx-q';
+      el.className = 'mx-q' + (isClosed ? ' closed' : '');
       el.dataset.q = q.key;
 
-      const head = document.createElement('div');
+      const head = document.createElement('button');
+      head.type = 'button';
       head.className = 'mx-head';
+      head.setAttribute('aria-expanded', String(!isClosed));
+      head.setAttribute('aria-label', q.name + '，' + items.length + ' 项，' + (isClosed ? '展开' : '收起'));
       const nm = document.createElement('span');
       nm.className = 'mx-name';
       nm.textContent = q.name;
@@ -6809,9 +6986,21 @@
       const n = document.createElement('span');
       n.className = 'mx-n';
       n.textContent = String(items.length);
-      head.append(nm, sub, n);
+      const fold = document.createElement('span');
+      fold.className = 'mx-fold';
+      fold.innerHTML = icon('chevronDown', 14);
+      head.append(nm, sub, n, fold);
+      head.addEventListener('click', () => {
+        const now = new Set(prefs.mxClosed || []);
+        if (now.has(q.key)) now.delete(q.key);
+        else now.add(q.key);
+        prefs.mxClosed = [...now];
+        save();
+        render();
+      });
       el.append(head);
 
+      if (isClosed) { matrix.append(el); continue; }
       if (!items.length) {
         const tip = document.createElement('div');
         tip.className = 'mx-empty';
@@ -6893,10 +7082,21 @@
 
     const cells = [...matrix.children].filter(el => el.classList.contains('mx-q'));
     const startX = ev.clientX, startY = ev.clientY;
-    let ghost = null, target = null, moved = false;
+    let ghost = null, target = null, insertBefore = null, moved = false;
 
     const mark = () => {
       for (const el of cells) el.classList.toggle('drop', el === target);
+      for (const el of matrix.querySelectorAll('.bd-card')) el.classList.remove('drop-above', 'drop-below');
+      if (!target || target.classList.contains('closed')) return;
+      const beforeEl = insertBefore
+        ? [...target.querySelectorAll('.bd-card')].find(el => el.dataset.id === insertBefore)
+        : null;
+      if (beforeEl) {
+        beforeEl.classList.add('drop-above');
+        return;
+      }
+      const cards = [...target.querySelectorAll('.bd-card')].filter(el => el.dataset.id !== id);
+      if (cards.length) cards[cards.length - 1].classList.add('drop-below');
     };
 
     const hit = (x, y) => {
@@ -6905,6 +7105,17 @@
         if (x >= r.left && x <= r.right && y >= r.top - 10 && y <= r.bottom + 10) return el;
       }
       return null;
+    };
+
+    // 象限内落点：指针在卡片上半部分 = 插到它前面，否则排到末尾
+    const dropPos = (cell, y) => {
+      if (cell.classList.contains('closed')) return '';
+      const cards = [...cell.querySelectorAll('.bd-card')].filter(el => el.dataset.id !== id);
+      for (const el of cards) {
+        const r = el.getBoundingClientRect();
+        if (y < r.top + r.height / 2) return el.dataset.id;
+      }
+      return '';
     };
 
     const onMove = (e) => {
@@ -6920,6 +7131,7 @@
       ghost.style.left = (e.clientX - 24) + 'px';
       ghost.style.top = (e.clientY - 16) + 'px';
       target = hit(e.clientX, e.clientY);
+      insertBefore = target ? dropPos(target, e.clientY) : null;
       mark();
     };
 
@@ -6929,12 +7141,13 @@
       document.removeEventListener('pointercancel', finish);
       card.classList.remove('dragging');
       for (const el of cells) el.classList.remove('drop');
+      for (const el of matrix.querySelectorAll('.bd-card')) el.classList.remove('drop-above', 'drop-below');
       if (ghost) ghost.remove();
       dragging = null;
       if (!moved) return;
       boardDropAt = Date.now();
       if (!target) { render(); return; }
-      matrixMove(id, target.dataset.q);
+      matrixDrop(id, target.dataset.q, insertBefore === null ? undefined : insertBefore);
     };
 
     document.addEventListener('pointermove', onMove);
@@ -6942,7 +7155,27 @@
     document.addEventListener('pointercancel', finish);
   }
 
-  function matrixMove(id, qKey, keepFocus) {
+  function matrixHas(task, qKey) {
+    return !task.done && quadOf(task) === qKey;
+  }
+
+  // 跟看板同一套槽位写法：只重写这个象限成员占的数组位置，别的项一个不动
+  function matrixPlace(id, qKey, beforeId) {
+    const slots = [];
+    const members = [];
+    tasks.forEach((t, i) => { if (matrixHas(t, qKey)) { members.push(t); slots.push(i); } });
+    const ids = members.map(t => t.id).filter(x => x !== id);
+    let at = beforeId ? ids.indexOf(beforeId) : ids.length;
+    if (at < 0) at = ids.length;
+    ids.splice(at, 0, id);
+    const byId = new Map(tasks.map(t => [t.id, t]));
+    const next = tasks.slice();
+    slots.forEach((slot, k) => { next[slot] = byId.get(ids[k]); });
+    tasks = next;
+  }
+
+  // 拖到某象限：换优先级 / 到期日的规则不变；给了 beforeId 就插到那张卡前面
+  function matrixDrop(id, qKey, beforeId) {
     const task = tasks.find(t => t.id === id);
     const q = QUADS.find(x => x.key === qKey);
     if (!task || !q || task.done) return;
@@ -6951,6 +7184,8 @@
     const wantUrg = q.key[1] === 'u';
     const wasImp = level(task) !== 'low';
     const wasUrg = isUrgentTask(task);
+    const wasPriority = task.priority;
+    const wasDue = task.due;
 
     let nextPriority = task.priority;
     let nextDue = task.due;
@@ -6960,18 +7195,27 @@
       else if (isUrgentTask(task)) nextDue = dayKey(shiftDays(1).getTime());
     }
 
-    if (nextPriority === task.priority && nextDue === task.due) return;
-    // 快照必须在改数据之前拍，否则撤销拿到的就是改后的状态
-    snapshot('已把「' + clip(task.text) + '」移到「' + q.name + '」', tasks);
+    const orderBefore = tasks.filter(t => matrixHas(t, qKey)).map(t => t.id);
+    // 字段和数组顺序都会变，快照必须在这之前深拷
+    const beforeSnap = JSON.parse(JSON.stringify(tasks));
     task.priority = nextPriority;
     task.due = nextDue;
+    if (beforeId !== undefined) matrixPlace(id, qKey, beforeId);
+    const orderAfter = tasks.filter(t => matrixHas(t, qKey)).map(t => t.id);
+    if (nextPriority === wasPriority && nextDue === wasDue
+      && orderBefore.join('\u0001') === orderAfter.join('\u0001')) return;
+
+    snapshot('已把「' + clip(task.text) + '」移到「' + q.name + '」', beforeSnap);
     save();
     render();
+    if (beforeId !== undefined) return;   // 拖完不抢焦点
     // 键盘归类后新 DOM 会丢焦点，把它接回去才能连按 1–4
-    if (keepFocus) {
-      const again = [...matrix.querySelectorAll('.bd-card')].find(el => el.dataset.id === id);
-      if (again) again.focus();
-    }
+    const again = [...matrix.querySelectorAll('.bd-card')].find(el => el.dataset.id === id);
+    if (again) again.focus();
+  }
+
+  function matrixMove(id, qKey) {
+    matrixDrop(id, qKey, undefined);
   }
 
   // ---------- 今日复盘：把一天的结果整理成能直接发出去的文字 ----------
@@ -7209,6 +7453,85 @@
     reviewStatus.classList.toggle('err', !!bad);
   }
 
+  // 写回目标：这条复盘相关的任务排前面（今天要做 / 本期完成 / 本期新建），其余按存储顺序垫后
+  function reviewCandidates(period) {
+    const r = reviewRange(period);
+    const startMs = r.start.getTime(), endMs = r.end.getTime();
+    const today = dayKey(Date.now());
+    const relevant = (t) => {
+      if (!t.done && t.due && t.due <= today) return true;
+      const st = clampStart(t.startAt);
+      if (st >= startMs && st < endMs) return true;
+      if (t.done && typeof t.completedAt === 'number' && t.completedAt >= startMs && t.completedAt < endMs) return true;
+      return typeof t.createdAt === 'number' && t.createdAt >= startMs && t.createdAt < endMs;
+    };
+    return tasks.slice()
+      .sort((a, b) => {
+        if (relevant(a) !== relevant(b)) return relevant(a) ? -1 : 1;
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        return 0;
+      })
+      .slice(0, 50);
+  }
+
+  function syncReviewTarget() {
+    const keep = reviewTarget.value;
+    const opts = [];
+    const logOpt = document.createElement('option');
+    logOpt.value = 'log';
+    logOpt.textContent = '写进今日流水（摘要一行）';
+    opts.push(logOpt);
+    for (const t of reviewCandidates(prefs.reviewPeriod)) {
+      const o = document.createElement('option');
+      o.value = t.id;
+      o.textContent = (t.done ? '✓ ' : '') + t.text.slice(0, 30)
+        + (tagsOf(t).length ? ' #' + tagsOf(t)[0] : '');
+      opts.push(o);
+    }
+    reviewTarget.textContent = '';
+    for (const o of opts) reviewTarget.append(o);
+    if (keep && [...reviewTarget.options].some(o => o.value === keep)) reviewTarget.value = keep;
+  }
+
+  function showReviewUndo() {
+    reviewUndo.hidden = false;
+    clearTimeout(reviewUndoTimer);
+    reviewUndoTimer = setTimeout(() => { reviewUndo.hidden = true; }, 6000);
+  }
+
+  function reviewWriteBack() {
+    const text = reviewText.value.trim();
+    if (!text) { reviewFlash('复盘是空的，先写点内容再写回', true); return; }
+    const target = reviewTarget.value;
+    if (!target) { reviewFlash('先选一个写回目标', true); return; }
+
+    if (target === 'log') {
+      const line = text.split('\n').map(x => x.trim()).find(x => /完成\s*\d/.test(x)) || '';
+      const entry = ('复盘：' + (line || text.replace(/\s+/g, ' '))).slice(0, 200);
+      snapshot('已把复盘写进今日流水', tasks, undefined, undefined, undefined, worklog);
+      addLog(entry);
+      showReviewUndo();
+      reviewFlash('已记进今日流水（6 秒内可撤销）');
+      return;
+    }
+
+    const task = tasks.find(t => t.id === target);
+    if (!task) { reviewFlash('这条任务已经不在了，换一个目标', true); syncReviewTarget(); return; }
+    const note = task.note || '';
+    if (note.length >= 500) { reviewFlash('这条任务的备注已经满了，先删掉一些再写回', true); return; }
+    const block = '\n【' + dayKey(Date.now()) + ' 复盘】\n' + text + '\n';
+    const room = 500 - note.length;
+    const add = block.length <= room ? block : block.slice(0, room);
+    if (!add.trim()) { reviewFlash('备注放不下了，先删掉一些再写回', true); return; }
+    const beforeSnap = JSON.parse(JSON.stringify(tasks));
+    task.note = note + add;
+    snapshot('已把复盘写进「' + clip(task.text) + '」的备注', beforeSnap);
+    save();
+    render();
+    showReviewUndo();
+    reviewFlash('已写进「' + clip(task.text) + '」的备注（6 秒内可撤销）');
+  }
+
   function syncReviewTabs() {
     for (const b of reviewTabs.querySelectorAll('.rev-tab')) {
       const on = b.dataset.period === prefs.reviewPeriod;
@@ -7220,6 +7543,7 @@
   function openReview(open) {
     if (open) {
       syncReviewTabs();
+      syncReviewTarget();
       reviewText.value = buildReview(prefs.reviewPeriod);
       reviewDirty = false;
       reviewTitle.textContent = '复盘';
@@ -7241,6 +7565,7 @@
       prefs.reviewPeriod = period;
       save();
       syncReviewTabs();
+      syncReviewTarget();
       reviewText.value = buildReview(period);
       reviewDirty = false;
       reviewSub.textContent = '清单「' + currentList().name + '」 · ' + reviewPeriodDesc(period)
@@ -7325,6 +7650,12 @@
       : '今日复盘-' + dayKey(Date.now()) + '.md';
     saveAsBlob(new Blob([reviewText.value], { type: 'text/markdown;charset=utf-8' }), name);
     reviewFlash('已下载 ' + name);
+  });
+  reviewWrite.addEventListener('click', reviewWriteBack);
+  reviewUndo.addEventListener('click', () => {
+    clearTimeout(reviewUndoTimer);
+    reviewUndo.hidden = true;
+    restoreUndo();
   });
 
   function renderRow(task) {
@@ -7466,6 +7797,20 @@
         sb.append(subs.filter(s => s.done).length + '/' + subs.length);
         sb.title = '子任务已完成 ' + subs.filter(s => s.done).length + ' / ' + subs.length;
         line.append(sb);
+
+        // 下一个（未完成、有日期）子任务的截止日，在行上就能看到
+        const nextSub = subs
+          .filter(s => !s.done && s.due)
+          .sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : 0))[0];
+        if (nextSub) {
+          const sd = document.createElement('span');
+          sd.className = 'tg sd' + (nextSub.due < dayKey(Date.now()) ? ' over' : '');
+          sd.innerHTML = icon('calendar', 12);
+          sd.append('子任务 ' + nextSub.due.slice(5).replace('-', '/'));
+          sd.title = '下一个子任务：' + nextSub.text + ' · ' + nextSub.due
+            + (nextSub.due < dayKey(Date.now()) ? '（已逾期）' : '');
+          line.append(sd);
+        }
       }
 
       if (task.note) {
@@ -7936,8 +8281,7 @@
     box.append(goalLabel, goalEdit, startLabel, startRow);
 
     box.append(noteLabel, note, tagLabel, tagsEdit, subLabel);
-
-    for (const s of task.subs || []) box.append(subRow(task, s));
+    box.append(subsBox(task));
 
     const addRow = document.createElement('div');
     addRow.className = 'sub-add';
@@ -7953,7 +8297,7 @@
       const text = si.value.trim();
       if (!text) return;
       if (!Array.isArray(task.subs)) task.subs = [];
-      task.subs.push({ id: uid(), text, done: false });
+      task.subs.push({ id: uid(), text, done: false, due: '' });
       save();
       render();
     };
@@ -7970,9 +8314,39 @@
     return box;
   }
 
-  function subRow(task, sub) {
+  // 子任务列表：未完成的在上、可拖动排序；完成的收进「已完成 N 项」，点开才展开
+  function subsBox(task) {
+    const box = document.createElement('div');
+    box.className = 'subs-box';
+    const subs = Array.isArray(task.subs) ? task.subs : [];
+    const pending = subs.filter(s => !s.done);
+    const done = subs.filter(s => s.done);
+    for (const s of pending) box.append(subRow(task, s, box));
+    if (done.length) {
+      const wrap = document.createElement('div');
+      wrap.className = 'subs-done';
+      wrap.hidden = true;
+      for (const s of done) wrap.append(subRow(task, s, box));
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'subs-done-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = icon('chevronRight', 14) + '已完成 ' + done.length + ' 项';
+      toggle.addEventListener('click', () => {
+        const openNow = wrap.hidden;
+        wrap.hidden = !openNow;
+        toggle.setAttribute('aria-expanded', String(openNow));
+        toggle.innerHTML = icon(openNow ? 'chevronDown' : 'chevronRight', 14) + '已完成 ' + done.length + ' 项';
+      });
+      box.append(toggle, wrap);
+    }
+    return box;
+  }
+
+  function subRow(task, sub, container) {
     const row = document.createElement('div');
     row.className = 'sub' + (sub.done ? ' done' : '');
+    row.dataset.sub = sub.id;
 
     const tick = document.createElement('button');
     tick.type = 'button';
@@ -7989,6 +8363,56 @@
     txt.className = 'sub-txt';
     txt.textContent = sub.text;
 
+    row.append(tick, txt);
+
+    // 子任务自己的截止日：默认只露一个小胶囊，点开出现日期框
+    if (!sub.done) {
+      const today = dayKey(Date.now());
+      const has = !!sub.due;
+      const over = has && sub.due < today;
+      const dueBtn = document.createElement('button');
+      dueBtn.type = 'button';
+      dueBtn.className = 'sub-date-btn' + (has ? ' has' : '') + (over ? ' over' : '');
+      dueBtn.innerHTML = icon('calendar', 14) + (has ? sub.due.slice(5).replace('-', '/') : '日期');
+      dueBtn.title = has
+        ? '子任务截止 ' + sub.due + (over ? '（已逾期）' : '')
+        : '给这个子任务设截止日';
+      dueBtn.setAttribute('aria-label', (has ? '修改' : '设置') + '子任务「' + sub.text + '」的截止日期');
+      dueBtn.addEventListener('click', () => {
+        const old = container.querySelector('.sub-editor');
+        if (old) old.remove();
+        const ed = document.createElement('div');
+        ed.className = 'sub-editor';
+        const di = document.createElement('input');
+        di.type = 'date';
+        di.className = 'date-input';
+        di.value = sub.due || '';
+        di.setAttribute('aria-label', '子任务「' + sub.text + '」的截止日期');
+        di.addEventListener('change', () => {
+          sub.due = isDay(di.value) ? di.value : '';
+          save();
+          render();
+        });
+        ed.append(di);
+        if (sub.due) {
+          const clr = document.createElement('button');
+          clr.type = 'button';
+          clr.className = 'd-act';
+          clr.innerHTML = icon('close', 14) + '清除';
+          clr.addEventListener('click', () => {
+            sub.due = '';
+            save();
+            render();
+          });
+          ed.append(clr);
+        }
+        row.after(ed);
+        di.focus();
+        try { if (typeof di.showPicker === 'function') di.showPicker(); } catch (e) { /* 老浏览器只聚焦 */ }
+      });
+      row.append(dueBtn);
+    }
+
     const del = document.createElement('button');
     del.type = 'button';
     del.className = 'sub-del';
@@ -7999,9 +8423,81 @@
       save();
       render();
     });
+    row.append(del);
 
-    row.append(tick, txt, del);
+    if (!sub.done) row.addEventListener('pointerdown', (e) => startSubDrag(e, row, task, sub.id, container));
     return row;
+  }
+
+  // 子任务拖动排序：只改未完成那一段的先后，已完成的顺序原样留在后面
+  function startSubDrag(ev, row, task, id, container) {
+    if (dragging || (ev.button !== undefined && ev.button !== 0)) return;
+    if (ev.target.closest && ev.target.closest('button, input, textarea, a, .sub-editor')) return;
+    ev.preventDefault();
+
+    const rows = () => [...container.querySelectorAll(':scope > .sub')];
+    const startX = ev.clientX, startY = ev.clientY;
+    let moved = false, before = null;
+
+    const mark = (y) => {
+      for (const el of rows()) el.classList.remove('drop-above', 'drop-below');
+      before = null;
+      for (const el of rows()) {
+        if (el === row) continue;
+        const r = el.getBoundingClientRect();
+        if (y < r.top + r.height / 2) {
+          before = el.dataset.sub;
+          el.classList.add('drop-above');
+          return;
+        }
+      }
+      const last = rows().filter(el => el !== row).pop();
+      if (last) last.classList.add('drop-below');
+    };
+
+    const onMove = (e) => {
+      if (!moved) {
+        if (Math.abs(e.clientX - startX) < 6 && Math.abs(e.clientY - startY) < 6) return;
+        moved = true;
+        dragging = true;
+        row.classList.add('dragging');
+      }
+      mark(e.clientY);
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      row.classList.remove('dragging');
+      for (const el of rows()) el.classList.remove('drop-above', 'drop-below');
+      dragging = null;
+      if (!moved) return;
+      subsReorder(task, id, before);
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
+  }
+
+  function subsReorder(task, id, beforeId) {
+    const subs = Array.isArray(task.subs) ? task.subs : [];
+    const pending = subs.filter(s => !s.done);
+    const done = subs.filter(s => s.done);
+    const beforeOrder = pending.map(s => s.id);
+    const ids = beforeOrder.filter(x => x !== id);
+    let at = beforeId ? ids.indexOf(beforeId) : ids.length;
+    if (at < 0) at = ids.length;
+    ids.splice(at, 0, id);
+    if (ids.join('\u0001') === beforeOrder.join('\u0001')) { render(); return; }
+    const byId = new Map(subs.map(s => [s.id, s]));
+    // 子任务数组是原地改的，快照必须深拷
+    const beforeSnap = JSON.parse(JSON.stringify(tasks));
+    task.subs = ids.map(x => byId.get(x)).concat(done);
+    snapshot('已调整「' + clip(task.text) + '」的子任务顺序', beforeSnap);
+    save();
+    render();
   }
 
   // ---------- 附件：文件本体放 IndexedDB，任务里只留一份元数据 ----------
@@ -8299,8 +8795,18 @@
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
-  // ---------- 附件大图查看器 ----------
-  // 只记任务 id，图片清单每次从任务现取：附件在查看期间被增删也能跟得上
+  // ---------- 附件预览器 ----------
+  // 图片按组翻页；PDF / 文本 / 其它类型只预览单份。
+  // 只记任务 id 与附件 id，清单每次从任务现取：附件在预览期间被增删也能跟得上
+  function previewKind(att) {
+    const type = String(att && att.type || '').toLowerCase();
+    const name = String(att && att.name || '').toLowerCase();
+    if (/^image\//.test(type)) return 'image';
+    if (type === 'application/pdf' || /\.pdf$/.test(name)) return 'pdf';
+    if (/^text\//.test(type) || /\.(md|markdown|txt|log|csv|json|xml|ya?ml|ini|js|ts|css|html?)$/.test(name)) return 'text';
+    return '';
+  }
+
   function viewerImgs(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return null;
@@ -8308,12 +8814,36 @@
     return imgs.length ? imgs : null;
   }
 
+  function viewerFresh() {
+    if (!viewerImageOnly) return viewerImgs(viewerTaskId);
+    const task = tasks.find(t => t.id === viewerTaskId);
+    if (!task) return null;
+    const att = attOf(task).find(a => a.id === viewerSingleId);
+    return att ? [att] : null;
+  }
+
   function openViewer(taskId, idx) {
     const imgs = viewerImgs(taskId);
     if (!imgs) return;
+    viewerImageOnly = false;
+    viewerSingleId = '';
     viewerTaskId = taskId;
     viewerItems = imgs;
     viewerIdx = Math.min(imgs.length - 1, Math.max(0, idx | 0));
+    attViewer.hidden = false;
+    showViewerItem();
+    avClose.focus();
+  }
+
+  function openSingleView(taskId, attId) {
+    const task = tasks.find(t => t.id === taskId);
+    const att = task && attOf(task).find(a => a.id === attId);
+    if (!att) return;
+    viewerImageOnly = true;
+    viewerSingleId = attId;
+    viewerTaskId = taskId;
+    viewerItems = [att];
+    viewerIdx = 0;
     attViewer.hidden = false;
     showViewerItem();
     avClose.focus();
@@ -8323,11 +8853,20 @@
     if (attViewer.hidden) return;
     attViewer.hidden = true;
     viewerTaskId = '';
+    viewerSingleId = '';
     viewerItems = null;
     viewerIdx = 0;
-    viewerSeq++;              // 让还在路上的异步加载作废，别再往隐藏的图上挂 URL
+    viewerImageOnly = false;
+    viewerSeq++;              // 让还在路上的异步加载作废，别再往隐藏的预览里塞东西
     if (viewerUrl) { URL.revokeObjectURL(viewerUrl); viewerUrl = ''; }
     avImg.removeAttribute('src');
+    avImg.hidden = false;
+    avFrame.removeAttribute('src');
+    avFrame.hidden = true;
+    avText.textContent = '';
+    avText.hidden = true;
+    avOther.textContent = '';
+    avOther.hidden = true;
   }
 
   function viewerStep(delta) {
@@ -8338,25 +8877,67 @@
   }
 
   function showViewerItem() {
-    const fresh = viewerImgs(viewerTaskId);
-    if (!fresh) { closeViewer(); return; }   // 任务没了 / 图片被删光：没有可看的，直接收
+    const fresh = viewerFresh();
+    if (!fresh) { closeViewer(); return; }   // 任务没了 / 附件被删：没有可看的，直接收
     viewerItems = fresh;
     viewerIdx = Math.min(fresh.length - 1, Math.max(0, viewerIdx));
     const att = viewerItems[viewerIdx];
     const seq = ++viewerSeq;
     if (viewerUrl) { URL.revokeObjectURL(viewerUrl); viewerUrl = ''; }
     avImg.removeAttribute('src');
+    avImg.hidden = true;
+    avFrame.removeAttribute('src');
+    avFrame.hidden = true;
+    avText.textContent = '';
+    avText.hidden = true;
+    avOther.textContent = '';
+    avOther.hidden = true;
     const multi = fresh.length > 1;
     avPrev.hidden = !multi;
     avNext.hidden = !multi;
+    const sizeTxt = fmtSize(att.size);
+    const kind = previewKind(att);
     avName.textContent = att.name;
-    avN.textContent = (multi ? (viewerIdx + 1) + ' / ' + fresh.length + ' · ' : '') + fmtSize(att.size);
-    withAttFile(att, (rec) => {
-      if (seq !== viewerSeq) return;   // 已经翻到别张 / 关掉了
-      viewerUrl = URL.createObjectURL(rec.blob);
-      avImg.src = viewerUrl;
-      avImg.alt = '附件图片：' + att.name;
-    }, (txt) => { if (seq === viewerSeq) avName.textContent = txt; });
+    avSave.setAttribute('aria-label', '下载附件 ' + att.name);
+    const fail = (txt, isErr) => {
+      if (seq !== viewerSeq) return;
+      avName.textContent = txt;
+      if (isErr && kind !== 'image') { avOther.textContent = txt; avOther.hidden = false; }
+    };
+    avN.textContent = (multi ? (viewerIdx + 1) + ' / ' + fresh.length + ' · ' : '') + sizeTxt;
+    if (kind === 'image') {
+      avImg.hidden = false;
+      withAttFile(att, (rec) => {
+        if (seq !== viewerSeq) return;   // 已经翻到别张 / 关掉了
+        viewerUrl = URL.createObjectURL(rec.blob);
+        avImg.src = viewerUrl;
+        avImg.alt = '附件图片：' + att.name;
+      }, fail);
+      return;
+    }
+    if (kind === 'pdf') {
+      withAttFile(att, (rec) => {
+        if (seq !== viewerSeq) return;
+        viewerUrl = URL.createObjectURL(rec.blob);
+        avFrame.src = viewerUrl;
+        avFrame.hidden = false;
+      }, fail);
+      return;
+    }
+    if (kind === 'text') {
+      withAttFile(att, async (rec) => {
+        const cut = rec.blob.size > ATT_TEXT_MAX;
+        const part = cut ? rec.blob.slice(0, ATT_TEXT_MAX) : rec.blob;
+        const txt = await part.text();
+        if (seq !== viewerSeq) return;
+        avText.textContent = txt || '（这个文件是空的）';
+        avText.hidden = false;
+        if (cut) avN.textContent = sizeTxt + ' · 只预览前 200 KB';
+      }, fail);
+      return;
+    }
+    avOther.textContent = '这种文件不能在页面里预览，点右边的下载按钮存到本地。';
+    avOther.hidden = false;
   }
 
   avPrev.addEventListener('click', () => viewerStep(-1));
@@ -8434,15 +9015,16 @@
       sz.className = 'att-size';
       sz.textContent = fmtSize(a.size);
 
+      const kind = previewKind(a);
       const view = document.createElement('button');
       view.type = 'button';
       view.className = 'a-btn';
-      view.innerHTML = icon(/^image\//.test(a.type) ? 'eye' : 'download', 16);
-      view.title = /^image\//.test(a.type) ? '看图' : '下载文件';
-      view.setAttribute('aria-label', (/^image\//.test(a.type) ? '预览附件 ' : '下载附件 ') + a.name);
+      view.innerHTML = icon('eye', 16);
+      view.title = kind === 'image' ? '看图' : '预览文件';
+      view.setAttribute('aria-label', '预览附件 ' + a.name);
       view.addEventListener('click', () => {
-        if (/^image\//.test(a.type)) { openViewer(task.id, imgs.indexOf(a)); return; }
-        withAttFile(a, (rec) => saveAsBlob(rec.blob, a.name), say);
+        if (kind === 'image') { openViewer(task.id, imgs.indexOf(a)); return; }
+        openSingleView(task.id, a.id);
       });
 
       const dl = document.createElement('button');
@@ -8472,7 +9054,7 @@
       });
 
       item.append(ic, nm, sz);
-      if (/^image\//.test(a.type)) item.append(view);
+      if (kind) item.append(view);
       item.append(dl, del);
       wrap.append(item);
     }
@@ -9113,7 +9695,7 @@
       note: task.note || '',
       goal: task.goal || '',
       startAt: 0,   // 下一轮还没排期，开始时间不跟着复制
-      subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
+      subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false, due: '' })),
       pin: !!task.pin,
       done: false,
       completedAt: null,
@@ -9637,10 +10219,7 @@
         note: typeof t.note === 'string' ? t.note.slice(0, 500) : '',
         goal: normGoal(t.goal),
         startAt: clampStart(t.startAt),
-        subs: (Array.isArray(t.subs) ? t.subs : [])
-          .filter(s => s && typeof s.text === 'string' && s.text.trim())
-          .slice(0, 50)
-          .map(s => ({ id: typeof s.id === 'string' && s.id ? s.id : uid(), text: s.text.trim().slice(0, 120), done: !!s.done })),
+        subs: normSubs(t.subs),
         pin: !!t.pin,
         focus: clampFocus(t.focus),
         remind: clampRemind(t.remind),
