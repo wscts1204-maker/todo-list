@@ -1835,7 +1835,8 @@
 
   .bg-panel {
     position: absolute;
-    top: 50px;
+    /* 窄屏按钮会换到标题下一行，面板跟着按钮那一行的下沿再让 6px */
+    top: calc(100% + 6px);
     right: 0;
     z-index: 40;
     /* 定位包含块是只有两个按钮宽的 .head-tools，所以宽度按视口算，不能写 max-width:100% */
@@ -1987,6 +1988,142 @@
   .bp-note-ic { flex: none; display: flex; margin-top: 1px; }
 
   .bp-note.err { color: var(--red-700); background: var(--red-50); }
+
+  /* ---------- 插件中心 ---------- */
+  .plug-panel {
+    width: min(332px, calc(100vw - 32px));
+    max-height: min(72vh, calc(100vh - 190px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .pl-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+
+  .pl-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--gray-50);
+  }
+
+  .pl-ic {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    color: var(--teal-700);
+    background: var(--teal-50);
+  }
+
+  .pl-main { flex: 1 1 auto; min-width: 0; }
+
+  .pl-name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-700);
+  }
+
+  .pl-core {
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--teal-700);
+    background: var(--teal-50);
+    border: 1px solid var(--teal-600);
+    border-radius: 999px;
+  }
+
+  .pl-desc {
+    margin-top: 2px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--text-muted);
+  }
+
+  .pl-sw {
+    flex: none;
+    min-width: 62px;
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-600);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+
+  .pl-sw:hover { color: var(--teal-700); border-color: var(--teal-600); }
+
+  .pl-sw.on { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+
+  .pl-sw.on:hover { color: var(--on-accent); background: var(--teal-800); }
+
+  .pl-sw[disabled] { cursor: default; color: var(--teal-700); background: var(--teal-50); border-color: var(--teal-600); }
+
+  /* ---------- 模块卸载只藏入口，数据原样留在本机 ---------- */
+  html[data-off~="lists"] .list-tabs,
+  html[data-off~="lists"] .move-row,
+  html[data-off~="lists"] #batch-move,
+  html[data-off~="tags"] #tag-filters,
+  html[data-off~="tags"] .tag-label,
+  html[data-off~="tags"] .tags-edit,
+  html[data-off~="tags"] .tgs,
+  html[data-off~="tags"] .tag-row,
+  html[data-off~="tags"] #batch-tag,
+  html[data-off~="tags"] #batch-tag-ok,
+  html[data-off~="tags"] #view-board,
+  html[data-off~="explore"] #search-bar,
+  html[data-off~="explore"] #filters,
+  html[data-off~="explore"] #prio-filters,
+  html[data-off~="explore"] #view-list,
+  html[data-off~="explore"] #view-board,
+  html[data-off~="explore"] #view-matrix,
+  html[data-off~="explore"] #sort-wrap,
+  html[data-off~="explore"] #view-hint,
+  html[data-off~="explore"] .vb-sep,
+  html[data-off~="explore"] #calendar-card,
+  html[data-off~="explore"] #kbd-btn,
+  html[data-off~="detail"] .grip,
+  html[data-off~="detail"] .ibtn.more,
+  html[data-off~="detail"] .ibtn.pin,
+  html[data-off~="detail"] .ibtn.snooze,
+  html[data-off~="detail"] .detail,
+  html[data-off~="detail"] .note-flag,
+  html[data-off~="detail"] .att-flag,
+  html[data-off~="detail"] .row-thumbs,
+  html[data-off~="detail"] .tg.pf,
+  html[data-off~="detail"] .tg.sb,
+  html[data-off~="detail"] .tg.sd,
+  html[data-off~="detail"] #tpl-toggle,
+  html[data-off~="detail"] #tpl-box,
+  html[data-off~="detail"] #drag-hint,
+  html[data-off~="remind"] #remind-strip,
+  html[data-off~="remind"] #alarm-strip,
+  html[data-off~="remind"] #today-strip,
+  html[data-off~="remind"] #focus-card,
+  html[data-off~="remind"] .remind-row,
+  html[data-off~="remind"] .focus-row,
+  html[data-off~="remind"] .tg.rm,
+  html[data-off~="remind"] .tg.fo,
+  html[data-off~="review"] #log-card,
+  html[data-off~="review"] #stats,
+  html[data-off~="review"] .backup-row,
+  html[data-off~="review"] #review-btn,
+  html[data-off~="review"] .head-clock,
+  html[data-off~="review"] #bg-btn,
+  html[data-off~="review"] #theme-btn,
+  html[data-off~="explore"][data-off~="review"] #view-bar { display: none !important; }
 
   #bg-file { display: none; }
 
@@ -2424,9 +2561,14 @@
 
   .tm-empty { padding: 20px 0; text-align: center; font-size: 13px; color: var(--text-muted); }
 
-  /* 窄屏上标题会伸到右上角按钮底下，给它们让出位置 */
+  /* 窄屏上三颗按钮横排会压住标题，整体换到标题下面一行 */
   @media (max-width: 431px) {
-    .head-top { padding-right: 96px; }
+    .head-tools {
+      position: relative;
+      width: 100%;
+      justify-content: center;
+      margin-top: 2px;
+    }
   }
 
   @media (max-width: 320px) {
@@ -3829,6 +3971,10 @@
     /* 折叠 = 主栏吃掉整条网格，窄屏本来就是一栏，所以这道规则只存在于本档 */
     html[data-side="off"] .dash { grid-template-columns: minmax(0, 1fr); }
     html[data-side="off"] .side { display: none; }
+    /* 侧栏三张卡全被藏掉（复盘/提醒插件卸了、又没已完成任务）时不留空槽；手动的折叠状态不动 */
+    html[data-side-empty="1"] .dash { grid-template-columns: minmax(0, 1fr); }
+    html[data-side-empty="1"] .side { display: none; }
+    html[data-side-empty="1"] .side-toggle { display: none; }
   }
 
   /* ---------- 打印：只输出清单本身 ---------- */
@@ -3898,8 +4044,19 @@
       <p>管理您的日常任务</p>
       <p class="head-clock" aria-hidden="true"><span id="head-date"></span><span class="hc-dot">·</span><span id="head-clock"></span></p>
       <div class="head-tools">
+        <button id="plug-btn" class="hbtn" type="button" aria-label="插件中心" aria-expanded="false" aria-controls="plug-panel"></button>
         <button id="bg-btn" class="hbtn" type="button" aria-label="更换背景" aria-expanded="false" aria-controls="bg-panel"></button>
         <button id="theme-btn" class="hbtn" type="button" aria-label="切换深色或浅色主题"></button>
+        <div id="plug-panel" class="bg-panel plug-panel" hidden>
+          <div class="bp-head">
+            <span class="bp-head-ic" id="plug-ico" aria-hidden="true"></span>
+            <span class="bp-head-t">插件中心</span>
+            <button type="button" class="bp-x" id="plug-close" aria-label="关闭插件中心"></button>
+          </div>
+          <p class="bp-title">功能模块</p>
+          <div class="pl-list" id="plug-list"></div>
+          <p class="bp-note" id="plug-note"><span class="bp-note-ic" id="plug-note-ic" aria-hidden="true"></span><span id="plug-note-text">卸载只会隐藏入口，任务、分类、备注和记录都留在本机，随时可以装回来。</span></p>
+        </div>
         <div id="bg-panel" class="bg-panel" hidden>
           <div class="bp-head">
             <span class="bp-head-ic" aria-hidden="true"></span>
@@ -3977,7 +4134,7 @@
         <input type="datetime-local" id="new-start" class="date-input start-input" aria-label="开始时间（可空）">
         <span class="tag-hint">只记排期，不影响到期筛选</span>
       </div>
-      <div class="due-row">
+      <div class="due-row tag-row">
         <span class="prio-label">分类：</span>
         <input type="text" id="new-tag" class="tag-input" list="tag-list" maxlength="12" placeholder="学习 / 生活">
         <datalist id="tag-list"></datalist>
@@ -4404,10 +4561,31 @@
     bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
     clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    puzzle: '<path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
   };
 
   function icon(name, size) {
     return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + PATHS[name] + '</svg>';
+  }
+
+  // 插件中心：一个模块一颗开关。核心模块只展示不可卸载，其余卸载后只藏入口，数据原样保留。
+  const PLUGINS = [
+    { id: 'create', name: '任务建立', icon: 'plus', core: true, desc: '输入框、快速添加、批量粘贴，以及优先级 / 到期日 / 目标 / 开始时间 / 重复' },
+    { id: 'lists', name: '清单管理', icon: 'folder', desc: '多清单切换、新建、重命名、排序与跨清单搬运' },
+    { id: 'tags', name: '分类管理', icon: 'tag', desc: '分类胶囊、分类筛选、改名合并与按名字配色' },
+    { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵、日历与快捷键' },
+    { id: 'detail', name: '任务详情与扩展', icon: 'note', desc: '备注、子任务、附件、任务模板、置顶、拖动排序与逾期顺延' },
+    { id: 'remind', name: '提醒与专注', icon: 'bell', desc: '到期横幅、精确提醒、今日专注与番茄钟' },
+    { id: 'dispose', name: '处置与回收', icon: 'checkCircle', core: true, desc: '勾选完成、编辑删除、批量整理、已完成历史、回收站与撤销' },
+    { id: 'review', name: '复盘与保障', icon: 'book', desc: '今日流水、复盘、数据统计、导出导入、打印、主题与背景' },
+  ];
+  const PLUGIN_IDS = PLUGINS.map(p => p.id);
+  const CORE_PLUGINS = PLUGINS.filter(p => p.core).map(p => p.id);
+  const PLUG_NOTE = '卸载只会隐藏入口，任务、分类、备注和记录都留在本机，随时可以装回来。';
+
+  function pluginOn(id) {
+    return !prefs.pluginsOff.includes(id);
   }
 
   const LEVELS = {
@@ -4453,6 +4631,14 @@
   const searchInput = $('search');
   const searchClear = $('search-clear');
   const themeBtn = $('theme-btn');
+  const plugBtn = $('plug-btn');
+  const plugPanel = $('plug-panel');
+  const plugClose = $('plug-close');
+  const plugIco = $('plug-ico');
+  const plugList = $('plug-list');
+  const plugNote = $('plug-note');
+  const plugNoteText = $('plug-note-text');
+  const plugNoteIc = $('plug-note-ic');
   const bgBtn = $('bg-btn');
   const bgPanel = $('bg-panel');
   const bgSwatches = $('bg-swatches');
@@ -5234,6 +5420,11 @@
   }
 
   function renderWorklog() {
+    if (!pluginOn('review')) {
+      logCard.hidden = true;
+      return;
+    }
+    logCard.hidden = false;
     const open = prefs.logOpen !== false;
     logBody.hidden = !open;
     logToggle.innerHTML = icon(open ? 'chevronUp' : 'chevronDown', 20);
@@ -5328,7 +5519,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [] };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [] };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -5345,6 +5536,10 @@
         : [];
       if (!['manual', 'due', 'priority', 'created'].includes(p.sort)) p.sort = 'manual';
       if (!['day', 'week', 'month'].includes(p.reviewPeriod)) p.reviewPeriod = 'day';
+      // 卸载的模块只认这 8 个 id，核心模块永远不允许被记成卸载
+      p.pluginsOff = Array.isArray(p.pluginsOff)
+        ? [...new Set(p.pluginsOff.filter(id => typeof id === 'string' && PLUGIN_IDS.includes(id) && !CORE_PLUGINS.includes(id)))]
+        : [];
       // 分类颜色覆盖表：只认「名字 -> 八个色相之一」，其它内容一律丢掉（旧数据里根本没这个键）
       const tc = p.tagColors;
       p.tagColors = tc && typeof tc === 'object' && !Array.isArray(tc)
@@ -5602,6 +5797,11 @@
   mqWide.addEventListener('change', render);
 
   function renderToday() {
+    if (!pluginOn('remind')) {
+      todayStrip.hidden = true;
+      focusCard.hidden = true;
+      return;
+    }
     placeTodayStrip();
     focusCard.hidden = !mqWide.matches || tasks.length === 0;
     todayStrip.hidden = tasks.length === 0;
@@ -5905,6 +6105,7 @@
   }
 
   function pomoStartFor(id) {
+    if (!pluginOn('remind')) return;
     const t = tasks.find(x => x.id === id);
     if (!t || t.done) return;
     pomoTaskId = id;
@@ -5916,6 +6117,7 @@
   }
 
   function pomoStart() {
+    if (!pluginOn('remind')) return;
     pomoSuggest = '';
     pomoEndAt = Date.now() + prefs.pomoMin * 60 * 1000;
     pomoTick();
@@ -6018,6 +6220,7 @@
   }
 
   function pomoClick() {
+    if (!pluginOn('remind')) return;
     if (breakEndAt) { breakStop(); return; }
     if (pomoEndAt) {
       askConfirm('结束番茄钟', '这一轮还没满 ' + prefs.pomoMin + ' 分钟，现在结束不会计入今天的专注轮数。', pomoStop);
@@ -6575,6 +6778,143 @@
     if (e.target === tagModal) openTagModal(false);
   });
 
+  // ---------- 插件中心 ----------
+  // 卸载只收起入口，不动数据：任务、清单、分类、备注、附件和流水都留在原处。
+  function renderPlugins(msg) {
+    plugList.textContent = '';
+    for (const p of PLUGINS) {
+      const on = pluginOn(p.id);
+      const row = document.createElement('div');
+      row.className = 'pl-row';
+
+      const ic = document.createElement('span');
+      ic.className = 'pl-ic';
+      ic.innerHTML = icon(p.icon, 18);
+
+      const main = document.createElement('div');
+      main.className = 'pl-main';
+
+      const name = document.createElement('div');
+      name.className = 'pl-name';
+      name.append(document.createTextNode(p.name));
+      if (p.core) {
+        const badge = document.createElement('span');
+        badge.className = 'pl-core';
+        badge.textContent = '核心';
+        name.append(badge);
+      }
+
+      const desc = document.createElement('div');
+      desc.className = 'pl-desc';
+      desc.textContent = p.desc;
+
+      main.append(name, desc);
+
+      const sw = document.createElement('button');
+      sw.type = 'button';
+      sw.className = 'pl-sw' + (on ? ' on' : '');
+      sw.dataset.plug = p.id;
+      sw.textContent = p.core ? '内置' : on ? '已安装' : '安装';
+      sw.setAttribute('aria-pressed', String(on));
+      if (p.core) {
+        sw.disabled = true;
+        sw.title = '核心模块：建立任务和处置任务是页面的地基，不能卸载';
+      } else {
+        sw.title = on ? '卸载「' + p.name + '」：只收起入口，数据保留' : '安装「' + p.name + '」';
+        sw.addEventListener('click', () => togglePlugin(p.id));
+      }
+
+      row.append(ic, main, sw);
+      plugList.append(row);
+    }
+
+    plugNoteText.textContent = msg || PLUG_NOTE;
+  }
+
+  function togglePlugin(id) {
+    const p = PLUGINS.find(x => x.id === id);
+    if (!p || p.core) return;
+    const on = pluginOn(id);
+    prefs.pluginsOff = on
+      ? [...new Set([...prefs.pluginsOff, id])]
+      : prefs.pluginsOff.filter(x => x !== id);
+    applyPlugins();
+    renderPlugins(on
+      ? '「' + p.name + '」已卸载：入口收起来了，数据一条没动。'
+      : '「' + p.name + '」已安装，入口都回来了。');
+    const btn = plugList.querySelector('.pl-sw[data-plug="' + id + '"]');
+    if (btn && !plugPanel.hidden) btn.focus();
+    if (!pluginOn('review')) openBgPanel(false);
+  }
+
+  // 把开关状态落到页面：先归一互斥的偏好，再整页重画
+  function applyPlugins() {
+    document.documentElement.dataset.off = PLUGIN_IDS.filter(id => !pluginOn(id)).join(' ');
+
+    if (!pluginOn('explore')) {
+      prefs.view = 'list';
+      prefs.sort = 'manual';
+      prefs.listFilter = 'all';
+      prefs.prioFilter = '';
+      prefs.dayFilter = '';
+      prefs.focusToday = false;
+      query = '';
+      searchInput.value = '';
+      searchClear.hidden = true;
+    }
+    if (!pluginOn('tags')) {
+      prefs.tagFilter = 'all';
+      if (prefs.view === 'board') prefs.view = 'list';
+      if (!tagModal.hidden) openTagModal(false);
+    }
+    if (!pluginOn('lists')) closeListMenu();
+    if (!pluginOn('review')) {
+      reviewModal.hidden = true;
+      prefs.logOpen = true;
+    }
+    if (!pluginOn('detail')) {
+      expanded.clear();
+      if (!tplBox.hidden) closeTpl();
+      if (!attViewer.hidden) closeViewer();
+    }
+    if (!pluginOn('remind')) {
+      clearInterval(pomoTimer);
+      pomoTimer = null;
+      pomoEndAt = 0;
+      breakEndAt = 0;
+      pomoSuggest = '';
+      pomoTaskId = '';
+      pomoPopOpen = false;
+      document.title = BASE_TITLE;
+      ringing.length = 0;
+    }
+
+    let switched = false;
+    if (!pluginOn('lists') && lists.active !== DEFAULT_LIST) {
+      save();                       // 先把当前清单原样存回去，再切回默认清单
+      lists.active = DEFAULT_LIST;
+      saveLists();
+      tasks = loadList(DEFAULT_LIST);
+      resetTransient();
+      switched = true;              // 上面已经把两份数据都写过了，别再 save 一次覆盖
+    }
+
+    if (!switched) save();
+    render();
+    renderPlugins();
+  }
+
+  function openPlugPanel(open) {
+    plugPanel.hidden = !open;
+    plugBtn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      openBgPanel(false);
+      renderPlugins();
+      const first = plugList.querySelector('.pl-sw:not([disabled])');
+      if (first) first.focus();
+    }
+  }
+
   function render() {
     list.textContent = '';
 
@@ -6652,14 +6992,18 @@
     toggleHiddenBtn.textContent = prefs.hideCompleted ? '显示已完成任务' : '隐藏已完成任务';
     statDone.classList.toggle('active', prefs.hideCompleted);
     clearDoneBtn.hidden = done.length === 0;
+    syncSide();
   }
 
   // ---------- 列表 / 看板 / 矩阵三视图 ----------
   function syncView() {
-    const view = prefs.view === 'board' || prefs.view === 'matrix' ? prefs.view : 'list';
+    const explore = pluginOn('explore');
+    // 看板按分类分列，分类模块卸了它就没意义了，退回列表
+    const view = explore && (prefs.view === 'matrix' || (prefs.view === 'board' && pluginOn('tags'))) ? prefs.view : 'list';
     const has = tasks.length > 0;
     document.documentElement.dataset.view = view;
-    viewBar.hidden = !has;
+    // 视图按钮属于「查找与聚焦」，复盘按钮属于「复盘与保障」；两边都卸了才整条收起
+    viewBar.hidden = !has || (!explore && !pluginOn('review'));
     board.hidden = view !== 'board' || !has;
     matrix.hidden = view !== 'matrix' || !has;
     viewListBtn.classList.toggle('on', view === 'list');
@@ -6674,6 +7018,8 @@
   }
 
   function setView(v) {
+    if (!pluginOn('explore')) return;
+    if (v === 'board' && !pluginOn('tags')) return;
     const next = v === 'board' || v === 'matrix' ? v : 'list';
     if (next === prefs.view) return;
     prefs.view = next;
@@ -7542,6 +7888,7 @@
 
   function openReview(open) {
     if (open) {
+      if (!pluginOn('review')) return;
       syncReviewTabs();
       syncReviewTarget();
       reviewText.value = buildReview(prefs.reviewPeriod);
@@ -7976,7 +8323,7 @@
     subLabel.textContent = '子任务';
 
     const tagLabel = document.createElement('span');
-    tagLabel.className = 'd-label';
+    tagLabel.className = 'd-label tag-label';
     tagLabel.textContent = '分类（最多 4 个）';
 
     const tagsEdit = document.createElement('div');
@@ -9220,6 +9567,10 @@
   }
 
   function renderStats(done) {
+    if (!pluginOn('review')) {
+      statsCard.hidden = true;
+      return;
+    }
     statsCard.hidden = tasks.length === 0;
     statsBody.hidden = !prefs.statsOpen;
     statsToggle.innerHTML = icon(prefs.statsOpen ? 'chevronUp' : 'chevronDown', 20);
@@ -9242,7 +9593,7 @@
     overall.append(statRow('已完成', done.length, tasks.length, 'green'));
     statsBody.append(overall);
 
-    const tags = usedTags();
+    const tags = pluginOn('tags') ? usedTags() : [];
     if (tags.length) {
       const sec = stSection('按分类完成率');
       for (const tag of tags) {
@@ -10690,6 +11041,10 @@
   }
 
   function renderRemind() {
+    if (!pluginOn('remind')) {
+      remindStrip.hidden = true;
+      return;
+    }
     const over = overdueCount();
     const todayN = tasks.filter(t => !t.done && dueInDays(t) === 0).length;
     remindStrip.hidden = over === 0;
@@ -10739,6 +11094,7 @@
   // 每天只发一次：todo.notified 记下当天日期
   function notifyDue(force) {
     try {
+      if (!pluginOn('remind')) return;
       if (!('Notification' in window) || Notification.permission !== 'granted') return;
       const today = dayKey(Date.now());
       if (!force && localStorage.getItem(NOTIFIED) === today) return;
@@ -10846,6 +11202,7 @@
   let alarmStale = false;
 
   function remindTick() {
+    if (!pluginOn('remind')) return;
     // 到点时如果正在改标题，先只挂个标记，等下一次心跳再整页刷新
     if (alarmStale) {
       if (editingId !== null) return;
@@ -10924,6 +11281,10 @@
   }
 
   function renderAlarms() {
+    if (!pluginOn('remind')) {
+      alarmStrip.hidden = true;
+      return;
+    }
     pruneRing();
     alarmStrip.hidden = ringing.length === 0;
     alarmStrip.textContent = '';
@@ -10997,6 +11358,10 @@
 
   // ---------- 日历月视图 ----------
   function renderCalendar() {
+    if (!pluginOn('explore')) {
+      calCard.hidden = true;
+      return;
+    }
     calCard.hidden = tasks.length === 0;
     calBody.hidden = !prefs.calOpen;
     calToggle.innerHTML = icon(prefs.calOpen ? 'chevronUp' : 'chevronDown', 20);
@@ -11260,7 +11625,12 @@
     if (field) return;
     if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden || !attViewer.hidden || !reviewModal.hidden || !tagModal.hidden) return;
 
-    if (e.key === '/') { e.preventDefault(); if (!searchBar.hidden) searchInput.focus(); return; }
+    if (e.key === '/') {
+      if (!pluginOn('explore')) return;
+      e.preventDefault();
+      if (!searchBar.hidden) searchInput.focus();
+      return;
+    }
     if (e.key === 'n' || e.key === 'N') {
       e.preventDefault();
       input.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -11272,13 +11642,15 @@
     if (e.key === 'Escape') { kbdClear(); return; }
     // 切视图 / 开复盘跟在任务上没关系，放在「按钮让路」这道闸之前
     if (e.key === 'v' || e.key === 'V') {
+      if (!pluginOn('explore')) return;
       e.preventDefault();
       if (!tasks.length) { backupMsg('先加几条任务，视图才有东西可分', true); return; }
-      const order = ['list', 'board', 'matrix'];
+      const order = pluginOn('tags') ? ['list', 'board', 'matrix'] : ['list', 'matrix'];
       setView(order[(order.indexOf(prefs.view) + 1) % order.length]);
       return;
     }
     if (e.key === 'r' || e.key === 'R') {
+      if (!pluginOn('review')) return;
       e.preventDefault();
       openReview(true);
       return;
@@ -11289,7 +11661,12 @@
     if (!kbId) return;
     if (e.key === ' ') { e.preventDefault(); toggle(kbId); return; }
     if (e.key === 'Enter') { e.preventDefault(); startEdit(kbId); return; }
-    if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePin(kbId); return; }
+    if (e.key === 'p' || e.key === 'P') {
+      if (!pluginOn('detail')) return;
+      e.preventDefault();
+      togglePin(kbId);
+      return;
+    }
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); remove(kbId); kbId = null; }
   });
 
@@ -11359,6 +11736,8 @@
   function syncSide() {
     const off = !!prefs.sideCollapsed;
     document.documentElement.dataset.side = off ? 'off' : 'on';
+    const empty = focusCard.hidden && statsCard.hidden && history.hidden;
+    document.documentElement.dataset.sideEmpty = empty ? '1' : '';
     sideToggle.textContent = off ? '显示侧栏' : '隐藏侧栏';
     sideToggle.setAttribute('aria-pressed', String(off));
     sideToggle.title = off ? '展开右侧的今日专注 / 统计 / 打卡' : '收起右侧栏，任务区占满整行';
@@ -11515,7 +11894,11 @@
   function openBgPanel(open) {
     bgPanel.hidden = !open;
     bgBtn.setAttribute('aria-expanded', String(open));
-    if (open) bgSwatches.querySelector('.sw[aria-pressed="true"]').focus();
+    if (open) {
+      plugPanel.hidden = true;
+      plugBtn.setAttribute('aria-expanded', 'false');
+      bgSwatches.querySelector('.sw[aria-pressed="true"]').focus();
+    }
   }
 
   bgBtn.addEventListener('click', () => openBgPanel(bgPanel.hidden));
@@ -11523,6 +11906,29 @@
   bgClose.addEventListener('click', () => {
     openBgPanel(false);
     bgBtn.focus();
+  });
+
+  plugBtn.addEventListener('click', () => openPlugPanel(plugPanel.hidden));
+
+  plugClose.addEventListener('click', () => {
+    openPlugPanel(false);
+    plugBtn.focus();
+  });
+
+  document.addEventListener('click', (e) => {
+    // 开关点下去会整列重画，等事件冒到这里 e.target 已经脱离文档；用派发时的路径判断才靠得住
+    const path = typeof e.composedPath === 'function' ? e.composedPath() : [];
+    if (plugPanel.hidden) return;
+    if (path.includes(plugPanel) || path.includes(plugBtn)) return;
+    openPlugPanel(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !plugPanel.hidden) {
+      e.preventDefault();
+      openPlugPanel(false);
+      plugBtn.focus();
+    }
   });
 
   document.addEventListener('click', (e) => {
@@ -11543,13 +11949,16 @@
   $('search-ico').innerHTML = icon('search', 18);
   undoBtn.innerHTML = icon('undo', 16) + '撤销';
   bgBtn.innerHTML = icon('image', 20);
+  plugBtn.innerHTML = icon('puzzle', 20);
+  plugIco.innerHTML = icon('puzzle', 16);
+  plugNoteIc.innerHTML = icon('lock', 12);
   kbdIco.innerHTML = icon('keyboard', 24);
   avPrev.innerHTML = icon('chevronLeft', 20);
   avNext.innerHTML = icon('chevronRight', 20);
   avSave.innerHTML = icon('download', 18);
   avClose.innerHTML = icon('close', 18);
   kbdBtn.innerHTML = icon('keyboard', 16) + '键盘快捷键';
-  document.querySelector('.bp-head-ic').innerHTML = icon('palette', 16);
+  bgPanel.querySelector('.bp-head-ic').innerHTML = icon('palette', 16);
   bgClose.innerHTML = icon('close', 16);
   bgNoteIc.innerHTML = icon('lock', 12);
   bgPick.innerHTML = icon('image', 16) + '上传图片';
@@ -11599,6 +12008,7 @@
   // 随时记一条：Ctrl/⌘ + Enter 落到今日流水；已经在别的输入框里写的字不会被误吞
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey) || e.isComposing) return;
+    if (!pluginOn('review')) return;
     const t = e.target;
     if (t && t.closest && t.closest('textarea, select')) return;
     if (!modal.hidden || !reviewModal.hidden || !trashModal.hidden || !kbdModal.hidden || !tagModal.hidden) return;
@@ -11794,7 +12204,7 @@
   scheduleGc();   // 上次没清掉的孤儿附件，开机后静悄悄回收
   syncHeadClock();
   setInterval(syncHeadClock, 1000);
-  render();
+  applyPlugins();                     // 先按插件开关把界面归一，再整页画出来
   notifyDue(false);
   remindTick();                       // 已经到点的提醒，打开页面就补上处置条
   setInterval(remindTick, 15000);     // 页面开着就按时响
