@@ -20,6 +20,7 @@
     --teal-600: #0d9488;
     --teal-700: #0f766e;
     --teal-50: #f0fdfa;
+    --teal-100: #ccfbf1;
     --teal-800: #115e59;
     --green-800: #14532d;
     --green-600: #15803d;
@@ -114,6 +115,7 @@
     --teal-600: #2dd4bf;
     --teal-700: #5eead4;
     --teal-50: #12312e;
+    --teal-100: #1b4a45;
     --teal-800: #99f6e4;
     --green-800: #bbf7d0;
     --green-600: #4ade80;
@@ -2102,6 +2104,8 @@
   html[data-off~="explore"] #view-list,
   html[data-off~="explore"] #view-board,
   html[data-off~="explore"] #view-matrix,
+  html[data-off~="explore"] #view-week,
+  html[data-off~="explore"] #week,
   html[data-off~="explore"] #sort-wrap,
   html[data-off~="explore"] #view-hint,
   html[data-off~="explore"] .vb-sep,
@@ -2151,6 +2155,11 @@
   html[data-off~="lists"] #ov-card,
   html[data-off~="health"] #hl-card,
   html[data-off~="import"] #imp-wrap,
+  html[data-off~="week"] #view-week,
+  html[data-off~="week"] #week,
+  html[data-off~="plan"] #plan-wrap,
+  html[data-off~="plan"] #plan-bar,
+  html[data-off~="focus"] #focus-btn,
   html[data-off~="command"][data-off~="explore"] .foot-links,
   html[data-off~="explore"][data-off~="review"] #view-bar { display: none !important; }
 
@@ -3202,6 +3211,7 @@
   .tg.dep { --tg: var(--yellow-800); }
   .tg.es { --tg: var(--teal-700); color: var(--teal-800); font-variant-numeric: tabular-nums; }
   .tg.es.over { --tg: var(--red-700); color: var(--red-800); }
+  .tg.over { --tg: var(--red-700); color: var(--red-800); }
 
   .tick.lk { color: var(--yellow-800); }
   .tick.lk:hover { color: var(--yellow-800); background: var(--yellow-50); }
@@ -4298,6 +4308,364 @@
     .mx-name { font-size: 12px; }
   }
 
+  /* ---------- 周视图：一周七列，横向滑动 ---------- */
+  .week {
+    padding: 2px 12px 14px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .week[hidden] { display: none; }
+  html[data-view="week"] #list { display: none; }
+
+  .wk-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .wk-title { font-size: 13px; font-weight: 700; color: var(--gray-800); font-variant-numeric: tabular-nums; }
+  .wk-sum { font-size: 12px; color: var(--text-muted); }
+  .wk-nav { display: inline-flex; gap: 4px; margin-left: auto; }
+
+  .wk-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--gray-700);
+    background: var(--surface-glass);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .wk-nav-btn:hover { color: var(--gray-800); background: var(--surface); }
+
+  .wk-grid { display: flex; align-items: stretch; gap: 8px; }
+
+  .wk-col {
+    flex: 0 0 156px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 168px;
+    max-height: 58vh;
+    overflow: auto;
+    padding: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    background: var(--surface-glass);
+    scrollbar-width: thin;
+    overscroll-behavior: contain;
+  }
+
+  .wk-col.today { border-color: var(--teal-600); box-shadow: inset 0 0 0 1px var(--teal-600); }
+  .wk-col.weekend { background: var(--gray-50); }
+
+  .wk-day {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 4px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .wk-day:hover { background: var(--gray-100); }
+  .wk-col.today .wk-day { color: var(--teal-800); }
+  .wk-day-n { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .wk-day small { font-size: 11px; font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  .wk-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid var(--card-border);
+    border-left-width: 3px;
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .wk-card.p-high { border-left-color: var(--red-500); }
+  .wk-card.p-mid { border-left-color: var(--yellow-500); }
+  .wk-card.p-low { border-left-color: var(--green-500); }
+  .wk-card:hover { box-shadow: var(--shadow-sm-hover); }
+  .wk-card.done { opacity: .72; }
+  .wk-card.done .wk-txt { color: var(--text-muted); text-decoration: line-through; }
+
+  .wk-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .wk-txt { font-size: 12.5px; color: var(--gray-800); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .wk-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-muted); }
+  .wk-empty { padding: 10px 2px; font-size: 12px; color: var(--text-muted); text-align: center; }
+  .wk-hint { margin: 8px 2px 0; font-size: 11.5px; color: var(--text-muted); }
+
+  @media (max-width: 480px) {
+    .week { padding: 2px 8px 12px; }
+    .wk-col { flex-basis: 140px; }
+  }
+
+  /* ---------- 今日计划：一条计划条 + 挑选弹层 ---------- */
+  .plan-wrap { position: relative; display: inline-flex; }
+
+  .plan-pop {
+    top: calc(100% + 10px);
+    bottom: auto;
+    width: min(300px, calc(100vw - 32px));
+    max-height: min(62vh, 520px);
+    overflow: auto;
+  }
+
+  .plan-preview { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; max-height: 236px; overflow: auto; scrollbar-width: thin; }
+
+  .pl-pick {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 6px 8px;
+    text-align: left;
+    color: var(--gray-800);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 8px;
+  }
+
+  .pl-pick:hover { background: var(--gray-50); border-color: var(--gray-200); }
+  .pl-pick .pl-ico { flex: none; display: inline-flex; color: var(--gray-400); padding-top: 2px; }
+  .pl-pick.on .pl-ico { color: var(--teal-700); }
+  .pl-pick .pl-main { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .pl-pick .pl-txt { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-pick .pl-meta { font-size: 10.5px; color: var(--text-muted); }
+  .pl-pick .pl-min { margin-left: auto; flex: none; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .plan-empty { padding: 14px 4px; font-size: 12px; color: var(--text-muted); text-align: center; }
+  .plan-sum { margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--gray-700); font-variant-numeric: tabular-nums; }
+
+  .plan-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--teal-600);
+    border-radius: 14px;
+    background: var(--teal-50);
+  }
+
+  .plan-bar[hidden] { display: none; }
+
+  .pln-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pln-title { font-size: 13px; font-weight: 700; color: var(--teal-800); }
+  .pln-sub { font-size: 11.5px; color: var(--teal-800); font-variant-numeric: tabular-nums; }
+
+  .pln-track {
+    width: 88px;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--teal-100);
+  }
+
+  .pln-track i { display: block; height: 100%; border-radius: inherit; background: var(--teal-600); }
+  .pln-clear {
+    margin-left: auto;
+    min-height: 44px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--teal-800);
+    background: none;
+    border: 1px solid var(--teal-600);
+    border-radius: 999px;
+  }
+
+  .pln-clear:hover { background: var(--teal-100); }
+  .pln-chips { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+
+  .pln-chip {
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid var(--teal-600);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+
+  .pln-chip.done { border-color: var(--gray-300); background: var(--gray-50); }
+  .pln-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 210px;
+    min-height: 44px;
+    padding: 0 4px 0 12px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--teal-800);
+    background: none;
+    border: none;
+  }
+
+  .pln-go span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pln-chip.done .pln-go { color: var(--text-muted); text-decoration: line-through; }
+  .pln-go:hover { color: var(--teal-800); background: var(--teal-50); }
+  .pln-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-height: 44px;
+    color: var(--gray-500);
+    background: none;
+    border: none;
+    border-left: 1px solid var(--gray-200);
+  }
+
+  .pln-x:hover { color: var(--red-700); background: var(--red-50); }
+
+  /* ---------- 专注模式：全屏只看一件 ---------- */
+  html[data-focus="1"] body { overflow: hidden; }
+
+  .focus-backdrop {
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .focus-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    padding: 18px 20px 20px;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-dialog);
+    animation: dlg-in .18s var(--ease-enter);
+  }
+
+  .focus-top { display: flex; align-items: center; gap: 8px; }
+  .focus-pos { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  .focus-x {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--gray-500);
+    background: none;
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .focus-x:hover { color: var(--gray-800); background: var(--gray-100); }
+  .focus-title { margin: 0; font-size: 21px; line-height: 1.4; color: var(--gray-800); overflow-wrap: anywhere; }
+  .focus-goal { margin: 0; font-size: 13px; line-height: 1.6; color: var(--gray-700); padding: 8px 10px; border-left: 3px solid var(--teal-600); border-radius: 6px; background: var(--teal-50); }
+  .focus-goal[hidden] { display: none; }
+  .focus-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .focus-subs { display: flex; flex-direction: column; gap: 4px; max-height: 30vh; overflow: auto; scrollbar-width: thin; }
+  .focus-subs:empty { display: none; }
+
+  .fs-sub {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 6px 8px;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: left;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    border: 1px solid transparent;
+    border-radius: 9px;
+  }
+
+  .fs-sub:hover { background: var(--gray-100); }
+  .fs-sub .fs-ico { flex: none; display: inline-flex; color: var(--gray-400); }
+  .fs-sub.done .fs-ico { color: var(--teal-700); }
+  .fs-sub.done .fs-txt { color: var(--text-muted); text-decoration: line-through; }
+
+  .focus-time {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: var(--surface-glass);
+  }
+
+  .focus-time[hidden] { display: none; }
+  .focus-clock { font-size: 26px; font-weight: 700; color: var(--gray-800); font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+
+  .focus-tbtn {
+    margin-left: auto;
+    min-height: 44px;
+    padding: 0 16px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-800);
+    background: var(--teal-50);
+    border: 1px solid var(--teal-600);
+    border-radius: 999px;
+  }
+
+  .focus-tbtn:hover { background: var(--teal-100); }
+  .focus-tbtn.run { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+  .focus-tbtn.run:hover { background: var(--teal-800); }
+  .focus-acts { display: flex; gap: 10px; }
+
+  .focus-act {
+    flex: 1;
+    min-height: 48px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 12px;
+  }
+
+  .focus-act:hover { background: var(--gray-50); }
+  .focus-act.main { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+  .focus-act.main:hover { background: var(--teal-800); }
+  .focus-hint { margin: 0; font-size: 11.5px; color: var(--text-muted); text-align: center; }
+
+  @media (max-width: 480px) {
+    .focus-stage { padding: 14px 14px 16px; gap: 12px; }
+    .focus-title { font-size: 19px; }
+    .focus-clock { font-size: 22px; }
+  }
+
   /* 侧栏折叠按钮只属于双栏那一档 */
   .side-toggle { display: none; }
 
@@ -4457,7 +4825,7 @@
     #kbd-btn, .foot-links, .backup-row, #undo-bar, #batch-bar, .backdrop, #ics-wrap, #exp-wrap,
     .search-bar, .filter-bar, .smart-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total,
-    .att-viewer, .board, .matrix, .view-bar, .row-thumbs { display: none !important; }
+    .att-viewer, .board, .matrix, .week, .view-bar, .row-thumbs, #plan-bar, .plan-wrap { display: none !important; }
     /* 看板视图在屏幕上是靠 html[data-view] 藏住清单的；打印永远输出列表那份 */
     #list { display: block !important; }
     html[data-pu="1"] li[data-done="1"] { display: none !important; }
@@ -4646,6 +5014,23 @@
         <button id="clear-done" class="tbtn gray" type="button">清空已完成</button>
         <button id="clear-all" class="tbtn gray" type="button">全部清空</button>
         <button id="trash-btn" class="tbtn gray" type="button">回收站</button>
+        <span id="plan-wrap" class="print-wrap plan-wrap">
+          <button id="plan-btn" class="tbtn gray" type="button" aria-expanded="false" aria-controls="plan-pop">今日计划</button>
+          <div id="plan-pop" class="print-pop plan-pop" hidden>
+            <div class="pt-t">今日计划 · 只从当前清单挑</div>
+            <div id="plan-budget" class="pp-chips plan-budget" role="group" aria-label="今天准备做多久">
+              <button class="fbtn" type="button" data-min="30">30 分</button>
+              <button class="fbtn" type="button" data-min="60">1 小时</button>
+              <button class="fbtn" type="button" data-min="90">1.5 小时</button>
+              <button class="fbtn" type="button" data-min="120">2 小时</button>
+            </div>
+            <div id="plan-preview" class="plan-preview"></div>
+            <div id="plan-sum" class="plan-sum">共 0 件 · 预计 0 分</div>
+            <button id="plan-shuffle" class="pp-no" type="button">按优先级重新挑</button>
+            <button id="plan-go" class="pp-go" type="button">开始今日计划</button>
+          </div>
+        </span>
+        <button id="focus-btn" class="tbtn gray" type="button">专注模式</button>
         <button id="side-toggle" class="tbtn gray side-toggle" type="button" aria-pressed="false">隐藏侧栏</button>
       </div>
     </section>
@@ -4670,6 +5055,7 @@
           <button id="smart-cancel" class="sm-cancel" type="button">取消</button>
         </div>
       </div>
+      <div id="plan-bar" class="plan-bar" hidden></div>
       <div id="filters" class="filter-bar"></div>
       <div id="tag-filters" class="filter-bar"></div>
       <div id="prio-filters" class="filter-bar"></div>
@@ -4677,6 +5063,7 @@
         <button id="view-list" class="fbtn on" type="button" aria-pressed="true">列表</button>
         <button id="view-board" class="fbtn" type="button" aria-pressed="false">看板</button>
         <button id="view-matrix" class="fbtn" type="button" aria-pressed="false">矩阵</button>
+        <button id="view-week" class="fbtn" type="button" aria-pressed="false">周</button>
         <span class="vb-sep" aria-hidden="true"></span>
         <button id="review-btn" class="fbtn vb-review" type="button">复盘</button>
         <label class="sort-wrap" id="sort-wrap">
@@ -4693,6 +5080,7 @@
       <ul id="list"></ul>
       <div id="board" class="board" hidden></div>
       <div id="matrix" class="matrix" hidden></div>
+      <div id="week" class="week" hidden></div>
       <div id="empty" class="empty">
         <span class="ring" id="empty-ico"></span>
         <h3>还没有任务</h3>
@@ -4873,6 +5261,29 @@
     <button id="batch-clear" class="b-act" type="button">取消选择</button>
   </div>
 
+  <!-- 专注模式：全屏只看一件事，Esc 随时退 -->
+  <div id="focus-modal" class="backdrop focus-backdrop" hidden>
+    <div class="focus-stage" role="dialog" aria-modal="true" aria-labelledby="focus-title">
+      <div class="focus-top">
+        <span id="focus-pos" class="focus-pos">1 / 1</span>
+        <button id="focus-exit" class="focus-x" type="button" aria-label="退出专注模式"></button>
+      </div>
+      <h2 id="focus-title" class="focus-title">这一件</h2>
+      <p id="focus-goal" class="focus-goal" hidden></p>
+      <div id="focus-chips" class="focus-chips"></div>
+      <div id="focus-subs" class="focus-subs"></div>
+      <div id="focus-time" class="focus-time" hidden>
+        <span id="focus-clock" class="focus-clock">0:00</span>
+        <button id="focus-timer" class="focus-tbtn" type="button">开始计时</button>
+      </div>
+      <div class="focus-acts">
+        <button id="focus-done" class="focus-act main" type="button">完成</button>
+        <button id="focus-skip" class="focus-act" type="button">跳过</button>
+      </div>
+      <p class="focus-hint">Esc 退出 · 完成会自动接下一件 · 跳过先放队尾</p>
+    </div>
+  </div>
+
   <div id="modal" class="backdrop" hidden>
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="dialog-head">
@@ -4963,8 +5374,9 @@
         <b>Enter</b><span>编辑选中的任务</span>
         <b>Delete</b><span>删除选中的任务（进回收站）</span>
         <b>P</b><span>置顶 / 取消置顶选中的任务</span>
-        <b>V</b><span>在列表、看板、矩阵视图之间切换</span>
+        <b>V</b><span>在列表、看板、矩阵、周视图之间切换</span>
         <b>R</b><span>打开复盘（今日 / 本周 / 本月）</span>
+        <b>F</b><span>进入专注模式，全屏只看一件事</span>
         <b>1 ~ 4</b><span>矩阵里把选中的卡片归到对应象限</span>
         <b>Ctrl + Enter</b><span>记一条今日流水；批量粘贴面板里一次添加全部</span>
         <b>粘贴多行</b><span>在输入框直接粘贴，自动进批量面板</span>
@@ -5143,13 +5555,16 @@
     { id: 'lists', name: '清单管理', icon: 'folder', desc: '多清单切换、新建、重命名、排序与跨清单搬运' },
     { id: 'overview', name: '全清单总览', icon: 'target', desc: '右侧列出每个清单的未完成 / 逾期 / 今日数量，点一下直接切过去' },
     { id: 'tags', name: '分类管理', icon: 'tag', desc: '分类胶囊、分类筛选、改名合并与按名字配色' },
-    { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵、日历与快捷键' },
+    { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵 / 周视图、日历与快捷键' },
+    { id: 'week', name: '周视图', icon: 'calendar', desc: '一周七列摊开看，前后翻周；点日期只看那天，逾期与未排期单独计数' },
     { id: 'smart', name: '智能清单', icon: 'filter', desc: '把当前一套筛选存成一颗胶囊，下次一键回到同一个视图' },
     { id: 'detail', name: '任务详情与扩展', icon: 'note', desc: '备注、子任务、附件、任务模板、置顶、拖动排序与逾期顺延' },
     { id: 'deps', name: '任务依赖', icon: 'lock', desc: '给任务设前置任务，前置没完成时先锁住，理清先后顺序' },
     { id: 'remind', name: '提醒与专注', icon: 'bell', desc: '到期横幅、精确提醒、今日专注与番茄钟' },
+    { id: 'focus', name: '专注模式', icon: 'target', desc: '全屏只看一件事：目标、子任务、预估与计时都在眼前，做完自动接下一件' },
     { id: 'timer', name: '时间追踪', icon: 'timer', desc: '给任务计时：开始 / 结束累计实际耗时，统计今日与本周投入' },
     { id: 'estimate', name: '预估时长', icon: 'clock', desc: '给任务填预估用时，和实际计时对照，统计今日与本周的时间预算' },
+    { id: 'plan', name: '今日计划', icon: 'listChecks', desc: '按分钟预算自动挑今天的活，生成一条计划条，做一件划掉一件' },
     { id: 'command', name: '命令面板', icon: 'command', desc: 'Ctrl / ⌘ + K 搜命令、搜任务，全键盘操作' },
     { id: 'ics', name: '日历导出', icon: 'download', desc: '把带到期日的任务导出成 .ics，导进手机或电脑日历' },
     { id: 'export', name: '清单导出', icon: 'copy', desc: '把当前筛选导出成 Markdown 或 CSV，可复制也可下载' },
@@ -5382,12 +5797,36 @@
   const viewListBtn = $('view-list');
   const viewBoardBtn = $('view-board');
   const viewMatrixBtn = $('view-matrix');
+  const viewWeekBtn = $('view-week');
   const viewHint = $('view-hint');
   const sortWrap = $('sort-wrap');
   const sortSel = $('sort-sel');
   const dragHint = $('drag-hint');
   const board = $('board');
   const matrix = $('matrix');
+  const week = $('week');
+  const planWrap = $('plan-wrap');
+  const planBtn = $('plan-btn');
+  const planPop = $('plan-pop');
+  const planBudgetBox = $('plan-budget');
+  const planPreview = $('plan-preview');
+  const planSum = $('plan-sum');
+  const planShuffle = $('plan-shuffle');
+  const planGo = $('plan-go');
+  const planBar = $('plan-bar');
+  const focusBtn = $('focus-btn');
+  const focusModal = $('focus-modal');
+  const focusPos = $('focus-pos');
+  const focusTitle = $('focus-title');
+  const focusGoal = $('focus-goal');
+  const focusChips = $('focus-chips');
+  const focusSubs = $('focus-subs');
+  const focusTimeBox = $('focus-time');
+  const focusClock = $('focus-clock');
+  const focusTimerBtn = $('focus-timer');
+  const focusDoneBtn = $('focus-done');
+  const focusSkipBtn = $('focus-skip');
+  const focusExitBtn = $('focus-exit');
   const reviewBtn = $('review-btn');
   const reviewModal = $('review-modal');
   const reviewIco = $('review-ico');
@@ -5409,6 +5848,10 @@
   // 前置任务最多挂 3 条；预估用时按分钟记，0 = 没填（要在下面 loadList 之前就位）
   const DEP_MAX = 3;
   const EST_MAX = 1440;
+  const WEEK_SHIFT_MAX = 52;            // 周视图最多前后翻一年
+  const PLAN_BUDGETS = [30, 60, 90, 120]; // 今日计划可选的时间预算（分钟）
+  const PLAN_FALLBACK_EST = 30;         // 没填预估的任务，计划里按 30 分钟算
+  const PLAN_MAX = 12;                  // 一天的计划最多排几条，免得碎任务刷屏
 
   let lists = loadLists();
   let tasks = loadList(lists.active);
@@ -6342,7 +6785,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '', weekShift: 0, planBudget: 60, plan: null, focusId: '' };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -6362,7 +6805,16 @@
       if (typeof p.lastBackupSig !== 'string') p.lastBackupSig = '';
       // 智能清单：名字去重、字段逐项校验；日期筛选只认这五个字面量（FILTERS 还没初始化）
       p.smart = normSmart(p.smart);
-      if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
+      if (!['board', 'matrix', 'week'].includes(p.view)) p.view = 'list';
+      p.weekShift = Math.min(WEEK_SHIFT_MAX, Math.max(-WEEK_SHIFT_MAX, Math.round(Number(p.weekShift)) || 0));
+      p.planBudget = PLAN_BUDGETS.includes(Number(p.planBudget)) ? Number(p.planBudget) : 60;
+      // 今日计划：只认当天形状的日期 + 当前清单 id + 字符串数组；其它内容一律当没有
+      const pl = p.plan;
+      p.plan = pl && typeof pl === 'object' && /^\d{4}-\d{2}-\d{2}$/.test(String(pl.day))
+        && typeof pl.list === 'string' && Array.isArray(pl.ids)
+        ? { day: String(pl.day), list: pl.list, ids: [...new Set(pl.ids.filter(x => typeof x === 'string'))].slice(0, 60) }
+        : null;
+      if (typeof p.focusId !== 'string') p.focusId = '';
       p.sideCollapsed = !!p.sideCollapsed;
       p.logOpen = p.logOpen !== false;
       // 矩阵里被折叠的象限（QUADS 的 key）；QUADS 在下面才定义，这里用字面量校验
@@ -7870,6 +8322,9 @@
       if (prefs.view === 'board') prefs.view = 'list';
       if (!tagModal.hidden) openTagModal(false);
     }
+    if (!pluginOn('week') && prefs.view === 'week') prefs.view = 'list';
+    if (!pluginOn('plan')) openPlanPop(false);
+    if (!pluginOn('focus')) closeFocus();
     if (!pluginOn('lists')) closeListMenu();
     if (!pluginOn('review')) {
       reviewModal.hidden = true;
@@ -7976,13 +8431,22 @@
     if (prefs.view === 'board') {
       renderBoard(shown);
       matrix.textContent = '';
+      week.textContent = '';
     } else if (prefs.view === 'matrix') {
       renderMatrix(shown);
       board.textContent = '';
+      week.textContent = '';
+    } else if (prefs.view === 'week') {
+      renderWeek(shown);
+      board.textContent = '';
+      matrix.textContent = '';
     } else {
       board.textContent = '';
       matrix.textContent = '';
+      week.textContent = '';
     }
+
+    renderPlanBar();
 
     renderFilters();
     renderTagFilters();
@@ -8010,32 +8474,41 @@
     syncSide();
   }
 
-  // ---------- 列表 / 看板 / 矩阵三视图 ----------
+  // ---------- 列表 / 看板 / 矩阵 / 周视图 ----------
   function syncView() {
     const explore = pluginOn('explore');
-    // 看板按分类分列，分类模块卸了它就没意义了，退回列表
-    const view = explore && (prefs.view === 'matrix' || (prefs.view === 'board' && pluginOn('tags'))) ? prefs.view : 'list';
+    // 看板按分类分列、周视图靠日期列，对应的模块卸了就退回列表
+    const view = explore && (
+      prefs.view === 'matrix'
+      || (prefs.view === 'board' && pluginOn('tags'))
+      || (prefs.view === 'week' && pluginOn('week'))
+    ) ? prefs.view : 'list';
     const has = tasks.length > 0;
     document.documentElement.dataset.view = view;
     // 视图按钮属于「查找与聚焦」，复盘按钮属于「复盘与保障」；两边都卸了才整条收起
     viewBar.hidden = !has || (!explore && !pluginOn('review'));
     board.hidden = view !== 'board' || !has;
     matrix.hidden = view !== 'matrix' || !has;
+    week.hidden = view !== 'week' || !has;
     viewListBtn.classList.toggle('on', view === 'list');
     viewListBtn.setAttribute('aria-pressed', String(view === 'list'));
     viewBoardBtn.classList.toggle('on', view === 'board');
     viewBoardBtn.setAttribute('aria-pressed', String(view === 'board'));
     viewMatrixBtn.classList.toggle('on', view === 'matrix');
     viewMatrixBtn.setAttribute('aria-pressed', String(view === 'matrix'));
+    viewWeekBtn.classList.toggle('on', view === 'week');
+    viewWeekBtn.setAttribute('aria-pressed', String(view === 'week'));
     viewHint.textContent = view === 'board' ? '看板：拖动卡片在本列排序，拖到别的列即换分类'
       : view === 'matrix' ? '矩阵只放未完成：中/高优先级算重要，今天到期或已逾期算紧急'
-      : '按 V 切换列表、看板、矩阵';
+      : view === 'week' ? '周视图：点日期只看那天，点卡片回到清单'
+      : '按 V 切换' + (pluginOn('week') ? '列表、看板、矩阵、周' : '列表、看板、矩阵');
   }
 
   function setView(v) {
     if (!pluginOn('explore')) return;
     if (v === 'board' && !pluginOn('tags')) return;
-    const next = v === 'board' || v === 'matrix' ? v : 'list';
+    if (v === 'week' && !pluginOn('week')) return;
+    const next = v === 'board' || v === 'matrix' || v === 'week' ? v : 'list';
     if (next === prefs.view) return;
     prefs.view = next;
     save();
@@ -8371,6 +8844,176 @@
       for (const t of items) el.append(matrixCard(t));
       matrix.append(el);
     }
+  }
+
+  // 周一为一周起点；shift 是往前 / 往后翻几周
+  function weekDays(shift) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (start.getDay() + 6) % 7 + shift * 7);
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      days.push({ key: dayKey(d.getTime()), date: d });
+    }
+    return days;
+  }
+
+  function renderWeek(shown) {
+    week.textContent = '';
+    const days = weekDays(prefs.weekShift);
+    const todayK = dayKey(Date.now());
+    const keys = new Set(days.map(d => d.key));
+
+    const byDay = new Map(days.map(d => [d.key, []]));
+    for (const t of listOrder(shown)) {
+      if (t.due && byDay.has(t.due)) byDay.get(t.due).push(t);
+    }
+
+    const open = shown.filter(t => !t.done);
+    const overdue = open.filter(t => t.due && t.due < todayK).length;
+    const nodate = open.filter(t => !t.due).length;
+    const inWeek = open.filter(t => t.due && keys.has(t.due)).length;
+
+    const bar = document.createElement('div');
+    bar.className = 'wk-bar';
+
+    const a = days[0].date, b = days[6].date;
+    const title = document.createElement('span');
+    title.className = 'wk-title';
+    title.id = 'wk-title';
+    title.textContent = a.getFullYear() + ' 年 ' + (a.getMonth() + 1) + '/' + a.getDate()
+      + ' – ' + (b.getMonth() + 1) + '/' + b.getDate()
+      + (prefs.weekShift === 0 ? '（本周）' : '');
+
+    const sum = document.createElement('span');
+    sum.className = 'wk-sum';
+    sum.id = 'wk-sum';
+    sum.textContent = '本周 ' + inWeek + ' 件 · 逾期 ' + overdue + ' 件 · 未排期 ' + nodate + ' 件';
+
+    const nav = document.createElement('span');
+    nav.className = 'wk-nav';
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'wk-nav-btn';
+    prev.id = 'wk-prev';
+    prev.innerHTML = icon('chevronLeft', 14) + '上周';
+    prev.setAttribute('aria-label', '上一周');
+    prev.addEventListener('click', () => shiftWeek(-1));
+    const nowBtn = document.createElement('button');
+    nowBtn.type = 'button';
+    nowBtn.className = 'wk-nav-btn';
+    nowBtn.id = 'wk-now';
+    nowBtn.textContent = '本周';
+    nowBtn.disabled = prefs.weekShift === 0;
+    nowBtn.addEventListener('click', () => {
+      if (prefs.weekShift === 0) return;
+      prefs.weekShift = 0;
+      save();
+      render();
+    });
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'wk-nav-btn';
+    next.id = 'wk-next';
+    next.innerHTML = '下周' + icon('chevronRight', 14);
+    next.setAttribute('aria-label', '下一周');
+    next.addEventListener('click', () => shiftWeek(1));
+    nav.append(prev, nowBtn, next);
+    bar.append(title, sum, nav);
+
+    const grid = document.createElement('div');
+    grid.className = 'wk-grid';
+
+    for (const day of days) {
+      const items = byDay.get(day.key);
+      const isToday = day.key === todayK;
+      const dow = day.date.getDay();
+      const col = document.createElement('div');
+      col.className = 'wk-col' + (isToday ? ' today' : '') + (dow === 0 || dow === 6 ? ' weekend' : '');
+      col.dataset.day = day.key;
+
+      const head = document.createElement('button');
+      head.type = 'button';
+      head.className = 'wk-day';
+      head.title = '只看 ' + (day.date.getMonth() + 1) + '月' + day.date.getDate() + '日 到期的任务';
+      const nm = document.createElement('span');
+      nm.textContent = isToday ? '今天' : WEEKDAY_NAME[dow];
+      const sm = document.createElement('small');
+      sm.textContent = (day.date.getMonth() + 1) + '/' + day.date.getDate();
+      const n = document.createElement('span');
+      n.className = 'wk-day-n';
+      n.textContent = items.length ? String(items.length) : '';
+      head.append(nm, sm, n);
+      head.addEventListener('click', () => {
+        prefs.dayFilter = day.key;
+        prefs.focusToday = false;
+        prefs.view = 'list';
+        save();
+        render();
+      });
+      col.append(head);
+
+      if (!items.length) {
+        const empty = document.createElement('div');
+        empty.className = 'wk-empty';
+        empty.textContent = '—';
+        col.append(empty);
+      }
+      for (const task of items) col.append(weekCard(task));
+      grid.append(col);
+    }
+
+    const hint = document.createElement('p');
+    hint.className = 'wk-hint';
+    hint.textContent = '点日期 = 在清单里只看那天 · 没填到期日的任务不进这七列；翻周只看排期，不改任何任务。';
+
+    week.append(bar, grid, hint);
+  }
+
+  function shiftWeek(delta) {
+    prefs.weekShift = Math.min(WEEK_SHIFT_MAX, Math.max(-WEEK_SHIFT_MAX, prefs.weekShift + delta));
+    save();
+    render();
+  }
+
+  function weekCard(task) {
+    const card = document.createElement('div');
+    card.className = 'wk-card p-' + level(task) + (task.done ? ' done' : '');
+    card.dataset.id = task.id;
+
+    const tick = document.createElement('button');
+    tick.type = 'button';
+    tick.className = 'bd-tick';
+    tick.innerHTML = icon(task.done ? 'checkCircle' : 'circle', 16);
+    tick.setAttribute('aria-label', task.done ? '标记为未完成' : '标记为已完成');
+    tick.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle(task.id);
+    });
+
+    const main = document.createElement('div');
+    main.className = 'wk-main';
+    const txt = document.createElement('span');
+    txt.className = 'wk-txt';
+    txt.textContent = task.text;
+    txt.title = task.text;
+    const meta = document.createElement('span');
+    meta.className = 'wk-meta';
+    const bits = [LEVELS[level(task)].label + '优先'];
+    const stAt = clampStart(task.startAt);
+    if (stAt) bits.push(startText(stAt).replace('开始 ', ''));
+    const subs = Array.isArray(task.subs) ? task.subs : [];
+    if (subs.length && pluginOn('detail')) bits.push('子 ' + subs.filter(s => s.done).length + '/' + subs.length);
+    const est = clampEst(task.est);
+    if (est && pluginOn('estimate')) bits.push(fmtMin(est));
+    meta.textContent = bits.join(' · ');
+    main.append(txt, meta);
+
+    card.append(tick, main);
+    card.addEventListener('click', () => revealInList(task.id));
+    return card;
   }
 
   function matrixCard(task) {
@@ -8965,6 +9608,7 @@
   viewListBtn.addEventListener('click', () => setView('list'));
   viewBoardBtn.addEventListener('click', () => setView('board'));
   viewMatrixBtn.addEventListener('click', () => setView('matrix'));
+  viewWeekBtn.addEventListener('click', () => setView('week'));
 
   sortSel.addEventListener('change', () => {
     const v = sortSel.value;
@@ -11395,6 +12039,486 @@
     }
   }
 
+  // ---------- 专注模式：全屏只看一件事 ----------
+  let focusQueue = [];
+
+  // 越急越靠前：逾期 > 今天 > 未来；同一天里高优先级先上
+  function focusOrder(arr) {
+    const prio = (t) => { const l = level(t); return l === 'high' ? 0 : l === 'mid' ? 1 : 2; };
+    const urgency = (t) => {
+      const d = dueInDays(t);
+      if (d === null) return 1000;
+      return d;
+    };
+    return arr.slice().sort((a, b) => {
+      const ua = urgency(a), ub = urgency(b);
+      if (ua !== ub) return ua - ub;
+      const pa = prio(a), pb = prio(b);
+      if (pa !== pb) return pa - pb;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
+  }
+
+  function focusPool() {
+    return focusOrder(tasks.filter(t => !t.done && !isBlocked(t)));
+  }
+
+  function currentFocusTask() {
+    const id = focusQueue[0];
+    return id ? tasks.find(t => t.id === id) || null : null;
+  }
+
+  function openFocus() {
+    if (!pluginOn('focus') || !focusModal.hidden) return;
+    openPlanPop(false);
+    openPlugPanel(false);
+    openBgPanel(false);
+    closeListMenu();
+    openPrintPop(false);
+    openIcsPop(false);
+    openExpPop(false);
+    closeCmdk();
+    const pool = focusPool();
+    if (!pool.length) {
+      backupMsg('当前清单没有可专注的任务' + (tasks.some(t => !t.done && isBlocked(t)) ? '（未完成的都被前置锁住了）' : '，先加一条'), true);
+      return;
+    }
+    focusQueue = pool.map(t => t.id);
+    // 上次没做完的那条接着来
+    if (prefs.focusId && focusQueue.includes(prefs.focusId)) {
+      focusQueue = [prefs.focusId, ...focusQueue.filter(id => id !== prefs.focusId)];
+    }
+    focusModal.hidden = false;
+    document.documentElement.dataset.focus = '1';
+    renderFocus();
+    focusExitBtn.focus();
+  }
+
+  function closeFocus() {
+    if (!focusModal.hidden) focusModal.hidden = true;
+    document.documentElement.dataset.focus = '';
+    focusSubs.textContent = '';
+  }
+
+  // 队列里没了的 / 已被别处完成的 / 被前置重新锁住的，直接跳过
+  function renderFocus() {
+    if (focusModal.hidden) return;
+    let guard = 0;
+    while (guard++ < 80) {
+      const task = currentFocusTask();
+      if (!task) { focusQueue = []; break; }
+      if (task.done || isBlocked(task)) { focusQueue.shift(); continue; }
+      renderFocusCard(task, focusQueue.length);
+      return;
+    }
+    const left = tasks.filter(t => !t.done).length;
+    closeFocus();
+    backupMsg(left ? '这一轮专注都处理完了，还有 ' + left + ' 项没排进队列' : '这一轮都完成了，休息一下', false);
+  }
+
+  function renderFocusCard(task, total) {
+    prefs.focusId = task.id;
+    save();
+    focusPos.textContent = '1 / ' + total;
+    focusTitle.textContent = task.text;
+    focusGoal.textContent = task.goal || '';
+    focusGoal.hidden = !task.goal;
+
+    focusChips.textContent = '';
+    const pr = document.createElement('span');
+    pr.className = 'tg';
+    pr.innerHTML = icon(LEVELS[level(task)].icon, 12);
+    pr.append(LEVELS[level(task)].label + '优先级');
+    focusChips.append(pr);
+
+    const d = dueInDays(task);
+    if (d !== null) {
+      const dc = document.createElement('span');
+      dc.className = 'tg' + (d < 0 ? ' over' : '');
+      dc.innerHTML = icon('calendar', 12);
+      dc.append(dueText(task));
+      dc.title = '到期日：' + task.due;
+      focusChips.append(dc);
+    }
+    const stAt = clampStart(task.startAt);
+    if (stAt) {
+      const sc = document.createElement('span');
+      sc.className = 'tg';
+      sc.innerHTML = icon('clock', 12);
+      sc.append(startText(stAt));
+      focusChips.append(sc);
+    }
+    const est = clampEst(task.est);
+    const spent = clampSpent(task.spent);
+    if (est && pluginOn('estimate')) {
+      const ec = document.createElement('span');
+      ec.className = 'tg es' + (spent > est * 60000 ? ' over' : '');
+      ec.innerHTML = icon('clock', 12);
+      ec.append('预估 ' + fmtMin(est));
+      focusChips.append(ec);
+    }
+    if (spent && pluginOn('timer')) {
+      const tc = document.createElement('span');
+      tc.className = 'tg tt';
+      tc.innerHTML = icon('timer', 12);
+      tc.append('已用 ' + fmtSpan(spent));
+      focusChips.append(tc);
+    }
+    for (const tag of tagsOf(task)) {
+      const tg = document.createElement('span');
+      tg.className = 'tg' + tagCls(tag);
+      tg.innerHTML = icon('tag', 12);
+      tg.append(tag);
+      focusChips.append(tg);
+    }
+
+    focusSubs.textContent = '';
+    for (const sub of (Array.isArray(task.subs) ? task.subs : [])) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'fs-sub' + (sub.done ? ' done' : '');
+      const ic = document.createElement('span');
+      ic.className = 'fs-ico';
+      ic.innerHTML = icon(sub.done ? 'checkCircle' : 'circle', 18);
+      const tx = document.createElement('span');
+      tx.className = 'fs-txt';
+      tx.textContent = sub.text;
+      b.append(ic, tx);
+      b.setAttribute('aria-label', (sub.done ? '把子任务标记为未完成：' : '把子任务标记为完成：') + sub.text);
+      b.addEventListener('click', () => {
+        sub.done = !sub.done;
+        save();
+        render();
+        renderFocus();
+      });
+      focusSubs.append(b);
+    }
+
+    if (pluginOn('timer')) {
+      focusTimeBox.hidden = false;
+      focusClock.textContent = fmtClock(task.timerAt ? elapsedOf(task) : spent);
+      focusTimerBtn.textContent = task.timerAt ? '结束计时' : spent ? '继续计时' : '开始计时';
+      focusTimerBtn.classList.toggle('run', !!task.timerAt);
+    } else {
+      focusTimeBox.hidden = true;
+    }
+  }
+
+  function updateFocusClock() {
+    if (focusModal.hidden) return;
+    const task = currentFocusTask();
+    if (!task) return;
+    focusClock.textContent = fmtClock(task.timerAt ? elapsedOf(task) : clampSpent(task.spent));
+  }
+
+  function focusSkip() {
+    if (focusQueue.length < 2) {
+      backupMsg('只剩这一件了，完成它或直接退出吧', true);
+      return;
+    }
+    focusQueue.push(focusQueue.shift());
+    renderFocus();
+  }
+
+  function focusFinish() {
+    const task = currentFocusTask();
+    if (!task) return;
+    if (!task.done && isBlocked(task)) {
+      backupMsg('先完成前置：' + waitTasks(task).map(t => clip(t.text)).join('、'), true);
+      renderFocus();
+      return;
+    }
+    if (!task.done) toggle(task.id);
+    if (focusQueue[0] === task.id) focusQueue.shift();
+    renderFocus();
+  }
+
+  focusBtn.addEventListener('click', () => openFocus());
+  focusExitBtn.innerHTML = icon('close', 18);
+  focusExitBtn.addEventListener('click', () => closeFocus());
+  focusModal.addEventListener('click', (e) => {
+    if (e.target === focusModal) closeFocus();
+  });
+  focusDoneBtn.addEventListener('click', focusFinish);
+  focusSkipBtn.addEventListener('click', focusSkip);
+  focusTimerBtn.addEventListener('click', () => {
+    const task = currentFocusTask();
+    if (!task) return;
+    toggleTimer(task.id);
+    renderFocus();
+  });
+
+  // ---------- 今日计划：按预算挑活，一条计划条跟到底 ----------
+  let planDraft = [];
+
+  const planMins = (t) => clampEst(t.est) || PLAN_FALLBACK_EST;
+
+  // 候选 = 当前清单里没完成、没被前置锁住的；越急越靠前
+  function planCandidates() {
+    return focusOrder(tasks.filter(t => !t.done && !isBlocked(t)));
+  }
+
+  function planActive() {
+    return !!prefs.plan
+      && prefs.plan.day === dayKey(Date.now())
+      && prefs.plan.list === lists.active;
+  }
+
+  // 贪心装进预算：能装就装，装不下就跳过看下一条；一条都装不下时至少留第一条
+  function autoPlan(budget) {
+    const picked = [];
+    let total = 0;
+    for (const t of planCandidates()) {
+      if (picked.length >= PLAN_MAX) break;
+      const mins = planMins(t);
+      if (picked.length && total + mins > budget) continue;
+      picked.push(t.id);
+      total += mins;
+    }
+    return picked;
+  }
+
+  function syncPlanBudget() {
+    for (const b of planBudgetBox.querySelectorAll('.fbtn')) {
+      const on = Number(b.dataset.min) === prefs.planBudget;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', String(on));
+    }
+  }
+
+  function renderPlanPreview() {
+    const cands = planCandidates();
+    const live = new Set(cands.map(t => t.id));
+    planDraft = planDraft.filter(id => live.has(id)).slice(0, PLAN_MAX);
+    planPreview.textContent = '';
+
+    if (!cands.length) {
+      const empty = document.createElement('p');
+      empty.className = 'plan-empty';
+      empty.textContent = tasks.some(t => !t.done && isBlocked(t))
+        ? '未完成的任务都被前置锁住了，先完成前置再来排。'
+        : '当前清单没有可排的未完成任务。';
+      planPreview.append(empty);
+    }
+
+    for (const t of cands) {
+      const on = planDraft.includes(t.id);
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'pl-pick' + (on ? ' on' : '');
+      row.setAttribute('aria-pressed', String(on));
+      row.title = on ? '从今日计划里拿掉「' + t.text + '」' : '把「' + t.text + '」放进今日计划';
+
+      const ic = document.createElement('span');
+      ic.className = 'pl-ico';
+      ic.innerHTML = icon(on ? 'checkSquare' : 'square', 18);
+
+      const main = document.createElement('span');
+      main.className = 'pl-main';
+      const tx = document.createElement('span');
+      tx.className = 'pl-txt';
+      tx.textContent = t.text;
+      const meta = document.createElement('span');
+      meta.className = 'pl-meta';
+      const dd = dueInDays(t);
+      meta.textContent = (dd === null ? '没排日期' : dueText(t)) + ' · ' + LEVELS[level(t)].label + '优先级';
+      main.append(tx, meta);
+
+      const min = document.createElement('span');
+      min.className = 'pl-min';
+      min.textContent = fmtMin(planMins(t));
+
+      row.append(ic, main, min);
+      row.addEventListener('click', (e) => {
+        // 这一行点完就重建了，别让冒泡到 document 时被当成“点在外面”把弹层关掉
+        e.stopPropagation();
+        const at = planDraft.indexOf(t.id);
+        if (at >= 0) planDraft.splice(at, 1);
+        else if (planDraft.length >= PLAN_MAX) {
+          backupMsg('一天最多排 ' + PLAN_MAX + ' 条，先把不做的拿掉', true);
+          return;
+        } else {
+          planDraft.push(t.id);
+        }
+        renderPlanPreview();
+      });
+      planPreview.append(row);
+    }
+
+    const total = planDraft.reduce((sum, id) => {
+      const t = tasks.find(x => x.id === id);
+      return sum + (t ? planMins(t) : 0);
+    }, 0);
+    planSum.textContent = '已选 ' + planDraft.length + ' 件 · 预计 ' + fmtMin(total)
+      + (total > prefs.planBudget ? '（超出预算 ' + fmtMin(total - prefs.planBudget) + '）' : '');
+  }
+
+  function placePlanPop() {
+    if (planPop.hidden) return;
+    planPop.style.left = '';
+    planPop.style.right = '';
+    const host = planWrap.getBoundingClientRect();
+    const w = planPop.offsetWidth;
+    const pad = 8;
+    const left = Math.min(Math.max(host.right - w, pad), window.innerWidth - w - pad);
+    planPop.style.left = (left - host.left) + 'px';
+    planPop.style.right = 'auto';
+  }
+
+  function openPlanPop(open) {
+    if (open && !pluginOn('plan')) return;
+    const wasHidden = planPop.hidden;
+    planPop.hidden = !open;
+    planBtn.setAttribute('aria-expanded', String(open));
+    if (open && wasHidden) {
+      openPlugPanel(false);
+      openBgPanel(false);
+      closeListMenu();
+      openPrintPop(false);
+      openIcsPop(false);
+      openExpPop(false);
+      closeCmdk();
+      planDraft = autoPlan(prefs.planBudget);
+      syncPlanBudget();
+      renderPlanPreview();
+      placePlanPop();
+      const cur = planBudgetBox.querySelector('.fbtn.on') || planBudgetBox.querySelector('.fbtn');
+      if (cur) cur.focus();
+    }
+  }
+
+  function renderPlanBar() {
+    if (!pluginOn('plan')) { planBar.hidden = true; return; }
+    // 昨天的计划不再挂着；换清单时另一份计划先存着，切回来还能接着做
+    if (prefs.plan && prefs.plan.day !== dayKey(Date.now())) {
+      prefs.plan = null;
+      save();
+    }
+    if (!planActive()) { planBar.hidden = true; return; }
+
+    const live = new Set(tasks.map(t => t.id));
+    const kept = prefs.plan.ids.filter(id => live.has(id));
+    if (kept.length !== prefs.plan.ids.length) {
+      prefs.plan.ids = kept;
+      save();
+    }
+    if (!kept.length) {
+      prefs.plan = null;
+      save();
+      planBar.hidden = true;
+      return;
+    }
+
+    const planned = kept.map(id => tasks.find(t => t.id === id)).filter(Boolean);
+    const doneN = planned.filter(t => t.done).length;
+    const totalMin = planned.reduce((sum, t) => sum + planMins(t), 0);
+    const leftMin = planned.filter(t => !t.done).reduce((sum, t) => sum + planMins(t), 0);
+
+    planBar.textContent = '';
+    const head = document.createElement('div');
+    head.className = 'pln-head';
+    const title = document.createElement('b');
+    title.className = 'pln-title';
+    title.textContent = '今日计划';
+    const sub = document.createElement('span');
+    sub.className = 'pln-sub';
+    sub.id = 'plan-prog';
+    sub.textContent = doneN + '/' + planned.length + ' 完成 · 预计 ' + fmtMin(totalMin)
+      + (leftMin ? ' · 还剩 ' + fmtMin(leftMin) : ' · 都做完了');
+    const track = document.createElement('span');
+    track.className = 'pln-track';
+    track.setAttribute('aria-hidden', 'true');
+    const fill = document.createElement('i');
+    fill.style.width = Math.round(doneN / planned.length * 100) + '%';
+    track.append(fill);
+    const clear = document.createElement('button');
+    clear.type = 'button';
+    clear.className = 'pln-clear';
+    clear.id = 'plan-clear';
+    clear.textContent = '清除计划';
+    clear.addEventListener('click', () => {
+      prefs.plan = null;
+      save();
+      renderPlanBar();
+    });
+    head.append(title, sub, track, clear);
+
+    const chips = document.createElement('div');
+    chips.className = 'pln-chips';
+    for (const t of planned) {
+      const chip = document.createElement('span');
+      chip.className = 'pln-chip' + (t.done ? ' done' : '');
+      const go = document.createElement('button');
+      go.type = 'button';
+      go.className = 'pln-go';
+      go.innerHTML = icon(t.done ? 'checkCircle' : 'circle', 14);
+      const label = document.createElement('span');
+      label.textContent = t.text;
+      go.append(label);
+      go.title = '回到清单里看这条：' + t.text;
+      go.addEventListener('click', () => revealInList(t.id));
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'pln-x';
+      x.innerHTML = icon('close', 12);
+      x.setAttribute('aria-label', '把「' + t.text + '」从今日计划里拿掉');
+      x.title = '从今日计划里拿掉（任务本身不动）';
+      x.addEventListener('click', () => {
+        prefs.plan.ids = prefs.plan.ids.filter(id => id !== t.id);
+        if (!prefs.plan.ids.length) prefs.plan = null;
+        save();
+        renderPlanBar();
+      });
+      chip.append(go, x);
+      chips.append(chip);
+    }
+
+    planBar.append(head, chips);
+    planBar.hidden = false;
+  }
+
+  planBtn.addEventListener('click', () => openPlanPop(planPop.hidden));
+  planBudgetBox.addEventListener('click', (e) => {
+    const b = e.target.closest && e.target.closest('.fbtn[data-min]');
+    if (!b) return;
+    const mins = Number(b.dataset.min);
+    if (!PLAN_BUDGETS.includes(mins)) return;
+    prefs.planBudget = mins;
+    save();
+    syncPlanBudget();
+    planDraft = autoPlan(mins);
+    renderPlanPreview();
+  });
+  planShuffle.addEventListener('click', () => {
+    planDraft = autoPlan(prefs.planBudget);
+    renderPlanPreview();
+  });
+  planGo.addEventListener('click', () => {
+    const ids = planCandidates().map(t => t.id).filter(id => planDraft.includes(id));
+    if (!ids.length) {
+      backupMsg('还没勾任务，先在上面点几条', true);
+      return;
+    }
+    const total = ids.reduce((sum, id) => {
+      const t = tasks.find(x => x.id === id);
+      return sum + (t ? planMins(t) : 0);
+    }, 0);
+    prefs.plan = { day: dayKey(Date.now()), list: lists.active, ids };
+    save();
+    openPlanPop(false);
+    render();
+    backupMsg('今日计划排了 ' + ids.length + ' 件，预计 ' + fmtMin(total)
+      + (pluginOn('focus') ? '；点「专注模式」开工' : ''));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!planPop.hidden && !planPop.contains(e.target) && !planBtn.contains(e.target)) openPlanPop(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !planPop.hidden) openPlanPop(false);
+  });
+  window.addEventListener('resize', placePlanPop);
+
   function toggle(id) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
@@ -12965,6 +14089,7 @@
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || !modal.hidden) return;   // 上面还压着确认弹窗时，Esc 只关最上面那个
     if (!attViewer.hidden) { closeViewer(); return; }   // 大图压在回收站/分类面板之上，Esc 先退它
+    if (!focusModal.hidden) { closeFocus(); return; }   // 专注层是最上面那层
     if (!trashModal.hidden) openTrash(false);
     // 正在分类管理里改名时，Esc 先交给输入框自己取消改名
     if (!tagModal.hidden && !renamingTag) openTagModal(false);
@@ -12996,7 +14121,7 @@
     const t = e.target;
     const field = t && t.closest && t.closest('input, textarea, select');
     if (field) return;
-    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden || !attViewer.hidden || !reviewModal.hidden || !tagModal.hidden) return;
+    if (!modal.hidden || !trashModal.hidden || !kbdModal.hidden || !attViewer.hidden || !reviewModal.hidden || !tagModal.hidden || !focusModal.hidden) return;
 
     if (e.key === '/') {
       if (!pluginOn('explore')) return;
@@ -13018,8 +14143,16 @@
       if (!pluginOn('explore')) return;
       e.preventDefault();
       if (!tasks.length) { backupMsg('先加几条任务，视图才有东西可分', true); return; }
-      const order = pluginOn('tags') ? ['list', 'board', 'matrix'] : ['list', 'matrix'];
+      const order = pluginOn('tags')
+        ? (pluginOn('week') ? ['list', 'board', 'matrix', 'week'] : ['list', 'board', 'matrix'])
+        : (pluginOn('week') ? ['list', 'matrix', 'week'] : ['list', 'matrix']);
       setView(order[(order.indexOf(prefs.view) + 1) % order.length]);
+      return;
+    }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!pluginOn('focus')) return;
+      e.preventDefault();
+      openFocus();
       return;
     }
     if (e.key === 'r' || e.key === 'R') {
@@ -14099,6 +15232,12 @@
     if (pluginOn('review')) {
       add('review', '常用', '打开今日复盘', 'book', () => openReview(true), '流水 / 完成情况一键汇总', 'R');
     }
+    if (pluginOn('focus')) {
+      add('focus', '常用', '进入专注模式', 'target', () => openFocus(), '全屏只看一件，做完自动接下一件', 'F');
+    }
+    if (pluginOn('plan')) {
+      add('plan', '常用', '安排今日计划', 'listChecks', () => openPlanPop(true), '按分钟预算自动挑活');
+    }
     if (pluginOn('smart') && pluginOn('explore') && hasActiveFilter() && tasks.length) {
       add('smart-save', '常用', '把当前筛选存为智能清单', 'filter', () => {
         smartBar.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -14126,6 +15265,7 @@
       add('view-list', '视图', '视图：列表', 'listChecks', () => setView('list'), prefs.view === 'list' ? '当前' : '', 'V');
       if (pluginOn('tags')) add('view-board', '视图', '视图：看板', 'square', () => setView('board'), prefs.view === 'board' ? '当前' : '', 'V');
       add('view-matrix', '视图', '视图：矩阵', 'scale', () => setView('matrix'), prefs.view === 'matrix' ? '当前' : '', 'V');
+      if (pluginOn('week')) add('view-week', '视图', '视图：周', 'calendar', () => setView('week'), prefs.view === 'week' ? '当前' : '', 'V');
       const SORTS = [['manual', '手动'], ['due', '到期日'], ['priority', '优先级'], ['created', '最近创建']];
       for (const [key, label] of SORTS) {
         add('sort-' + key, '视图', '排序：' + label, 'listTodo', () => {
@@ -14923,7 +16063,7 @@
   notifyDue(false);
   remindTick();                       // 已经到点的提醒，打开页面就补上处置条
   setInterval(remindTick, 15000);     // 页面开着就按时响
-  setInterval(updateTimerChips, 1000); // 跑着的计时胶囊每秒走字
+  setInterval(() => { updateTimerChips(); updateFocusClock(); }, 1000); // 跑着的计时胶囊每秒走字
 </script>
 <script>
 /* 动效层：滚动揭示 + 标题逐字进场 + 点阵背景。零依赖零构建，file:// 双击照用。 */
