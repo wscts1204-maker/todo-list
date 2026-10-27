@@ -2147,6 +2147,10 @@
   html[data-off~="deps"] .tg.dep,
   html[data-off~="estimate"] .est-row,
   html[data-off~="estimate"] .tg.es,
+  html[data-off~="overview"] #ov-card,
+  html[data-off~="lists"] #ov-card,
+  html[data-off~="health"] #hl-card,
+  html[data-off~="import"] #imp-wrap,
   html[data-off~="command"][data-off~="explore"] .foot-links,
   html[data-off~="explore"][data-off~="review"] #view-bar { display: none !important; }
 
@@ -3210,6 +3214,121 @@
   }
 
   .exp-scope { margin-top: 6px; }
+
+  /* ---------- 全清单总览：每个清单一行，点一下切过去 ---------- */
+  .ov-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .ov-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    text-align: left;
+    transition: background .18s;
+  }
+
+  .ov-row:hover { background: var(--gray-100); }
+  .ov-row.on { background: var(--teal-50); }
+  .ov-row.on .ov-name { color: var(--teal-700); font-weight: 700; }
+
+  .ov-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-800);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ov-nums {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--gray-600);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ov-nums b { font-weight: 700; }
+  .ov-nums .ov-bad { color: var(--red-700); }
+  .ov-nums .ov-today { color: var(--teal-700); }
+  .ov-foot { margin-top: 10px; font-size: 12px; color: var(--gray-700); }
+  [data-theme="dark"] .ov-foot { color: var(--gray-800); }
+
+  /* ---------- 数据体检：占用 / 计数 / 上次备份 ---------- */
+  .hl-use b {
+    display: block;
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--gray-800);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hl-use span { font-size: 12px; color: var(--text-muted); }
+
+  .hl-bar {
+    height: 8px;
+    margin-top: 8px;
+    background: var(--gray-100);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .hl-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--teal-600), #14b8a6); transition: width .3s; }
+  .hl-bar i.warn { background: linear-gradient(90deg, var(--yellow-500), var(--yellow-600)); }
+  .hl-bar i.bad { background: linear-gradient(90deg, var(--red-500), var(--red-600)); }
+
+  .hl-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 14px; }
+
+  .hl-cell {
+    background: var(--surface);
+    border: 1px solid var(--gray-100);
+    border-radius: 12px;
+    padding: 8px 10px;
+  }
+
+  .hl-cell b { display: block; font-size: 18px; line-height: 1.25; color: var(--gray-800); font-variant-numeric: tabular-nums; }
+  .hl-cell span { font-size: 11px; color: var(--text-muted); }
+
+  .hl-back { margin-top: 12px; font-size: 12px; color: var(--gray-700); }
+  [data-theme="dark"] .hl-back { color: var(--gray-800); }
+  .hl-back.hl-warn { color: var(--red-700); }
+  .hl-back.hl-ok { color: var(--green-600); }
+
+  .hl-btn { flex: none; width: 100%; margin-top: 12px; }
+
+  /* ---------- 清单导入：粘贴或选文件 ---------- */
+  #imp-pop { width: min(300px, calc(100vw - 32px)); }
+
+  .imp-text {
+    width: 100%;
+    min-height: 92px;
+    max-height: 180px;
+    resize: vertical;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 10px;
+    outline: none;
+  }
+
+  .imp-text:focus { border-color: transparent; box-shadow: 0 0 0 2px var(--teal-600); }
+
+  .imp-tools { margin-top: 8px; }
+  .imp-preview { min-height: 18px; margin-top: 8px; font-size: 12px; color: var(--gray-700); }
+  [data-theme="dark"] .imp-preview { color: var(--gray-800); }
+  .imp-preview.bad { color: var(--red-700); }
+  #imp-pick { display: none; }
+  #imp-go { flex: none; width: 100%; margin-top: 10px; }
 
   /* ---------- 智能清单：把一套筛选存成一颗胶囊 ---------- */
   .smart-bar {
@@ -4321,7 +4440,7 @@
     /* 折叠 = 主栏吃掉整条网格，窄屏本来就是一栏，所以这道规则只存在于本档 */
     html[data-side="off"] .dash { grid-template-columns: minmax(0, 1fr); }
     html[data-side="off"] .side { display: none; }
-    /* 侧栏三张卡全被藏掉（复盘/提醒插件卸了、又没已完成任务）时不留空槽；手动的折叠状态不动 */
+    /* 侧栏几张卡全被藏掉（复盘/提醒/总览/体检插件卸了、又没已完成任务）时不留空槽；手动的折叠状态不动 */
     html[data-side-empty="1"] .dash { grid-template-columns: minmax(0, 1fr); }
     html[data-side-empty="1"] .side { display: none; }
     html[data-side-empty="1"] .side-toggle { display: none; }
@@ -4605,6 +4724,14 @@
 
     </main>
     <aside class="side">
+    <section id="ov-card" class="card hist-card reveal">
+      <div class="hist-head">
+        <h3>全清单总览</h3>
+        <button id="ov-toggle" class="chev" type="button" title="展开/收起"></button>
+      </div>
+      <div id="ov-body"></div>
+    </section>
+
     <section id="focus-card" class="card hist-card focus-card" hidden>
       <div class="hist-head">
         <h3>今日专注</h3>
@@ -4617,6 +4744,14 @@
         <button id="stats-toggle" class="chev" type="button" title="展开/收起"></button>
       </div>
       <div id="stats-body"></div>
+    </section>
+
+    <section id="hl-card" class="card hist-card reveal">
+      <div class="hist-head">
+        <h3>数据体检</h3>
+        <button id="hl-toggle" class="chev" type="button" title="展开/收起"></button>
+      </div>
+      <div id="hl-body"></div>
     </section>
 
     <section id="history" class="card hist-card reveal">
@@ -4645,6 +4780,21 @@
     <div class="backup-row">
       <button id="export-btn" class="bbtn" type="button">⬇ 导出备份</button>
       <button id="import-btn" class="bbtn" type="button">⬆ 导入备份</button>
+      <span id="imp-wrap" class="print-wrap">
+        <button id="imp-btn" class="bbtn" type="button" aria-expanded="false" aria-controls="imp-pop">📥 导入清单</button>
+        <div id="imp-pop" class="print-pop" hidden>
+          <div class="pt-t">导入到「<span id="imp-list-name">我的清单</span>」</div>
+          <textarea id="imp-text" class="imp-text" rows="5" spellcheck="false"
+                    placeholder="粘贴 CSV 表格，或 Markdown 清单：&#10;- [ ] 买菜 #生活 !高 @明天&#10;- [x] 交水电费"></textarea>
+          <div class="pp-chips imp-tools">
+            <button id="imp-pick-btn" class="fbtn" type="button">选择文件</button>
+            <button id="imp-dup" class="fbtn on" type="button" aria-pressed="true">跳过同名</button>
+          </div>
+          <p id="imp-preview" class="imp-preview">还没识别到任务</p>
+          <button id="imp-go" class="pp-go" type="button">导入</button>
+          <input type="file" id="imp-pick" accept=".csv,.tsv,.md,.markdown,.txt,text/csv,text/markdown,text/plain">
+        </div>
+      </span>
       <span class="print-wrap">
         <button id="print-btn" class="bbtn" type="button" aria-expanded="false" aria-controls="print-pop">🖨 打印清单</button>
         <div id="print-pop" class="print-pop" hidden>
@@ -4969,6 +5119,8 @@
     folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
     paperclip: '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 0 12.88 8.8l-8.56 8.57a2 2 0 0 1-2.83-2.83l8.57-8.57"/>',
     download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+    shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
     eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
     copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
     move: '<path d="m17 2 4 4-4 4"/><path d="M3 6h18"/><path d="m7 22-4-4 4-4"/><path d="M21 18H3"/>',
@@ -4989,6 +5141,7 @@
   const PLUGINS = [
     { id: 'create', name: '任务建立', icon: 'plus', core: true, desc: '输入框、快速添加、批量粘贴，以及优先级 / 到期日 / 目标 / 开始时间 / 重复' },
     { id: 'lists', name: '清单管理', icon: 'folder', desc: '多清单切换、新建、重命名、排序与跨清单搬运' },
+    { id: 'overview', name: '全清单总览', icon: 'target', desc: '右侧列出每个清单的未完成 / 逾期 / 今日数量，点一下直接切过去' },
     { id: 'tags', name: '分类管理', icon: 'tag', desc: '分类胶囊、分类筛选、改名合并与按名字配色' },
     { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵、日历与快捷键' },
     { id: 'smart', name: '智能清单', icon: 'filter', desc: '把当前一套筛选存成一颗胶囊，下次一键回到同一个视图' },
@@ -5000,8 +5153,10 @@
     { id: 'command', name: '命令面板', icon: 'command', desc: 'Ctrl / ⌘ + K 搜命令、搜任务，全键盘操作' },
     { id: 'ics', name: '日历导出', icon: 'download', desc: '把带到期日的任务导出成 .ics，导进手机或电脑日历' },
     { id: 'export', name: '清单导出', icon: 'copy', desc: '把当前筛选导出成 Markdown 或 CSV，可复制也可下载' },
+    { id: 'import', name: '清单导入', icon: 'upload', desc: '粘贴或选文件导入 CSV / Markdown / 纯文本，可预览并跳过同名' },
     { id: 'dispose', name: '处置与回收', icon: 'checkCircle', core: true, desc: '勾选完成、编辑删除、批量整理、已完成历史、回收站与撤销' },
     { id: 'review', name: '复盘与保障', icon: 'book', desc: '今日流水、复盘、数据统计、导出导入、打印、主题与背景' },
+    { id: 'health', name: '数据体检', icon: 'shield', desc: '看本机数据占多大、上次备份多久前，提醒你及时导出备份' },
   ];
   const PLUGIN_IDS = PLUGINS.map(p => p.id);
   const CORE_PLUGINS = PLUGINS.filter(p => p.core).map(p => p.id);
@@ -5163,6 +5318,22 @@
   const expScopeAll = $('exp-scope-all');
   const expCopy = $('exp-copy');
   const expGo = $('exp-go');
+  const impWrap = $('imp-wrap');
+  const impBtn = $('imp-btn');
+  const impPop = $('imp-pop');
+  const impText = $('imp-text');
+  const impPickBtn = $('imp-pick-btn');
+  const impPick = $('imp-pick');
+  const impDup = $('imp-dup');
+  const impPreview = $('imp-preview');
+  const impGo = $('imp-go');
+  const impListName = $('imp-list-name');
+  const ovCard = $('ov-card');
+  const ovBody = $('ov-body');
+  const ovToggle = $('ov-toggle');
+  const hlCard = $('hl-card');
+  const hlBody = $('hl-body');
+  const hlToggle = $('hl-toggle');
   const cmdkBtn = $('cmdk-btn');
   const cmdk = $('cmdk');
   const cmdkIco = $('cmdk-ico');
@@ -5555,6 +5726,7 @@
     pomoTaskId = '';
     closeListMenu();
     closeViewer();
+    openImpPop(false);
     if (!tagModal.hidden) openTagModal(false);
     if (!keepUndo) closeUndo();
   }
@@ -6170,7 +6342,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '' };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -6182,6 +6354,12 @@
       p.icsAll = p.icsAll !== false;
       if (p.expFmt !== 'csv') p.expFmt = 'md';
       if (!['filter', 'open', 'all'].includes(p.expScope)) p.expScope = 'filter';
+      p.ovOpen = p.ovOpen !== false;
+      p.hlOpen = p.hlOpen !== false;
+      p.impSkipDup = p.impSkipDup !== false;
+      const lb = Number(p.lastBackupAt);
+      p.lastBackupAt = Number.isFinite(lb) && lb > 0 ? lb : 0;
+      if (typeof p.lastBackupSig !== 'string') p.lastBackupSig = '';
       // 智能清单：名字去重、字段逐项校验；日期筛选只认这五个字面量（FILTERS 还没初始化）
       p.smart = normSmart(p.smart);
       if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
@@ -7721,6 +7899,7 @@
     if (!pluginOn('command')) closeCmdk();
     if (!pluginOn('ics')) openIcsPop(false);
     if (!pluginOn('export')) openExpPop(false);
+    if (!pluginOn('import')) openImpPop(false);
 
     let switched = false;
     if (!pluginOn('lists') && lists.active !== DEFAULT_LIST) {
@@ -7817,6 +7996,8 @@
     renderCalendar();
     renderHistory(done);
     renderStats(done);
+    renderOverview();
+    renderHealth();
     renderBatchUI();
 
     trashBtn.textContent = '回收站' + (trash.length ? '（' + trash.length + '）' : '');
@@ -11707,6 +11888,7 @@
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    recordBackup();
     backupMsg('已导出 ' + total + ' 条任务（' + groups.length + ' 个清单）'
       + (files && Object.keys(files).length ? '，含 ' + Object.keys(files).length + ' 个附件' : '')
       + (skipped ? '，' + skipped + ' 个大附件没打包' : '')
@@ -13259,6 +13441,635 @@
   });
   syncExpOptions();
 
+  // ---------- 清单导入：CSV / TSV / Markdown / 纯文本 ----------
+  // 与「清单导出」配成一对：CSV 是无损往返，Markdown 适合从别的应用贴过来。
+  const IMP_MAX = 200;
+  const IMP_ALIAS = {
+    text: ['任务', 'task', 'title', 'name', 'subject', '内容', '事项'],
+    priority: ['优先级', 'priority', 'prio'],
+    due: ['到期', '到期日', 'due', 'duedate', 'date', '截止', '截止日期'],
+    tags: ['分类', '标签', 'tags', 'tag', 'category', 'categories'],
+    est: ['预估分钟', '预估', '预估时长', 'estimate', 'estimated'],
+    spent: ['实际分钟', '实际', '实际耗时', 'spent'],
+    status: ['状态', 'status', 'done', 'completed', '完成'],
+    goal: ['目标', 'goal', 'objective'],
+    note: ['备注', 'note', 'notes', 'description', '说明', '详情'],
+  };
+  const IMP_KIND_LABEL = { csv: 'CSV', tsv: 'TSV', md: 'Markdown', text: '纯文本' };
+
+  function impPad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  // 按分隔符拆表格：引号里的逗号 / 换行、两个连续引号代表一个引号
+  function impRows(text, sep) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (quoted) {
+        if (ch === '"') {
+          if (text[i + 1] === '"') { cell += '"'; i++; }
+          else quoted = false;
+        } else {
+          cell += ch;
+        }
+      } else if (ch === '"') {
+        quoted = true;
+      } else if (ch === sep) {
+        row.push(cell);
+        cell = '';
+      } else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell);
+        cell = '';
+        if (row.some(x => x.trim() !== '')) rows.push(row);
+        row = [];
+      } else {
+        cell += ch;
+      }
+    }
+    row.push(cell);
+    if (row.some(x => x.trim() !== '')) rows.push(row);
+    return rows;
+  }
+
+  function impPriority(v) {
+    const s = String(v || '').trim().toLowerCase();
+    if (/高|high|urgent|^h$|^1$|^p1$/.test(s)) return 'high';
+    if (/低|low|^l$|^3$|^p3$/.test(s)) return 'low';
+    return 'mid';
+  }
+
+  function impDone(v) {
+    const s = String(v || '').trim().toLowerCase();
+    return ['已完成', '完成', 'done', 'completed', 'complete', 'true', '1', 'yes', 'x', '✓'].includes(s);
+  }
+
+  // 只认能原样走回来的日期；2026/2/30 这种脏日期直接丢掉
+  function impDay(v) {
+    const s = String(v || '').trim();
+    if (!s) return '';
+    if (isDay(s)) return s;
+    let m = /^(\d{4})[/.](\d{1,2})[/.](\d{1,2})$/.exec(s);
+    if (m) {
+      const k = m[1] + '-' + impPad(m[2]) + '-' + impPad(m[3]);
+      return isDay(k) ? k : '';
+    }
+    m = /^(\d{1,2})[/.](\d{1,2})[/.](\d{4})$/.exec(s);
+    if (m) {
+      const k = m[3] + '-' + impPad(m[1]) + '-' + impPad(m[2]);
+      return isDay(k) ? k : '';
+    }
+    return '';
+  }
+
+  function impTags(v) {
+    return normTags(String(v || '').split(/\s*[/、,，;；|]\s*/).filter(Boolean));
+  }
+
+  // 有「任务」列才当表格处理，否则返回 null 让上层退回 Markdown / 纯文本
+  function impFromRows(rows) {
+    if (!rows.length) return null;
+    const head = rows[0].map(h => String(h || '').trim().toLowerCase().replace(/\s+/g, ''));
+    const idx = {};
+    for (const [field, names] of Object.entries(IMP_ALIAS)) {
+      for (const name of names) {
+        const i = head.indexOf(name);
+        if (i >= 0) { idx[field] = i; break; }
+      }
+    }
+    if (idx.text === undefined) return null;
+    const out = [];
+    for (const r of rows.slice(1)) {
+      const cell = f => (idx[f] === undefined ? '' : String(r[idx[f]] == null ? '' : r[idx[f]]).trim());
+      const text = cell('text');
+      if (!text) continue;
+      out.push({
+        text: text.slice(0, 200),
+        priority: impPriority(cell('priority')),
+        due: impDay(cell('due')),
+        tags: impTags(cell('tags')),
+        repeat: '',
+        done: impDone(cell('status')),
+        goal: normGoal(cell('goal')),
+        note: cell('note').slice(0, 500),
+        est: clampEst(Number(cell('est')) || 0),
+        spent: clampSpent((Number(cell('spent')) || 0) * 60000),
+      });
+    }
+    return out;
+  }
+
+  // 本应用导出的 Markdown 会在任务后面带一段「 · 到期 … · 高 · 分类」，重新导入时剪掉
+  const IMP_META_TAIL = /\s·\s(?=(?:到期\s|高(?:\s·|$)|中(?:\s·|$)|低(?:\s·|$)|预估\s|已用\s|子任务\s|前置\s|重复(?:每天|每周|每月)))/;
+
+  // 把「30 分 / 1 时 30 分 / 1 小时 30 分钟」换算成分钟
+  function impMinutes(v) {
+    const s = String(v || '');
+    const h = /(\d+)\s*(?:小时|时)/.exec(s);
+    const m = /(\d+)\s*分/.exec(s);
+    if (!h && !m) return 0;
+    return (h ? Number(h[1]) * 60 : 0) + (m ? Number(m[1]) : 0);
+  }
+
+  // dueText() 写出去的是人话，按它自己的几种说法读回来
+  function impDueProse(v) {
+    const s = String(v || '').trim();
+    const base = parseDay(dayKey(Date.now()));
+    if (!base) return '';
+    if (s === '今天到期') return dayKey(base.getTime());
+    if (s === '明天到期') return dayKey(base.getTime() + 86400000);
+    let m = /^(\d+) 天后到期$/.exec(s);
+    if (m) return dayKey(base.getTime() + Number(m[1]) * 86400000);
+    m = /^逾期 (\d+) 天$/.exec(s);
+    if (m) return dayKey(base.getTime() - Number(m[1]) * 86400000);
+    m = /^(\d{1,2})\/(\d{1,2}) 到期$/.exec(s);
+    if (m) {
+      const y = base.getFullYear();
+      let k = y + '-' + impPad(m[1]) + '-' + impPad(m[2]);
+      if (isDay(k) && parseDay(k) < base) k = (y + 1) + '-' + impPad(m[1]) + '-' + impPad(m[2]);
+      return isDay(k) ? k : '';
+    }
+    return '';
+  }
+
+  function impMetaTail(tail, out) {
+    for (const seg of String(tail || '').split(' · ')) {
+      const s = seg.trim();
+      if (!s) continue;
+      if (s.startsWith('到期 ')) { if (!out.due) out.due = impDueProse(s.slice(3)); continue; }
+      if (QUICK_PRIO[s]) { if (!out.priority) out.priority = QUICK_PRIO[s]; continue; }
+      if (s.startsWith('预估 ')) { out.est = clampEst(impMinutes(s.slice(3))); continue; }
+      if (s.startsWith('已用 ')) { out.spent = clampSpent(impMinutes(s.slice(3)) * 60000); continue; }
+      if (/^(子任务|前置|重复)/.test(s)) continue;
+      for (const t of impTags(s)) {
+        if (!out.tags.includes(t) && out.tags.length < 4) out.tags.push(t);
+      }
+    }
+  }
+
+  function impSplitMeta(body) {
+    const cut = body.search(IMP_META_TAIL);
+    if (cut < 0) return { text: body.trim(), tail: '' };
+    return { text: body.slice(0, cut).trim(), tail: body.slice(cut + 3) };
+  }
+
+  function impFromMarkdown(text) {
+    const out = [];
+    let cur = null;
+    for (const line of text.split(/\r?\n/)) {
+      const m = /^\s*[-*+]\s+\[([ xX])\]\s+(.+?)\s*$/.exec(line);
+      if (m) {
+        const parts = impSplitMeta(m[2]);
+        const hit = parseQuickAdd(parts.text);
+        const body = (hit.text || parts.text).trim();
+        if (!body) continue;
+        cur = {
+          text: body.slice(0, 200),
+          priority: hit.priority || '',
+          due: hit.due || '',
+          tags: hit.tags.slice(),
+          repeat: hit.repeat || '',
+          done: m[1].toLowerCase() === 'x',
+          goal: '',
+          note: '',
+          est: 0,
+          spent: 0,
+        };
+        if (parts.tail) impMetaTail(parts.tail, cur);
+        cur.priority = cur.priority || 'mid';
+        out.push(cur);
+        continue;
+      }
+      const g = /^\s+[-*+]\s+(目标|备注)[：:]\s*(.+?)\s*$/.exec(line);
+      if (g && cur) {
+        if (g[1] === '目标') cur.goal = normGoal(g[2]);
+        else cur.note = g[2].slice(0, 500);
+      }
+    }
+    return out;
+  }
+
+  function impFromPlain(text) {
+    const out = [];
+    for (const raw of text.split(/\r?\n/)) {
+      let s = raw.trim();
+      if (!s) continue;
+      // 导出 Markdown 的标题、分隔线和说明行不是任务
+      if (/^#{1,6}\s/.test(s) || /^[-*_]{3,}$/.test(s)) continue;
+      if (/^导出时间[：:]/.test(s) || /^_?这个范围里没有任务/.test(s)) continue;
+      s = s.replace(/^[-*•·]\s*/, '').replace(/^\d+[.、)]\s*/, '').trim();
+      if (!s) continue;
+      const parts = impSplitMeta(s);
+      const hit = parseQuickAdd(parts.text);
+      const t = (hit.text || parts.text).trim().slice(0, 200);
+      if (!t) continue;
+      const item = {
+        text: t,
+        priority: hit.priority || '',
+        due: hit.due || '',
+        tags: hit.tags.slice(),
+        repeat: hit.repeat || '',
+        done: false,
+        goal: '',
+        note: '',
+        est: 0,
+        spent: 0,
+      };
+      if (parts.tail) impMetaTail(parts.tail, item);
+      item.priority = item.priority || 'mid';
+      out.push(item);
+      if (out.length >= IMP_MAX * 2) break;
+    }
+    return out;
+  }
+
+  function impParse() {
+    const raw = String(impText.value || '').replace(/^\uFEFF/, '');
+    if (!raw.trim()) return { items: [], kind: '', total: 0, capped: false, empty: true };
+
+    const firstLine = raw.split(/\r?\n/).find(l => l.trim()) || '';
+    let items = null;
+    let kind = '';
+    if (firstLine.includes('\t') || firstLine.includes(',')) {
+      const sep = firstLine.includes('\t') ? '\t' : ',';
+      const table = impFromRows(impRows(raw, sep));
+      if (table) { items = table; kind = sep === '\t' ? 'tsv' : 'csv'; }
+    }
+    if (!items) {
+      const md = impFromMarkdown(raw);
+      if (md.length) { items = md; kind = 'md'; }
+    }
+    if (!items) {
+      items = impFromPlain(raw);
+      kind = 'text';
+    }
+
+    // 同一批里同名只留第一条，避免复制两遍的内容建出两份
+    const seen = new Set();
+    const keep = [];
+    for (const x of items) {
+      const k = x.text.trim().toLowerCase();
+      if (!k || seen.has(k)) continue;
+      seen.add(k);
+      keep.push(x);
+    }
+    return { items: keep.slice(0, IMP_MAX), kind, total: keep.length, capped: keep.length > IMP_MAX, empty: false };
+  }
+
+  function impDupCount(items) {
+    const known = new Set(tasks.map(t => t.text.trim().toLowerCase()));
+    return items.filter(x => known.has(x.text.trim().toLowerCase())).length;
+  }
+
+  function renderImpPreview() {
+    if (!pluginOn('import')) return;
+    const res = impParse();
+    impPreview.classList.remove('bad');
+    if (res.empty) {
+      impPreview.textContent = '还没识别到任务';
+      return;
+    }
+    if (!res.items.length) {
+      impPreview.textContent = '没认出任务：CSV 要有「任务」列，Markdown 每行用 - [ ] 开头';
+      impPreview.classList.add('bad');
+      return;
+    }
+    const dup = impDupCount(res.items);
+    let s = '识别到 ' + res.total + ' 条（' + IMP_KIND_LABEL[res.kind] + '）';
+    if (res.capped) s += '，只导入前 ' + IMP_MAX + ' 条';
+    if (dup) s += ' · ' + dup + ' 条同名会跳过';
+    impPreview.textContent = s;
+  }
+
+  function placeImpPop() {
+    if (impPop.hidden) return;
+    impPop.style.left = '';
+    impPop.style.right = '';
+    const host = impPop.parentElement.getBoundingClientRect();
+    const w = impPop.offsetWidth;
+    const pad = 8;
+    const left = Math.min(Math.max(host.right - w, pad), window.innerWidth - w - pad);
+    impPop.style.left = (left - host.left) + 'px';
+    impPop.style.right = 'auto';
+  }
+
+  function openImpPop(open) {
+    impPop.hidden = !open;
+    impBtn.setAttribute('aria-expanded', String(open));
+    if (!open) return;
+    openExpPop(false);
+    openIcsPop(false);
+    impListName.textContent = currentList().name;
+    impDup.classList.toggle('on', prefs.impSkipDup);
+    impDup.setAttribute('aria-pressed', String(prefs.impSkipDup));
+    renderImpPreview();
+    placeImpPop();
+    impText.focus();
+  }
+
+  function doImport() {
+    const res = impParse();
+    if (!res.items.length) {
+      backupMsg(res.empty ? '先粘贴要导入的内容' : '没认出任务，检查一下格式', true);
+      return;
+    }
+    const known = new Set(tasks.map(t => t.text.trim().toLowerCase()));
+    const incoming = [];
+    let dup = 0;
+    for (const x of res.items) {
+      const k = x.text.trim().toLowerCase();
+      if (prefs.impSkipDup && known.has(k)) { dup++; continue; }
+      known.add(k);
+      incoming.push(x);
+    }
+    if (!incoming.length) {
+      backupMsg('这 ' + dup + ' 条都已经在这个清单里了', true);
+      return;
+    }
+
+    snapshot('已导入 ' + incoming.length + ' 条任务到「' + currentList().name + '」', tasks);
+    const now = Date.now();
+    for (const x of incoming) {
+      tasks.push({
+        id: uid(),
+        text: x.text,
+        priority: LEVELS[x.priority] ? x.priority : 'mid',
+        due: x.due || '',
+        tags: normTags(x.tags),
+        repeat: x.repeat === 'daily' || x.repeat === 'weekly' || x.repeat === 'monthly' ? x.repeat : '',
+        note: (x.note || '').slice(0, 500),
+        goal: normGoal(x.goal),
+        startAt: 0,
+        subs: [],
+        pin: false,
+        done: !!x.done,
+        completedAt: x.done ? now : null,
+        createdAt: now,
+        est: clampEst(x.est),
+        spent: clampSpent(x.spent),
+        deps: [],
+      });
+    }
+    save();
+    render();
+    openImpPop(false);
+    backupMsg('已导入 ' + incoming.length + ' 条到「' + currentList().name + '」'
+      + (dup ? '，跳过 ' + dup + ' 条同名' : '')
+      + (res.capped ? '，超出上限只取了前 ' + IMP_MAX + ' 条' : ''));
+  }
+
+  window.addEventListener('resize', placeImpPop);
+
+  impBtn.addEventListener('click', () => openImpPop(impPop.hidden));
+  impText.addEventListener('input', renderImpPreview);
+  impDup.addEventListener('click', () => {
+    prefs.impSkipDup = !prefs.impSkipDup;
+    save();
+    impDup.classList.toggle('on', prefs.impSkipDup);
+    impDup.setAttribute('aria-pressed', String(prefs.impSkipDup));
+    renderImpPreview();
+  });
+  impPickBtn.addEventListener('click', () => impPick.click());
+  impPick.addEventListener('change', () => {
+    const file = impPick.files && impPick.files[0];
+    impPick.value = '';
+    if (!file) return;
+    if (file.size > 512 * 1024) {
+      backupMsg('文件超过 512 KB，先截取要导入的部分', true);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      impText.value = String(reader.result || '');
+      renderImpPreview();
+      impText.focus();
+    };
+    reader.onerror = () => backupMsg('这个文件读不出来', true);
+    reader.readAsText(file, 'utf-8');
+  });
+  impGo.addEventListener('click', doImport);
+
+  document.addEventListener('click', (e) => {
+    if (!impPop.hidden && !impPop.contains(e.target) && !impBtn.contains(e.target)) openImpPop(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !impPop.hidden) openImpPop(false);
+  });
+
+  // ---------- 全清单总览：每个清单一行 ----------
+  function renderOverview() {
+    if (!pluginOn('overview') || !pluginOn('lists')) {
+      ovCard.hidden = true;
+      return;
+    }
+    ovCard.hidden = false;
+    ovBody.hidden = !prefs.ovOpen;
+    ovToggle.innerHTML = icon(prefs.ovOpen ? 'chevronUp' : 'chevronDown', 20);
+
+    ovBody.textContent = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'ov-list';
+    let all = 0;
+    let allBad = 0;
+    let allToday = 0;
+
+    for (const l of lists.items) {
+      const own = l.id === lists.active ? tasks : loadList(l.id);
+      const open = own.filter(t => !t.done);
+      const bad = open.filter(t => { const d = dueInDays(t); return d !== null && d < 0; });
+      const today = open.filter(t => dueInDays(t) === 0);
+      all += open.length;
+      allBad += bad.length;
+      allToday += today.length;
+
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'ov-row' + (l.id === lists.active ? ' on' : '');
+      if (l.id === lists.active) row.setAttribute('aria-current', 'true');
+
+      const name = document.createElement('span');
+      name.className = 'ov-name';
+      name.textContent = l.name;
+      name.title = l.name;
+
+      const nums = document.createElement('span');
+      nums.className = 'ov-nums';
+      const mk = (n, label, cls) => {
+        const s = document.createElement('span');
+        if (cls) s.className = cls;
+        const b = document.createElement('b');
+        b.textContent = String(n);
+        s.append(b, document.createTextNode(' ' + label));
+        return s;
+      };
+      nums.append(mk(open.length, '未'));
+      if (bad.length) nums.append(mk(bad.length, '逾', 'ov-bad'));
+      if (today.length) nums.append(mk(today.length, '今', 'ov-today'));
+
+      row.append(name, nums);
+      row.title = l.name + '：未完成 ' + open.length + ' 项'
+        + (bad.length ? '，已逾期 ' + bad.length + ' 项' : '')
+        + (today.length ? '，今天到期 ' + today.length + ' 项' : '');
+      row.addEventListener('click', () => { if (l.id !== lists.active) switchList(l.id); });
+      wrap.append(row);
+    }
+    ovBody.append(wrap);
+
+    const foot = document.createElement('p');
+    foot.className = 'ov-foot';
+    foot.textContent = lists.items.length + ' 个清单 · 未完成 ' + all + ' 项'
+      + (allBad ? ' · 逾期 ' + allBad + ' 项' : '')
+      + (allToday ? ' · 今天 ' + allToday + ' 项' : '');
+    ovBody.append(foot);
+  }
+
+  // ---------- 数据体检：占用 / 计数 / 上次备份 ----------
+  function healthChars() {
+    let chars = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || k.indexOf('todo') !== 0) continue;
+        chars += k.length + (localStorage.getItem(k) || '').length;
+      }
+    } catch {
+      /* 读不出来就按 0 算，面板照样能用 */
+    }
+    return chars;
+  }
+
+  // 只给「有没有改动」用，不追求密码学强度：32 位 FNV + 长度，够挡住误报
+  function dataSig() {
+    const parts = [];
+    for (const l of lists.items) {
+      const arr = l.id === lists.active ? tasks : loadList(l.id);
+      parts.push(l.id + '|' + l.name + '|' + JSON.stringify(arr));
+    }
+    parts.push('|' + JSON.stringify(trash) + '|' + JSON.stringify(templates)
+      + '|' + JSON.stringify(worklog) + '|' + JSON.stringify(timelog));
+    const s = parts.join('\n');
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(36) + '.' + s.length.toString(36);
+  }
+
+  function recordBackup() {
+    prefs.lastBackupAt = Date.now();
+    prefs.lastBackupSig = dataSig();
+    save();
+    if (pluginOn('health')) renderHealth();
+  }
+
+  // 跟附件那个 fmtSize 分开：这里算的是存储字符数，按 UTF-16 两位元折算
+  function fmtCharSize(chars) {
+    const kb = chars * 2 / 1024;
+    if (kb < 1) return '0 KB';
+    if (kb < 1024) return Math.round(kb) + ' KB';
+    return (Math.round(kb / 102.4) / 10) + ' MB';
+  }
+
+  function renderHealth() {
+    if (!pluginOn('health')) {
+      hlCard.hidden = true;
+      return;
+    }
+    hlCard.hidden = false;
+    hlBody.hidden = !prefs.hlOpen;
+    hlToggle.innerHTML = icon(prefs.hlOpen ? 'chevronUp' : 'chevronDown', 20);
+    if (!prefs.hlOpen) return;
+
+    hlBody.textContent = '';
+    const chars = healthChars();
+    const pct = Math.min(100, Math.round((chars / (5 * 1024 * 1024)) * 1000) / 10);
+
+    const use = document.createElement('div');
+    use.className = 'hl-use';
+    const big = document.createElement('b');
+    big.textContent = fmtCharSize(chars);
+    const cap = document.createElement('span');
+    cap.textContent = '本机数据 · 约占浏览器上限的 ' + (chars && pct < 1 ? '<1' : pct) + '%（按 5 MB 估算）';
+    const bar = document.createElement('div');
+    bar.className = 'hl-bar';
+    const fill = document.createElement('i');
+    fill.style.width = (chars ? Math.max(2, pct) : 0) + '%';
+    if (pct >= 80) fill.className = 'bad';
+    else if (pct >= 50) fill.className = 'warn';
+    bar.append(fill);
+    use.append(big, cap, bar);
+    hlBody.append(use);
+
+    const doneN = tasks.filter(t => t.done).length;
+    const grid = document.createElement('div');
+    grid.className = 'hl-grid';
+    const cell = (label, value) => {
+      const c = document.createElement('div');
+      c.className = 'hl-cell';
+      const b = document.createElement('b');
+      b.textContent = value;
+      const s = document.createElement('span');
+      s.textContent = label;
+      c.append(b, s);
+      return c;
+    };
+    grid.append(
+      cell('当前清单任务', tasks.length + ' 条'),
+      cell('其中已完成', doneN + ' 条'),
+      cell('清单', lists.items.length + ' 个'),
+      cell('回收站', trash.length + ' 条'),
+    );
+    hlBody.append(grid);
+
+    const at = Number(prefs.lastBackupAt) || 0;
+    const p = document.createElement('p');
+    p.className = 'hl-back';
+    if (!at) {
+      p.classList.add('hl-warn');
+      p.textContent = '还没在这台设备导出过备份' + (tasks.length ? '，建议现在就导一次' : '');
+    } else {
+      const days = Math.floor((Date.now() - at) / 86400000);
+      const dt = new Date(at);
+      const when = days <= 0 ? '今天' : days === 1 ? '昨天' : days + ' 天前';
+      p.textContent = '上次备份：' + when + '（' + (dt.getMonth() + 1) + '月' + dt.getDate() + '日 '
+        + impPad(dt.getHours()) + ':' + impPad(dt.getMinutes()) + '）';
+      if (prefs.lastBackupSig !== dataSig()) {
+        p.classList.add('hl-warn');
+        p.textContent += ' · 之后有改动';
+      } else if (days >= 30) {
+        p.classList.add('hl-warn');
+        p.textContent += ' · 已超过 30 天，建议再导一次';
+      } else {
+        p.classList.add('hl-ok');
+        p.textContent += ' · 已是最新';
+      }
+    }
+    hlBody.append(p);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pp-go hl-btn';
+    btn.textContent = '⬇ 立即导出备份';
+    btn.addEventListener('click', () => exportBackup());
+    hlBody.append(btn);
+  }
+
+  ovToggle.addEventListener('click', () => {
+    prefs.ovOpen = !prefs.ovOpen;
+    save();
+    renderOverview();
+  });
+  hlToggle.addEventListener('click', () => {
+    prefs.hlOpen = !prefs.hlOpen;
+    save();
+    renderHealth();
+  });
+
   // ---------- 命令面板：Ctrl / ⌘ + K ----------
   // 两块内容：所有能点的命令，加上跨清单的任务搜索。只管「去哪个界面」，
   // 不直接删数据，所以不需要撤销条。
@@ -13636,7 +14447,8 @@
   function syncSide() {
     const off = !!prefs.sideCollapsed;
     document.documentElement.dataset.side = off ? 'off' : 'on';
-    const empty = focusCard.hidden && statsCard.hidden && history.hidden;
+    const empty = focusCard.hidden && statsCard.hidden && history.hidden
+      && ovCard.hidden && hlCard.hidden;
     document.documentElement.dataset.sideEmpty = empty ? '1' : '';
     sideToggle.textContent = off ? '显示侧栏' : '隐藏侧栏';
     sideToggle.setAttribute('aria-pressed', String(off));
