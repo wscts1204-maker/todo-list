@@ -2138,6 +2138,11 @@
   html[data-off~="review"] #theme-btn,
   html[data-off~="timer"] .ibtn.tmr,
   html[data-off~="timer"] .tg.tt,
+  html[data-off~="smart"] #smart-bar,
+  html[data-off~="command"] #cmdk-btn,
+  html[data-off~="command"] #cmdk,
+  html[data-off~="ics"] #ics-wrap,
+  html[data-off~="command"][data-off~="explore"] .foot-links,
   html[data-off~="explore"][data-off~="review"] #view-bar { display: none !important; }
 
   #bg-file { display: none; }
@@ -3105,6 +3110,235 @@
 
   .print-pop .pp-go { flex: none; margin-top: 10px; width: 100%; }
 
+  /* ---------- 智能清单：把一套筛选存成一颗胶囊 ---------- */
+  .smart-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .smart-bar[hidden] { display: none; }
+
+  .smart-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .sm-chip {
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    background: var(--surface-glass);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .sm-chip.on { border-color: var(--teal-600); background: var(--teal-50); }
+
+  .sm-go {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 4px 0 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: none;
+    border: none;
+  }
+
+  .sm-chip.on .sm-go { color: var(--teal-800); }
+
+  .sm-go:hover { color: var(--gray-800); }
+
+  .sm-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-height: 44px;
+    color: var(--gray-500);
+    background: none;
+    border: none;
+    border-left: 1px solid var(--gray-200);
+  }
+
+  .sm-x:hover { color: var(--red-600); background: var(--red-50); }
+
+  .sm-add {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: none;
+    border: 1px dashed var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .sm-add:hover { color: var(--teal-700); border-color: var(--teal-600); }
+
+  .sm-form { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+  .sm-form[hidden] { display: none; }
+
+  .sm-name {
+    min-height: 44px;
+    width: min(180px, 46vw);
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .sm-name:focus { outline: 2px solid var(--teal-600); outline-offset: 1px; border-color: transparent; }
+
+  .sm-ok,
+  .sm-cancel {
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .sm-ok { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+  .sm-ok:hover { background: var(--teal-800); }
+  .sm-cancel:hover { background: var(--gray-100); color: var(--gray-800); }
+
+  /* ---------- 命令面板（Ctrl / ⌘ + K） ---------- */
+  .cmdk-backdrop {
+    z-index: 58;
+    align-items: flex-start;
+    padding: 10vh 16px 16px;
+  }
+
+  .cmdk {
+    display: flex;
+    flex-direction: column;
+    width: min(560px, 100%);
+    max-height: min(74vh, 640px);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-dialog);
+    animation: dlg-in .16s var(--ease-enter);
+  }
+
+  .cmdk-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .cmdk-ico { flex: none; display: flex; padding-left: 4px; color: var(--teal-700); }
+
+  .cmdk-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 4px;
+    font-size: 15px;
+    color: var(--gray-800);
+    background: none;
+    border: none;
+    outline: none;
+  }
+
+  .cmdk-input::placeholder { color: var(--gray-500); }
+
+  .cmdk-x {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--gray-500);
+    background: none;
+    border: none;
+    border-radius: 10px;
+  }
+
+  .cmdk-x:hover { color: var(--gray-800); background: var(--gray-100); }
+
+  .cmdk-list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 6px;
+  }
+
+  .cmdk-group { padding: 8px 10px 4px; font-size: 11px; font-weight: 700; color: var(--gray-500); }
+
+  .cmdk-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 4px 10px;
+    text-align: left;
+    color: var(--gray-700);
+    background: none;
+    border: none;
+    border-radius: 10px;
+  }
+
+  .cmdk-item.sel { background: var(--teal-50); }
+  .cmdk-item:hover { background: var(--gray-100); }
+  .cmdk-item.sel:hover { background: var(--teal-50); }
+
+  .ci-ic { flex: none; display: flex; color: var(--teal-700); }
+
+  .ci-t {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ci-sub { flex: none; font-size: 11px; color: var(--gray-500); }
+
+  .ci-k {
+    flex: none;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    border-radius: 6px;
+  }
+
+  .cmdk-empty { padding: 20px 12px; text-align: center; font-size: 12px; color: var(--text-muted); }
+
+  .cmdk-hint {
+    padding: 8px 14px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--card-border);
+  }
+
+  .foot-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px; }
+
+  .kbd-btn .kc {
+    margin-left: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    border-radius: 5px;
+  }
+
   /* ---------- 详情面板：顺延按钮 ---------- */
   .due-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 
@@ -4000,8 +4234,8 @@
     /* 打印时可能正撞上进场半途，强制落到终态 */
     .head, .input-card, .list-card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
     .head, .input-card, .log-card, .toolbar, #calendar-card, #history, #stats, .side,
-    #kbd-btn, .backup-row, #undo-bar, #batch-bar, .backdrop,
-    .search-bar, .filter-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
+    #kbd-btn, .foot-links, .backup-row, #undo-bar, #batch-bar, .backdrop, #ics-wrap,
+    .search-bar, .filter-bar, .smart-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total,
     .att-viewer, .board, .matrix, .view-bar, .row-thumbs { display: none !important; }
     /* 看板视图在屏幕上是靠 html[data-view] 藏住清单的；打印永远输出列表那份 */
@@ -4207,6 +4441,15 @@
       <div id="remind-strip" class="remind-strip" hidden></div>
       <div id="alarm-strip" class="alarm-strip" hidden></div>
       <div id="today-strip" class="today-strip" hidden></div>
+      <div id="smart-bar" class="smart-bar" hidden>
+        <div id="smart-chips" class="smart-chips"></div>
+        <button id="smart-add" class="sm-add" type="button">＋ 存为智能清单</button>
+        <div id="smart-form" class="sm-form" hidden>
+          <input id="smart-name" class="sm-name" type="text" maxlength="12" placeholder="给当前筛选起个名字" aria-label="智能清单名字">
+          <button id="smart-save" class="sm-ok" type="button">保存</button>
+          <button id="smart-cancel" class="sm-cancel" type="button">取消</button>
+        </div>
+      </div>
       <div id="filters" class="filter-bar"></div>
       <div id="tag-filters" class="filter-bar"></div>
       <div id="prio-filters" class="filter-bar"></div>
@@ -4293,7 +4536,10 @@
 
     <p id="total" class="total">共 0 个任务</p>
 
-    <button id="kbd-btn" class="kbd-btn" type="button">键盘快捷键</button>
+    <div class="foot-links">
+      <button id="cmdk-btn" class="kbd-btn" type="button"></button>
+      <button id="kbd-btn" class="kbd-btn" type="button">键盘快捷键</button>
+    </div>
 
     <div class="backup-row">
       <button id="export-btn" class="bbtn" type="button">⬇ 导出备份</button>
@@ -4309,8 +4555,34 @@
           <button id="print-go" class="pp-go" type="button">开始打印</button>
         </div>
       </span>
+      <span id="ics-wrap" class="print-wrap">
+        <button id="ics-btn" class="bbtn" type="button" aria-expanded="false" aria-controls="ics-pop">📅 导出日历</button>
+        <div id="ics-pop" class="print-pop" hidden>
+          <div class="pt-t">导出 .ics 日历文件</div>
+          <div class="pp-chips">
+            <button id="ics-undone" class="fbtn" type="button" aria-pressed="true">只导未完成</button>
+            <button id="ics-all" class="fbtn" type="button" aria-pressed="true">全部清单</button>
+          </div>
+          <button id="ics-go" class="pp-go" type="button">导出</button>
+        </div>
+      </span>
       <input type="file" id="import-file" accept=".json,application/json">
       <span id="backup-msg" class="bmsg"></span>
+    </div>
+  </div>
+
+  <!-- 命令面板：Ctrl / ⌘ + K 呼出，命令与任务都从这里走 -->
+  <div id="cmdk" class="backdrop cmdk-backdrop" hidden>
+    <div class="cmdk" role="dialog" aria-modal="true" aria-label="命令面板">
+      <div class="cmdk-head">
+        <span class="cmdk-ico" id="cmdk-ico" aria-hidden="true"></span>
+        <input id="cmdk-input" class="cmdk-input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="输入命令或任务名…" aria-label="搜索命令或任务"
+               role="combobox" aria-expanded="true" aria-controls="cmdk-list" aria-autocomplete="list">
+        <button id="cmdk-close" class="cmdk-x" type="button" aria-label="关闭命令面板"></button>
+      </div>
+      <div id="cmdk-list" class="cmdk-list" role="listbox" aria-label="命令与任务"></div>
+      <p class="cmdk-hint">↑ ↓ 选择 · Enter 执行 · Esc 关闭</p>
     </div>
   </div>
 
@@ -4415,6 +4687,7 @@
         <h3 id="kbd-title">键盘快捷键</h3>
       </div>
       <div class="kbd-list">
+        <b>Ctrl / ⌘ + K</b><span>打开命令面板：搜命令、搜任务，全键盘操作</span>
         <b>/</b><span>跳到搜索框</span>
         <b>N</b><span>跳到新建任务输入框</span>
         <b>↑ / ↓ 或 J / K</b><span>上下选择任务</span>
@@ -4478,6 +4751,9 @@
   const DEFAULT_LIST = 'main';         // 默认清单沿用 todo.tasks 这个老键，不做数据迁移
   const LIST_NAME_MAX = 12;
   const LIST_MAX = 12;
+  const SMART_MAX = 20;                // 智能清单最多存 20 条，名字跟清单名一样 ≤12 字
+  const SMART_NAME_MAX = 12;
+  const SMART_DATE = ['all', 'overdue', 'today', 'week', 'nodate'];   // 日期筛选的合法值（FILTERS 还没初始化）
   // 附件的文件本体走 IndexedDB（localStorage 装不下），任务里只存一条元数据
   const ATT_DB = 'todo-files';
   const ATT_STORE = 'files';
@@ -4583,6 +4859,8 @@
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     puzzle: '<path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"/>',
     book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    command: '<path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/>',
+    filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
   };
 
   function icon(name, size) {
@@ -4595,9 +4873,12 @@
     { id: 'lists', name: '清单管理', icon: 'folder', desc: '多清单切换、新建、重命名、排序与跨清单搬运' },
     { id: 'tags', name: '分类管理', icon: 'tag', desc: '分类胶囊、分类筛选、改名合并与按名字配色' },
     { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵、日历与快捷键' },
+    { id: 'smart', name: '智能清单', icon: 'filter', desc: '把当前一套筛选存成一颗胶囊，下次一键回到同一个视图' },
     { id: 'detail', name: '任务详情与扩展', icon: 'note', desc: '备注、子任务、附件、任务模板、置顶、拖动排序与逾期顺延' },
     { id: 'remind', name: '提醒与专注', icon: 'bell', desc: '到期横幅、精确提醒、今日专注与番茄钟' },
     { id: 'timer', name: '时间追踪', icon: 'timer', desc: '给任务计时：开始 / 结束累计实际耗时，统计今日与本周投入' },
+    { id: 'command', name: '命令面板', icon: 'command', desc: 'Ctrl / ⌘ + K 搜命令、搜任务，全键盘操作' },
+    { id: 'ics', name: '日历导出', icon: 'download', desc: '把带到期日的任务导出成 .ics，导进手机或电脑日历' },
     { id: 'dispose', name: '处置与回收', icon: 'checkCircle', core: true, desc: '勾选完成、编辑删除、批量整理、已完成历史、回收站与撤销' },
     { id: 'review', name: '复盘与保障', icon: 'book', desc: '今日流水、复盘、数据统计、导出导入、打印、主题与背景' },
   ];
@@ -4735,11 +5016,29 @@
   const batchSnoozeBtn = $('batch-snooze');
   const batchMove = $('batch-move');
   const prioFilters = $('prio-filters');
+  const smartBar = $('smart-bar');
+  const smartChips = $('smart-chips');
+  const smartAdd = $('smart-add');
+  const smartForm = $('smart-form');
+  const smartName = $('smart-name');
+  const smartSave = $('smart-save');
+  const smartCancel = $('smart-cancel');
   const printBtn = $('print-btn');
   const printPop = $('print-pop');
   const printUndoneBtn = $('print-undone');
   const printTodayBtn = $('print-today');
   const printGo = $('print-go');
+  const icsBtn = $('ics-btn');
+  const icsPop = $('ics-pop');
+  const icsUndoneBtn = $('ics-undone');
+  const icsAllBtn = $('ics-all');
+  const icsGo = $('ics-go');
+  const cmdkBtn = $('cmdk-btn');
+  const cmdk = $('cmdk');
+  const cmdkIco = $('cmdk-ico');
+  const cmdkInput = $('cmdk-input');
+  const cmdkClose = $('cmdk-close');
+  const cmdkList = $('cmdk-list');
   const kbdBtn = $('kbd-btn');
   const kbdModal = $('kbd-modal');
   const kbdClose = $('kbd-close');
@@ -4855,6 +5154,36 @@
   const _now = new Date();
   let calY = _now.getFullYear();
   let calM = _now.getMonth();
+
+  // 智能清单：存的是「一套筛选」，不是任务副本。名字去重，字段逐项校验
+  function normSmart(list) {
+    if (!Array.isArray(list)) return [];
+    const out = [];
+    const seen = new Set();
+    for (const s of list) {
+      if (!s || typeof s !== 'object') continue;
+      const name = typeof s.name === 'string' ? s.name.trim().slice(0, SMART_NAME_MAX) : '';
+      if (!name || seen.has(name)) continue;
+      const f = s.f && typeof s.f === 'object' ? s.f : {};
+      out.push({
+        id: typeof s.id === 'string' && s.id ? s.id : uid(),
+        name,
+        f: {
+          q: typeof f.q === 'string' ? f.q.slice(0, 60) : '',
+          date: SMART_DATE.includes(f.date) ? f.date : 'all',
+          tag: typeof f.tag === 'string' && f.tag ? f.tag.slice(0, 12) : 'all',
+          prio: ['high', 'mid', 'low'].includes(f.prio) ? f.prio : '',
+          day: typeof f.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(f.day) ? f.day : '',
+          focus: !!f.focus,
+          hide: !!f.hide,
+          list: typeof f.list === 'string' ? f.list : '',
+        },
+      });
+      seen.add(name);
+      if (out.length >= SMART_MAX) break;
+    }
+    return out;
+  }
 
   // 分类统一存成 tags 数组（最多 4 个、每个 ≤12 字、去重）；旧数据的 tag 字符串在这里迁移
   function normTags(value, fallback) {
@@ -5638,7 +5967,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [] };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -5646,6 +5975,10 @@
       if (p.prioFilter !== 'high' && p.prioFilter !== 'mid' && p.prioFilter !== 'low') p.prioFilter = '';
       p.printUndone = !!p.printUndone;
       p.printToday = !!p.printToday;
+      p.icsUndone = p.icsUndone !== false;
+      p.icsAll = p.icsAll !== false;
+      // 智能清单：名字去重、字段逐项校验；日期筛选只认这五个字面量（FILTERS 还没初始化）
+      p.smart = normSmart(p.smart);
       if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
       p.sideCollapsed = !!p.sideCollapsed;
       p.logOpen = p.logOpen !== false;
@@ -5655,7 +5988,7 @@
         : [];
       if (!['manual', 'due', 'priority', 'created'].includes(p.sort)) p.sort = 'manual';
       if (!['day', 'week', 'month'].includes(p.reviewPeriod)) p.reviewPeriod = 'day';
-      // 卸载的模块只认这 8 个 id，核心模块永远不允许被记成卸载
+      // 卸载的模块只认 PLUGIN_IDS 里这些 id，核心模块永远不允许被记成卸载
       p.pluginsOff = Array.isArray(p.pluginsOff)
         ? [...new Set(p.pluginsOff.filter(id => typeof id === 'string' && PLUGIN_IDS.includes(id) && !CORE_PLUGINS.includes(id)))]
         : [];
@@ -6670,6 +7003,174 @@
     }
   }
 
+  // ---------- 智能清单：把当前这套筛选存成一颗胶囊 ----------
+  // 存的是筛选条件本身，不是任务副本：任务一改，胶囊里的结果跟着变。
+  function currentFilter() {
+    return {
+      q: query,
+      date: prefs.listFilter,
+      tag: prefs.tagFilter,
+      prio: prefs.prioFilter,
+      day: prefs.dayFilter,
+      focus: prefs.focusToday,
+      hide: prefs.hideCompleted,
+      list: lists.active,
+    };
+  }
+
+  function hasActiveFilter() {
+    return !!query || prefs.listFilter !== 'all' || prefs.tagFilter !== 'all'
+      || !!prefs.prioFilter || !!prefs.dayFilter || !!prefs.focusToday;
+  }
+
+  // 胶囊亮不亮：逐项比对；清单模块卸了就不比清单，免得永远亮不起来
+  function smartSame(f) {
+    return f.q === query
+      && f.date === prefs.listFilter
+      && f.tag === prefs.tagFilter
+      && f.prio === prefs.prioFilter
+      && f.day === prefs.dayFilter
+      && !!f.focus === !!prefs.focusToday
+      && !!f.hide === !!prefs.hideCompleted
+      && (!pluginOn('lists') || !f.list || f.list === lists.active);
+  }
+
+  function smartTitle(f) {
+    const parts = [];
+    if (f.list && pluginOn('lists') && f.list !== lists.active) parts.push('清单：' + (listName(f.list) || '已删除的清单'));
+    if (f.q) parts.push('搜索「' + f.q + '」');
+    if (f.date !== 'all') { const x = FILTERS.find(v => v.key === f.date); if (x) parts.push(x.label); }
+    if (f.day) {
+      const d = parseDay(f.day);
+      if (d) parts.push('只看 ' + (d.getMonth() + 1) + '月' + d.getDate() + '日');
+    }
+    if (f.tag !== 'all') parts.push(f.tag ? '分类「' + f.tag + '」' : '未分类');
+    if (f.prio) parts.push(LEVELS[f.prio].label + '优先级');
+    if (f.focus) parts.push('今日专注');
+    if (f.hide) parts.push('隐藏已完成');
+    return parts.length ? parts.join(' · ') : '全部任务';
+  }
+
+  function renderSmart() {
+    const on = pluginOn('smart') && pluginOn('explore');
+    if (!on) {
+      smartBar.hidden = true;
+      smartForm.hidden = true;
+      return;
+    }
+    const saved = prefs.smart;
+    smartBar.hidden = tasks.length === 0 || (!saved.length && !hasActiveFilter());
+    smartChips.textContent = '';
+    if (smartBar.hidden) {
+      smartForm.hidden = true;
+      return;
+    }
+    for (const s of saved) {
+      const chip = document.createElement('span');
+      chip.className = 'sm-chip' + (smartSame(s.f) ? ' on' : '');
+      const go = document.createElement('button');
+      go.type = 'button';
+      go.className = 'sm-go';
+      go.textContent = s.name;
+      go.title = smartTitle(s.f);
+      go.setAttribute('aria-pressed', String(smartSame(s.f)));
+      go.addEventListener('click', () => applySmart(s));
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'sm-x';
+      x.innerHTML = icon('close', 14);
+      x.title = '删除这颗智能清单';
+      x.setAttribute('aria-label', '删除智能清单「' + s.name + '」');
+      x.addEventListener('click', () => deleteSmart(s.id));
+      chip.append(go, x);
+      smartChips.append(chip);
+    }
+    // 没有筛选可存、或者已经存满，就不再摆「存为智能清单」
+    smartAdd.hidden = !hasActiveFilter() || saved.length >= SMART_MAX;
+    smartAdd.title = saved.length >= SMART_MAX ? '最多存 ' + SMART_MAX + ' 条' : '把当前这套筛选存成一颗胶囊';
+    if (smartAdd.hidden) smartForm.hidden = true;
+  }
+
+  function applySmart(s) {
+    if (!pluginOn('smart') || !pluginOn('explore')) return;
+    const f = s.f || {};
+    prefs.listFilter = SMART_DATE.includes(f.date) ? f.date : 'all';
+    prefs.tagFilter = typeof f.tag === 'string' ? f.tag : 'all';
+    prefs.prioFilter = ['high', 'mid', 'low'].includes(f.prio) ? f.prio : '';
+    prefs.dayFilter = typeof f.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(f.day) ? f.day : '';
+    prefs.focusToday = !!f.focus;
+    prefs.hideCompleted = !!f.hide;
+    query = typeof f.q === 'string' ? f.q.slice(0, 60) : '';
+    searchInput.value = query;
+    searchClear.hidden = !query;
+    if (pluginOn('lists') && f.list && f.list !== lists.active && lists.items.some(l => l.id === f.list)) {
+      switchList(f.list);          // 里面会 save()（连同 prefs）再 render()
+    } else {
+      save();
+      render();
+    }
+  }
+
+  function saveCurrentSmart() {
+    if (!pluginOn('smart') || !pluginOn('explore') || !hasActiveFilter()) return;
+    const name = smartName.value.trim().slice(0, SMART_NAME_MAX);
+    if (!name) {
+      smartName.placeholder = '先起个名字（≤12 字）';
+      smartName.focus();
+      return;
+    }
+    const f = currentFilter();
+    const same = prefs.smart.find(s => s.name === name);
+    if (same) {
+      same.f = f;                  // 同名直接覆盖：改完筛选再存一次是顺手的事
+    } else {
+      if (prefs.smart.length >= SMART_MAX) return;
+      prefs.smart.push({ id: uid(), name, f });
+    }
+    smartName.value = '';
+    smartName.placeholder = '给当前筛选起个名字';
+    smartForm.hidden = true;
+    save();
+    render();
+    smartAdd.focus();
+  }
+
+  function deleteSmart(id) {
+    const s = prefs.smart.find(x => x.id === id);
+    if (!s) return;
+    askConfirm('删除智能清单', '「' + s.name + '」这颗胶囊会被删掉，任务和当前筛选都不受影响。', () => {
+      prefs.smart = prefs.smart.filter(x => x.id !== id);
+      save();
+      render();
+    });
+  }
+
+  smartAdd.addEventListener('click', () => {
+    if (!smartForm.hidden) {
+      smartForm.hidden = true;
+      return;
+    }
+    smartName.value = '';
+    smartName.placeholder = '给当前筛选起个名字';
+    smartForm.hidden = false;
+    smartName.focus();
+  });
+  smartSave.addEventListener('click', saveCurrentSmart);
+  smartCancel.addEventListener('click', () => {
+    smartForm.hidden = true;
+    smartName.value = '';
+    smartAdd.focus();
+  });
+  smartName.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); saveCurrentSmart(); }
+    else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      smartForm.hidden = true;
+      smartName.blur();
+    }
+  });
+
   // ---------- 分类管理：改名 / 合并 / 去掉标记，一次作用到所有清单 ----------
   function tagCounts() {
     const map = new Map();
@@ -7011,6 +7512,9 @@
       // 卸载前先把跑着的表结掉：时间是真花掉的，照样记进流水
       stopTimersEverywhere(null);
     }
+    if (!pluginOn('smart')) smartForm.hidden = true;
+    if (!pluginOn('command')) closeCmdk();
+    if (!pluginOn('ics')) openIcsPop(false);
 
     let switched = false;
     if (!pluginOn('lists') && lists.active !== DEFAULT_LIST) {
@@ -7098,6 +7602,7 @@
     renderFilters();
     renderTagFilters();
     renderPrioFilters();
+    renderSmart();
     renderTagOptions();
     renderRemind();
     renderAlarms();
@@ -11997,6 +12502,531 @@
     if (e.key === 'Escape' && !printPop.hidden) openPrintPop(false);
   });
   syncPrintOptions();
+
+  // ---------- 导出日历：带到期日的任务 → .ics（RFC 5545） ----------
+  // 用全天事件（VALUE=DATE），导进手机 / 电脑日历就是一整天的提醒，不用处理时区。
+  function icsEsc(v) {
+    return String(v == null ? '' : v)
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\r\n|\r|\n/g, '\\n');
+  }
+
+  // RFC 5545 折行：首行 ≤75 字节；续行以空格开头，连这个空格一起 ≤75
+  function icsFold(line) {
+    const enc = new TextEncoder();
+    const out = [];
+    let cur = '';
+    let bytes = 0;
+    let limit = 75;
+    for (const ch of String(line)) {
+      const n = enc.encode(ch).length;
+      if (bytes + n > limit) {
+        out.push(cur);
+        cur = '';
+        bytes = 0;
+        limit = 74;
+      }
+      cur += ch;
+      bytes += n;
+    }
+    out.push(cur);
+    return out.join('\r\n ');
+  }
+
+  function icsStamp(ms) {
+    const d = new Date(ms);
+    const p = (n) => String(n).padStart(2, '0');
+    return d.getUTCFullYear() + p(d.getUTCMonth() + 1) + p(d.getUTCDate()) + 'T'
+      + p(d.getUTCHours()) + p(d.getUTCMinutes()) + p(d.getUTCSeconds()) + 'Z';
+  }
+
+  // DTEND 是「次日」：按本地日历日加一天，不经过 UTC
+  function icsNextDay(key) {
+    const d = parseDay(key);
+    if (!d) return '';
+    d.setDate(d.getDate() + 1);
+    return dayKey(d.getTime()).replace(/-/g, '');
+  }
+
+  const ICS_REPEAT = { daily: 'FREQ=DAILY', weekly: 'FREQ=WEEKLY', monthly: 'FREQ=MONTHLY' };
+  const ICS_PRIO = { high: 1, mid: 5, low: 9 };
+
+  function collectIcsTasks() {
+    const rows = [];
+    const take = (arr, listId) => {
+      for (const t of arr) {
+        if (!t.due || !parseDay(t.due)) continue;   // 没有合法到期日的任务不占日历
+        if (prefs.icsUndone && t.done) continue;
+        rows.push({ task: t, listId });
+      }
+    };
+    if (prefs.icsAll) {
+      for (const l of lists.items) take(l.id === lists.active ? tasks : loadList(l.id), l.id);
+    } else {
+      take(tasks, lists.active);
+    }
+    rows.sort((a, b) => a.task.due.localeCompare(b.task.due));
+    return rows;
+  }
+
+  function buildIcs(rows) {
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//todo-list//todo-list//CN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:' + icsEsc(prefs.icsAll ? '我的待办清单' : currentList().name),
+    ];
+    for (const { task, listId } of rows) {
+      const desc = ['优先级：' + LEVELS[level(task)].label];
+      if (lists.items.length > 1 && listId) desc.push('清单：' + (listName(listId) || ''));
+      if (tagsOf(task).length) desc.push('分类：' + tagsOf(task).join(' / '));
+      if (task.goal) desc.push('目标：' + task.goal);
+      if (task.note) desc.push('备注：' + task.note.slice(0, 1000));
+      if (task.done) desc.push('状态：已完成');
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:' + task.id + '@todo-list');
+      lines.push('DTSTAMP:' + icsStamp(Date.now()));
+      lines.push('DTSTART;VALUE=DATE:' + task.due.replace(/-/g, ''));
+      lines.push('DTEND;VALUE=DATE:' + icsNextDay(task.due));
+      lines.push('SUMMARY:' + icsEsc(task.text));
+      lines.push('DESCRIPTION:' + icsEsc(desc.join('\n')));
+      if (tagsOf(task).length) lines.push('CATEGORIES:' + tagsOf(task).map(x => icsEsc(x)).join(','));
+      lines.push('PRIORITY:' + (ICS_PRIO[level(task)] || 5));
+      if (ICS_REPEAT[task.repeat]) lines.push('RRULE:' + ICS_REPEAT[task.repeat]);
+      lines.push('TRANSP:TRANSPARENT');
+      lines.push('STATUS:CONFIRMED');
+      lines.push('END:VEVENT');
+    }
+    lines.push('END:VCALENDAR');
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+  }
+
+  function exportIcs() {
+    if (!pluginOn('ics')) return;
+    const rows = collectIcsTasks();
+    if (!rows.length) {
+      backupMsg('没有带到期日的任务可以导出', true);
+      return;
+    }
+    const blob = new Blob([buildIcs(rows)], { type: 'text/calendar;charset=utf-8' });
+    saveAsBlob(blob, 'todo-list-' + dayKey(Date.now()).replace(/-/g, '') + '.ics');
+    backupMsg('已导出 ' + rows.length + ' 个日程（.ics）');
+  }
+
+  function syncIcsOptions() {
+    icsUndoneBtn.classList.toggle('on', !!prefs.icsUndone);
+    icsUndoneBtn.setAttribute('aria-pressed', String(!!prefs.icsUndone));
+    icsAllBtn.classList.toggle('on', !!prefs.icsAll);
+    icsAllBtn.setAttribute('aria-pressed', String(!!prefs.icsAll));
+  }
+
+  function openIcsPop(open) {
+    icsPop.hidden = !open;
+    icsBtn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      syncIcsOptions();
+      icsUndoneBtn.focus();
+    }
+  }
+
+  icsBtn.addEventListener('click', () => openIcsPop(icsPop.hidden));
+  icsUndoneBtn.addEventListener('click', () => {
+    prefs.icsUndone = !prefs.icsUndone;
+    save();
+    syncIcsOptions();
+  });
+  icsAllBtn.addEventListener('click', () => {
+    prefs.icsAll = !prefs.icsAll;
+    save();
+    syncIcsOptions();
+  });
+  icsGo.addEventListener('click', () => {
+    openIcsPop(false);
+    icsBtn.focus();
+    exportIcs();
+  });
+  document.addEventListener('click', (e) => {
+    if (!icsPop.hidden && !icsPop.contains(e.target) && !icsBtn.contains(e.target)) openIcsPop(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !icsPop.hidden) openIcsPop(false);
+  });
+  syncIcsOptions();
+
+  // ---------- 命令面板：Ctrl / ⌘ + K ----------
+  // 两块内容：所有能点的命令，加上跨清单的任务搜索。只管「去哪个界面」，
+  // 不直接删数据，所以不需要撤销条。
+  let cmdkRows = [];
+  let cmdkSel = 0;
+  const CMDK_KEY = /Mac|iPhone|iPad/.test(navigator.platform || '') ? '⌘ K' : 'Ctrl K';
+
+  function cmdkCommands() {
+    const cmds = [];
+    const add = (id, group, title, ic, run, sub, k) => cmds.push({ id, group, title, icon: ic, run, sub, k });
+
+    if (pluginOn('create')) {
+      add('new', '常用', '新建任务', 'plus', () => {
+        input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        input.focus();
+      }, '光标跳进顶部输入框', 'N');
+      add('bulk', '常用', '批量粘贴多条任务', 'copy', () => {
+        openBulk(bulkText.value);
+        bulkText.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, '一行一条，自动识别优先级 / 日期 / 分类');
+    }
+    if (pluginOn('explore')) {
+      add('search', '常用', '搜索任务', 'search', () => {
+        if (!searchBar.hidden) searchInput.focus();
+      }, '把光标放进搜索框', '/');
+    }
+    if (pluginOn('review')) {
+      add('review', '常用', '打开今日复盘', 'book', () => openReview(true), '流水 / 完成情况一键汇总', 'R');
+    }
+    if (pluginOn('smart') && pluginOn('explore') && hasActiveFilter() && tasks.length) {
+      add('smart-save', '常用', '把当前筛选存为智能清单', 'filter', () => {
+        smartBar.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        smartName.value = '';
+        smartForm.hidden = false;
+        smartName.focus();
+      }, '下次一键回到同一个视图');
+    }
+
+    if (pluginOn('lists')) {
+      add('list-new', '清单', '新建清单', 'folder', () => listAdd.click(), '最多 ' + LIST_MAX + ' 个');
+      for (const l of lists.items) {
+        if (l.id === lists.active) continue;
+        add('list-' + l.id, '清单', '切换到「' + l.name + '」', 'folder', () => switchList(l.id));
+      }
+    }
+    if (pluginOn('tags')) {
+      add('tag-manage', '清单', '管理分类', 'tag', () => openTagModal(true), '改名 / 合并 / 配色');
+    }
+    if (pluginOn('detail')) {
+      add('tpl', '清单', '任务模板', 'copy', () => openTpl(), '只存结构，不存日期');
+    }
+
+    if (pluginOn('explore')) {
+      add('view-list', '视图', '视图：列表', 'listChecks', () => setView('list'), prefs.view === 'list' ? '当前' : '', 'V');
+      if (pluginOn('tags')) add('view-board', '视图', '视图：看板', 'square', () => setView('board'), prefs.view === 'board' ? '当前' : '', 'V');
+      add('view-matrix', '视图', '视图：矩阵', 'scale', () => setView('matrix'), prefs.view === 'matrix' ? '当前' : '', 'V');
+      const SORTS = [['manual', '手动'], ['due', '到期日'], ['priority', '优先级'], ['created', '最近创建']];
+      for (const [key, label] of SORTS) {
+        add('sort-' + key, '视图', '排序：' + label, 'listTodo', () => {
+          prefs.sort = key;
+          save();
+          render();
+        }, prefs.sort === key ? '当前' : '');
+      }
+      add('f-focus', '视图', (prefs.focusToday ? '退出' : '只看') + '今日专注', 'target', () => {
+        prefs.focusToday = !prefs.focusToday;
+        if (prefs.focusToday) prefs.listFilter = 'all';
+        save();
+        render();
+      }, '今天到期或已逾期');
+      add('f-overdue', '视图', '只看已逾期', 'alert', () => {
+        prefs.listFilter = prefs.listFilter === 'overdue' ? 'all' : 'overdue';
+        prefs.focusToday = false;
+        save();
+        render();
+      }, prefs.listFilter === 'overdue' ? '当前' : '');
+      add('f-today', '视图', '只看今天到期', 'calendar', () => {
+        prefs.listFilter = prefs.listFilter === 'today' ? 'all' : 'today';
+        prefs.focusToday = false;
+        save();
+        render();
+      }, prefs.listFilter === 'today' ? '当前' : '');
+      add('f-hide', '视图', (prefs.hideCompleted ? '显示' : '隐藏') + '已完成任务', 'eye', () => {
+        prefs.hideCompleted = !prefs.hideCompleted;
+        save();
+        render();
+      }, '');
+    }
+
+    if (pluginOn('review')) {
+      add('panel-stats', '面板', (prefs.statsOpen ? '收起' : '展开') + '数据统计', 'scale', () => {
+        prefs.statsOpen = !prefs.statsOpen;
+        save();
+        render();
+      });
+      add('panel-hist', '面板', (prefs.historyOpen ? '收起' : '展开') + '已完成任务历史', 'checkCircle', () => {
+        prefs.historyOpen = !prefs.historyOpen;
+        save();
+        render();
+      });
+      add('panel-cal', '面板', (prefs.calOpen ? '收起' : '展开') + '日历视图', 'calendar', () => {
+        prefs.calOpen = !prefs.calOpen;
+        save();
+        render();
+      });
+      add('panel-log', '面板', (prefs.logOpen ? '收起' : '展开') + '今日流水', 'note', () => {
+        prefs.logOpen = !prefs.logOpen;
+        save();
+        render();
+      });
+
+      add('export', '数据', '导出备份（JSON）', 'download', () => exportBackup(), '任务、清单、流水、计时都在里面');
+      add('import', '数据', '导入备份', 'reply', () => importFile.click());
+      add('print', '数据', '打印清单', 'printer', () => openPrintPop(true), '打印选项可以只打未完成 / 只打今天');
+      add('trash', '数据', '打开回收站', 'trash', () => openTrash(true), trash.length ? '有 ' + trash.length + ' 条待处理' : '空的');
+    }
+    if (pluginOn('ics')) {
+      add('ics', '数据', '导出日历（.ics）', 'calendar', () => exportIcs(), '带到期日的任务导进手机 / 电脑日历');
+    }
+
+    if (pluginOn('review')) {
+      add('theme-light', '外观', '主题：浅色', 'sun', () => { prefs.theme = 'light'; save(); applyTheme(); }, prefs.theme === 'light' ? '当前' : '');
+      add('theme-dark', '外观', '主题：深色', 'moon', () => { prefs.theme = 'dark'; save(); applyTheme(); }, prefs.theme === 'dark' ? '当前' : '');
+      add('theme-auto', '外观', '主题：跟随系统', 'monitor', () => { prefs.theme = ''; save(); applyTheme(); }, prefs.theme === '' ? '当前' : '');
+      add('bg', '外观', '换个背景', 'palette', () => openBgPanel(true));
+    }
+    add('plugins', '外观', '插件中心', 'puzzle', () => openPlugPanel(true), '装卸各个功能模块');
+    add('kbd', '外观', '键盘快捷键', 'keyboard', () => openKbd(true));
+
+    return cmds;
+  }
+
+  function taskHit(t, q) {
+    const s = String(q || '').toLowerCase();
+    if (!s) return true;
+    return t.text.toLowerCase().includes(s)
+      || (t.goal || '').toLowerCase().includes(s)
+      || (t.note || '').toLowerCase().includes(s)
+      || tagsOf(t).some(x => x.toLowerCase().includes(s));
+  }
+
+  function searchTasksEverywhere(q, limit) {
+    const out = [];
+    const scan = (arr, listId) => {
+      for (const t of arr) if (taskHit(t, q)) out.push({ type: 'task', task: t, listId });
+    };
+    scan(tasks, lists.active);
+    if (pluginOn('lists')) {
+      for (const l of lists.items) {
+        if (l.id !== lists.active) scan(loadList(l.id), l.id);
+      }
+    }
+    // 当前清单优先，其次未完成优先
+    out.sort((a, b) => ((a.listId === lists.active ? 0 : 1) - (b.listId === lists.active ? 0 : 1))
+      || ((a.task.done ? 1 : 0) - (b.task.done ? 1 : 0)));
+    return limit ? out.slice(0, limit) : out;
+  }
+
+  function cmdkPaint() {
+    const q = cmdkInput.value.trim();
+    const ql = q.toLowerCase();
+    const rows = cmdkCommands()
+      .filter(c => !ql || (c.title + ' ' + c.group + ' ' + (c.sub || '')).toLowerCase().includes(ql))
+      .map(c => ({ type: 'cmd', cmd: c }));
+    if (q) {
+      for (const hit of searchTasksEverywhere(q, 6)) rows.push(hit);
+    }
+
+    // 重画之后尽量把光标留在原来那一项上
+    const prev = cmdkRows[cmdkSel];
+    const prevKey = prev && (prev.cmd ? 'c:' + prev.cmd.id : 't:' + prev.task.id);
+    cmdkRows = rows;
+    const keep = prevKey ? rows.findIndex(r => (r.cmd ? 'c:' + r.cmd.id : 't:' + r.task.id) === prevKey) : -1;
+    cmdkSel = keep >= 0 ? keep : 0;
+    if (cmdkSel > rows.length - 1) cmdkSel = rows.length - 1;
+
+    cmdkList.textContent = '';
+    let lastGroup = '';
+    rows.forEach((r, i) => {
+      const group = r.cmd ? r.cmd.group : '任务';
+      if (group !== lastGroup) {
+        lastGroup = group;
+        const h = document.createElement('div');
+        h.className = 'cmdk-group';
+        h.textContent = group;
+        cmdkList.append(h);
+      }
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cmdk-item' + (i === cmdkSel ? ' sel' : '');
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', String(i === cmdkSel));
+
+      const ic = document.createElement('span');
+      ic.className = 'ci-ic';
+      ic.innerHTML = icon(r.cmd ? r.cmd.icon : 'note', 16);
+
+      const title = document.createElement('span');
+      title.className = 'ci-t';
+      title.textContent = r.cmd ? r.cmd.title : r.task.text;
+
+      b.append(ic, title);
+
+      if (r.cmd) {
+        if (r.cmd.sub) {
+          const sub = document.createElement('span');
+          sub.className = 'ci-sub';
+          sub.textContent = r.cmd.sub;
+          b.append(sub);
+        }
+        if (r.cmd.k) {
+          const k = document.createElement('span');
+          k.className = 'ci-k';
+          k.textContent = r.cmd.k;
+          b.append(k);
+        }
+      } else {
+        const bits = [];
+        if (lists.items.length > 1) bits.push(listName(r.listId) || '已删除的清单');
+        if (r.task.due) bits.push(r.task.due);
+        if (r.task.done) bits.push('已完成');
+        if (bits.length) {
+          const sub = document.createElement('span');
+          sub.className = 'ci-sub';
+          sub.textContent = bits.join(' · ');
+          b.append(sub);
+        }
+      }
+
+      b.addEventListener('click', () => {
+        cmdkSel = i;
+        runCmdkRow();
+      });
+      b.addEventListener('mousemove', () => {
+        if (cmdkSel === i) return;
+        cmdkSel = i;
+        syncCmdkSel();
+      });
+      cmdkList.append(b);
+    });
+
+    if (!rows.length) {
+      const none = document.createElement('div');
+      none.className = 'cmdk-empty';
+      none.textContent = q ? '没有匹配的命令或任务' : '没有可执行的命令';
+      cmdkList.append(none);
+    }
+    syncCmdkSel(false);
+  }
+
+  function syncCmdkSel(scroll) {
+    const els = cmdkList.querySelectorAll('.cmdk-item');
+    els.forEach((el, i) => {
+      const on = i === cmdkSel;
+      el.classList.toggle('sel', on);
+      el.setAttribute('aria-selected', String(on));
+      if (on && scroll !== false) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  function runCmdkRow() {
+    const r = cmdkRows[cmdkSel];
+    if (!r) return;
+    if (r.cmd) {
+      closeCmdk();
+      r.cmd.run();
+    } else {
+      closeCmdk();
+      jumpToTask(r.task.id, r.listId);
+    }
+  }
+
+  function jumpToTask(id, listId) {
+    const dest = lists.items.some(l => l.id === listId) ? listId : lists.active;
+    if (pluginOn('lists') && dest !== lists.active) switchList(dest);
+    const task = tasks.find(t => t.id === id);
+    if (!task) {
+      backupMsg('没找到这条任务，可能刚被删掉', true);
+      return;
+    }
+    // 被筛掉的任务先放出来：跳过去却看不见等于没跳
+    let changed = false;
+    if (prefs.hideCompleted && task.done) { prefs.hideCompleted = false; changed = true; }
+    if (prefs.focusToday) { prefs.focusToday = false; changed = true; }
+    if (prefs.dayFilter && task.due !== prefs.dayFilter) { prefs.dayFilter = ''; changed = true; }
+    if (prefs.prioFilter && level(task) !== prefs.prioFilter) { prefs.prioFilter = ''; changed = true; }
+    if (prefs.listFilter !== 'all' && !matchDate(task, prefs.listFilter)) { prefs.listFilter = 'all'; changed = true; }
+    if (prefs.tagFilter !== 'all' && !tagsOf(task).includes(prefs.tagFilter)) { prefs.tagFilter = 'all'; changed = true; }
+    if (query && !taskHit(task, query)) { query = ''; searchInput.value = ''; searchClear.hidden = true; changed = true; }
+    if (prefs.view !== 'list') { prefs.view = 'list'; changed = true; }
+    kbId = task.id;
+    if (changed) {
+      save();
+      render();
+    }
+    const li = list.querySelector('li[data-id="' + (window.CSS && CSS.escape ? CSS.escape(task.id) : task.id) + '"]');
+    if (!li) return;
+    li.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    li.classList.add('kb-cursor');
+  }
+
+  function openCmdk() {
+    if (!pluginOn('command') || !modal.hidden) return;
+    openPlugPanel(false);
+    openBgPanel(false);
+    closeListMenu();
+    openPrintPop(false);
+    openIcsPop(false);
+    cmdk.hidden = false;
+    cmdkBtn.setAttribute('aria-expanded', 'true');
+    cmdkInput.value = '';
+    cmdkSel = 0;
+    cmdkPaint();
+    cmdkInput.focus();
+  }
+
+  function closeCmdk() {
+    if (cmdk.hidden) return;
+    cmdk.hidden = true;
+    cmdkBtn.setAttribute('aria-expanded', 'false');
+    cmdkInput.value = '';
+    cmdkRows = [];
+    cmdkSel = 0;
+    cmdkList.textContent = '';
+  }
+
+  cmdkBtn.addEventListener('click', () => {
+    if (cmdk.hidden) openCmdk();
+    else closeCmdk();
+  });
+  cmdkClose.addEventListener('click', () => closeCmdk());
+  cmdk.addEventListener('click', (e) => {
+    if (e.target === cmdk) closeCmdk();
+  });
+  cmdkInput.addEventListener('input', cmdkPaint);
+  cmdkInput.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!cmdkRows.length) return;
+      cmdkSel = (cmdkSel + 1) % cmdkRows.length;
+      syncCmdkSel();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!cmdkRows.length) return;
+      cmdkSel = (cmdkSel - 1 + cmdkRows.length) % cmdkRows.length;
+      syncCmdkSel();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      runCmdkRow();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      closeCmdk();
+      cmdkBtn.focus();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      if (cmdk.hidden) openCmdk();
+      else closeCmdk();
+    }
+  }, true);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !cmdk.hidden) closeCmdk();
+  });
+
+  cmdkBtn.innerHTML = icon('command', 14) + '<span>命令面板</span><span class="kc">' + CMDK_KEY + '</span>';
+  cmdkIco.innerHTML = icon('command', 18);
+  cmdkClose.innerHTML = icon('close', 16);
 
   // ---------- 侧栏折叠：状态进 prefs，按钮只在双栏那一档出现 ----------
   // CSS 里 html[data-side="off"] 的两条规则只写在 min-width:1040px 档内，
