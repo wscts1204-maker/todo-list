@@ -742,7 +742,8 @@
     justify-content: center;
     align-items: center;
     gap: 8px;
-    max-width: calc(100% - 32px);
+    width: calc(100% - 32px);
+    max-width: 720px;
     padding: 10px 14px;
     border-radius: 16px;
     background: var(--gray-800);
@@ -796,6 +797,20 @@
   }
 
   .batch-bar .b-move[disabled] { opacity: .4; }
+  .batch-bar .b-date {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: none;
+    border-radius: 999px;
+    padding: 8px 10px;
+    min-height: 44px;
+    width: 148px;
+    flex-shrink: 0;
+  }
+
+  .batch-bar .b-date[disabled] { opacity: .4; }
 
   /* ---------- 键盘光标与快捷键说明 ---------- */
   #list li.kb-cursor { outline: 2px solid var(--teal-600); outline-offset: 2px; border-radius: 12px; }
@@ -4417,6 +4432,29 @@
   .wk-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-muted); }
   .wk-empty { padding: 10px 2px; font-size: 12px; color: var(--text-muted); text-align: center; }
   .wk-hint { margin: 8px 2px 0; font-size: 11.5px; color: var(--text-muted); }
+  .wk-card { cursor: grab; }
+  .wk-card.dragging { opacity: .45; }
+  .wk-col.drop { border-color: var(--teal-600); box-shadow: inset 0 0 0 2px var(--teal-600); }
+  .wk-ghost {
+    position: fixed;
+    z-index: 56;
+    pointer-events: none;
+    opacity: .94;
+    transform: rotate(-1.5deg);
+    box-shadow: var(--shadow-card);
+  }
+  .wk-clear {
+    display: none;
+    margin-top: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--gray-700);
+    text-align: center;
+    border: 1px dashed var(--gray-300);
+    border-radius: 12px;
+  }
+  .week.wk-drag .wk-clear { display: block; }
+  .wk-clear.drop { border-color: var(--teal-600); color: var(--teal-800); background: var(--teal-50); }
 
   @media (max-width: 480px) {
     .week { padding: 2px 8px 12px; }
@@ -4542,6 +4580,44 @@
   }
 
   .pln-x:hover { color: var(--red-700); background: var(--red-50); }
+  .pln-chip.dragging { opacity: .45; }
+  .pln-chip.drop-before { box-shadow: inset 3px 0 0 0 var(--teal-600); }
+  .pln-chip.drop-after { box-shadow: inset -3px 0 0 0 var(--teal-600); }
+  .pln-grip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    min-height: 44px;
+    color: var(--gray-500);
+    background: none;
+    border: none;
+    border-right: 1px solid var(--gray-200);
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .pln-grip:hover { color: var(--teal-700); background: var(--teal-50); }
+  .pln-grip:active { cursor: grabbing; }
+  .pln-chip.done .pln-grip { border-right-color: var(--gray-200); }
+  .pln-tmr {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    min-height: 44px;
+    padding: 0 8px;
+    font-family: inherit;
+    font-size: 11px;
+    color: var(--gray-600);
+    background: none;
+    border: none;
+    border-left: 1px solid var(--gray-200);
+  }
+
+  .pln-tmr:hover { color: var(--teal-800); background: var(--teal-50); }
+  .pln-tmr span { white-space: nowrap; }
+  .pln-chip { max-width: 100%; }
+  .pln-go { min-width: 0; flex: 0 1 auto; }
 
   /* ---------- 专注模式：全屏只看一件 ---------- */
   html[data-focus="1"] body { overflow: hidden; }
@@ -5254,6 +5330,14 @@
     <button id="batch-reopen" class="b-act" type="button">放回</button>
     <button id="batch-purge" class="b-act danger" type="button" title="把选中的已完成任务直接删掉，不进回收站（6 秒内还能撤销）">彻底删除</button>
     <button id="batch-snooze" class="b-act" type="button" title="选中任务的到期日各往后推 1 天（没填日期则设为明天）">顺延 1 天</button>
+    <input id="batch-due" class="b-date" type="date" aria-label="给选中任务设置到期日">
+    <button id="batch-due-clear" class="b-act" type="button" title="把选中任务的到期日清空">清日期</button>
+    <select id="batch-prio" class="b-move" aria-label="给选中任务设置优先级">
+      <option value="">改优先级…</option>
+      <option value="high">高优先级</option>
+      <option value="mid">中优先级</option>
+      <option value="low">低优先级</option>
+    </select>
     <button id="batch-del" class="b-act danger" type="button">删除</button>
     <input id="batch-tag" class="b-tag" type="text" maxlength="60" list="tag-list" placeholder="设分类，空格隔开" aria-label="给选中任务设置分类，空格隔开可多个">
     <button id="batch-tag-ok" class="b-act" type="button">应用</button>
@@ -5705,6 +5789,9 @@
   const batchTagOk = $('batch-tag-ok');
   const batchClear = $('batch-clear');
   const batchSnoozeBtn = $('batch-snooze');
+  const batchDue = $('batch-due');
+  const batchDueClear = $('batch-due-clear');
+  const batchPrioEl = $('batch-prio');
   const batchMove = $('batch-move');
   const prioFilters = $('prio-filters');
   const smartBar = $('smart-bar');
@@ -5899,6 +5986,7 @@
   let viewerImageOnly = false;   // 图片画廊模式（多张翻页）还是单份预览（PDF / 文本）
   let viewerSingleId = '';       // 单份预览看的是哪个附件
   let boardDropAt = 0;           // 刚拖完看板卡片的时间戳，紧随的那次 click 要忽略
+  let weekDropAt = 0;            // 刚拖完周视图卡片的时间戳，紧随的那次 click 要忽略
   const _now = new Date();
   let calY = _now.getFullYear();
   let calM = _now.getMonth();
@@ -8500,7 +8588,7 @@
     viewWeekBtn.setAttribute('aria-pressed', String(view === 'week'));
     viewHint.textContent = view === 'board' ? '看板：拖动卡片在本列排序，拖到别的列即换分类'
       : view === 'matrix' ? '矩阵只放未完成：中/高优先级算重要，今天到期或已逾期算紧急'
-      : view === 'week' ? '周视图：点日期只看那天，点卡片回到清单'
+      : view === 'week' ? '周视图：拖卡片到别的日期改期，点日期只看那天'
       : '按 V 切换' + (pluginOn('week') ? '列表、看板、矩阵、周' : '列表、看板、矩阵');
   }
 
@@ -8967,9 +9055,13 @@
 
     const hint = document.createElement('p');
     hint.className = 'wk-hint';
-    hint.textContent = '点日期 = 在清单里只看那天 · 没填到期日的任务不进这七列；翻周只看排期，不改任何任务。';
+    hint.textContent = '点日期 = 在清单里只看那天 · 拖卡片到别的列 = 改到期日，拖到底部 = 清掉日期 · 键盘聚焦卡片后 Alt + ← / → 挪一天；没填到期日的任务不进这七列。';
 
-    week.append(bar, grid, hint);
+    const clear = document.createElement('div');
+    clear.className = 'wk-clear';
+    clear.textContent = '拖到这里 = 清掉这条任务的到期日';
+
+    week.append(bar, grid, clear, hint);
   }
 
   function shiftWeek(delta) {
@@ -8982,6 +9074,10 @@
     const card = document.createElement('div');
     card.className = 'wk-card p-' + level(task) + (task.done ? ' done' : '');
     card.dataset.id = task.id;
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', '打开任务：' + clip(task.text));
+    card.title = '拖到别的日期改期、拖到底部清日期；Alt + ← / → 挪一天；点开回列表';
 
     const tick = document.createElement('button');
     tick.type = 'button';
@@ -9012,8 +9108,129 @@
     main.append(txt, meta);
 
     card.append(tick, main);
-    card.addEventListener('click', () => revealInList(task.id));
+    card.addEventListener('pointerdown', (e) => startWeekDrag(e, card, task.id));
+    card.addEventListener('click', () => {
+      if (Date.now() - weekDropAt < 300) return;   // 刚拖完的那次 click 不算「点开」
+      revealInList(task.id);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.preventDefault();
+        shiftTaskDue(task.id, e.key === 'ArrowRight' ? 1 : -1);
+        return;
+      }
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      revealInList(task.id);
+    });
     return card;
+  }
+
+  function dayLabel(day) {
+    const d = parseDay(day);
+    return d ? (d.getMonth() + 1) + '月' + d.getDate() + '日' : day;
+  }
+
+  // 周视图的键盘改期：没有到期日就从今天起算
+  function shiftTaskDue(id, delta) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    const base = parseDay(task.due) || new Date();
+    base.setDate(base.getDate() + delta);
+    const next = dayKey(base.getTime());
+    if (next === task.due) return;
+    snapshot('已把「' + clip(task.text) + '」改到 ' + dayLabel(next), tasks);
+    task.due = next;
+    save();
+    render();
+    const el = week.querySelector('.wk-card[data-id="' + CSS.escape(id) + '"]');
+    if (el) el.focus();
+    backupMsg('「' + clip(task.text) + '」到期日改为 ' + dayLabel(next));
+  }
+
+  function startWeekDrag(ev, card, id) {
+    if (dragging || batchOn || (ev.button !== undefined && ev.button !== 0)) return;
+    if (ev.target.closest && ev.target.closest('.bd-tick')) return;
+    ev.preventDefault();
+
+    const cols = [...week.querySelectorAll('.wk-col')];
+    const clearZone = week.querySelector('.wk-clear');
+    const task = tasks.find(t => t.id === id);
+    if (!task || !cols.length) return;
+    const startX = ev.clientX, startY = ev.clientY;
+    let ghost = null, target = null, moved = false;
+
+    const mark = () => {
+      for (const el of cols) el.classList.toggle('drop', el === target);
+      if (clearZone) clearZone.classList.toggle('drop', target === clearZone);
+    };
+
+    // 命中按矩形算：指针落在列头、卡片缝隙或列内边距时 elementFromPoint 拿不到这一列
+    const hit = (x, y) => {
+      if (clearZone) {
+        const r = clearZone.getBoundingClientRect();
+        if (r.width && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return clearZone;
+      }
+      for (const el of cols) {
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top - 10 && y <= r.bottom + 10) return el;
+      }
+      return null;
+    };
+
+    const onMove = (e) => {
+      if (!moved) {
+        if (Math.abs(e.clientX - startX) < 6 && Math.abs(e.clientY - startY) < 6) return;
+        moved = true;
+        dragging = true;
+        week.classList.add('wk-drag');
+        card.classList.add('dragging');
+        ghost = card.cloneNode(true);
+        ghost.className = 'wk-card wk-ghost p-' + level(task) + (card.classList.contains('done') ? ' done' : '');
+        ghost.removeAttribute('tabindex');
+        ghost.style.width = card.getBoundingClientRect().width + 'px';
+        document.body.append(ghost);
+      }
+      ghost.style.left = (e.clientX - 24) + 'px';
+      ghost.style.top = (e.clientY - 20) + 'px';
+      target = hit(e.clientX, e.clientY);
+      mark();
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      card.classList.remove('dragging');
+      week.classList.remove('wk-drag');
+      for (const el of cols) el.classList.remove('drop');
+      if (clearZone) clearZone.classList.remove('drop');
+      if (ghost) ghost.remove();
+      dragging = null;
+      if (!moved) return;
+      weekDropAt = Date.now();
+      if (!target) { render(); return; }
+      if (target === clearZone) {
+        if (!task.due) { render(); return; }
+        snapshot('已清掉「' + clip(task.text) + '」的到期日', tasks);
+        task.due = '';
+        save();
+        render();
+        backupMsg('已清掉「' + clip(task.text) + '」的到期日');
+        return;
+      }
+      const to = target.dataset.day;
+      if (!to || to === task.due) { render(); return; }
+      snapshot('已把「' + clip(task.text) + '」改到 ' + dayLabel(to), tasks);
+      task.due = to;
+      save();
+      render();
+      backupMsg('「' + clip(task.text) + '」改到 ' + dayLabel(to));
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
   }
 
   function matrixCard(task) {
@@ -12448,6 +12665,21 @@
     for (const t of planned) {
       const chip = document.createElement('span');
       chip.className = 'pln-chip' + (t.done ? ' done' : '');
+      chip.dataset.id = t.id;
+
+      const grip = document.createElement('button');
+      grip.type = 'button';
+      grip.className = 'pln-grip';
+      grip.innerHTML = icon('grip', 14);
+      grip.title = '按住拖动排序（Alt + ← / → 也能挪）';
+      grip.setAttribute('aria-label', '调整「' + t.text + '」在今日计划里的顺序');
+      grip.addEventListener('pointerdown', (e) => startPlanDrag(e, chip, t.id));
+      grip.addEventListener('keydown', (e) => {
+        if (!e.altKey || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+        e.preventDefault();
+        movePlanItem(t.id, e.key === 'ArrowLeft' ? -1 : 1);
+      });
+
       const go = document.createElement('button');
       go.type = 'button';
       go.className = 'pln-go';
@@ -12469,12 +12701,114 @@
         save();
         renderPlanBar();
       });
-      chip.append(go, x);
+      chip.append(grip, go);
+      if (!t.done) {
+        const tmr = document.createElement('button');
+        tmr.type = 'button';
+        tmr.className = 'pln-tmr';
+        tmr.innerHTML = icon('snooze', 13) + '<span>明天</span>';
+        tmr.title = '把这条挪到明天，并移出今日计划';
+        tmr.setAttribute('aria-label', '把「' + t.text + '」挪到明天');
+        tmr.addEventListener('click', () => planTomorrow(t.id));
+        chip.append(tmr);
+      }
+      chip.append(x);
       chips.append(chip);
     }
 
     planBar.append(head, chips);
     planBar.hidden = false;
+  }
+
+  // 计划条顺序就存在 prefs.plan.ids 里，拖动 / Alt + ← → 都只改这一份
+  function movePlanItem(id, delta) {
+    if (!prefs.plan) return;
+    const ids = prefs.plan.ids;
+    const at = ids.indexOf(id);
+    const to = at + delta;
+    if (at < 0 || to < 0 || to >= ids.length) return;
+    ids.splice(at, 1);
+    ids.splice(to, 0, id);
+    save();
+    renderPlanBar();
+    const grip = planBar.querySelector('.pln-chip[data-id="' + CSS.escape(id) + '"] .pln-grip');
+    if (grip) grip.focus();
+  }
+
+  function planTomorrow(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task || task.done) return;
+    snapshot('已把「' + clip(task.text) + '」挪到明天', tasks);
+    task.due = dayKey(shiftDays(1).getTime());
+    if (prefs.plan) {
+      prefs.plan.ids = prefs.plan.ids.filter(x => x !== id);
+      if (!prefs.plan.ids.length) prefs.plan = null;
+    }
+    save();
+    render();
+    backupMsg('「' + clip(task.text) + '」改到明天，已移出今日计划');
+  }
+
+  function startPlanDrag(ev, chip, id) {
+    if (dragging || (ev.button !== undefined && ev.button !== 0)) return;
+    ev.preventDefault();
+    const box = chip.parentElement;
+    const startX = ev.clientX, startY = ev.clientY;
+    let moved = false, target = null, after = false;
+
+    const hit = (x, y) => {
+      for (const el of box.querySelectorAll('.pln-chip')) {
+        if (el === chip) continue;
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return el;
+      }
+      return null;
+    };
+
+    const mark = () => {
+      for (const el of box.querySelectorAll('.pln-chip')) el.classList.remove('drop-before', 'drop-after');
+      if (!target) return;
+      target.classList.add(after ? 'drop-after' : 'drop-before');
+    };
+
+    const onMove = (e) => {
+      if (!moved) {
+        if (Math.abs(e.clientX - startX) < 6 && Math.abs(e.clientY - startY) < 6) return;
+        moved = true;
+        dragging = true;
+        chip.classList.add('dragging');
+      }
+      target = hit(e.clientX, e.clientY);
+      if (target) {
+        const r = target.getBoundingClientRect();
+        after = e.clientX > r.left + r.width / 2;
+      }
+      mark();
+    };
+
+    const finish = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      chip.classList.remove('dragging');
+      for (const el of box.querySelectorAll('.pln-chip')) el.classList.remove('drop-before', 'drop-after');
+      dragging = null;
+      if (!moved) return;
+      if (!target || !prefs.plan) { renderPlanBar(); return; }
+      const ids = prefs.plan.ids.filter(x => x !== id);
+      const at = ids.indexOf(target.dataset.id);
+      if (at < 0) { renderPlanBar(); return; }
+      ids.splice(after ? at + 1 : at, 0, id);
+      prefs.plan.ids = ids;
+      save();
+      renderPlanBar();
+      const grip = planBar.querySelector('.pln-chip[data-id="' + CSS.escape(id) + '"] .pln-grip');
+      if (grip) grip.focus();
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
   }
 
   planBtn.addEventListener('click', () => openPlanPop(planPop.hidden));
@@ -12716,6 +13050,9 @@
     batchAll.textContent = batchSel.size ? '全不选' : '全选';
     batchDoneBtn.disabled = ![...batchSel].some(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
     batchSnoozeBtn.disabled = batchDoneBtn.disabled;
+    batchDue.disabled = batchDoneBtn.disabled;
+    batchDueClear.disabled = batchDoneBtn.disabled;
+    batchPrioEl.disabled = batchDoneBtn.disabled;
     batchReopen.disabled = ![...batchSel].some(id => { const t = tasks.find(x => x.id === id); return t && t.done; });
     batchPurge.disabled = batchReopen.disabled;
     batchDel.disabled = batchSel.size === 0;
@@ -12799,6 +13136,41 @@
     render();
   }
 
+  // 批量改到期日 / 清日期 / 改优先级：都只动选中的未完成任务
+  function batchDueSel(day) {
+    const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
+    if (!ids.length) {
+      backupMsg('先选几条没完成的任务', true);
+      return;
+    }
+    const next = day || '';
+    snapshot(next
+      ? '已把 ' + ids.length + ' 项任务的到期日设为 ' + dayLabel(next)
+      : '已清掉 ' + ids.length + ' 项任务的到期日', tasks);
+    for (const id of ids) {
+      const t = tasks.find(x => x.id === id);
+      if (t) t.due = next;
+    }
+    save();
+    render();
+  }
+
+  function batchPrioApply(prio) {
+    if (!LEVELS[prio]) return;
+    const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
+    if (!ids.length) {
+      backupMsg('先选几条没完成的任务', true);
+      return;
+    }
+    snapshot('已把 ' + ids.length + ' 项任务设为' + LEVELS[prio].label + '优先级', tasks);
+    for (const id of ids) {
+      const t = tasks.find(x => x.id === id);
+      if (t) t.priority = prio;
+    }
+    save();
+    render();
+  }
+
   function batchDelete() {
     const ids = [...batchSel];
     if (!ids.length) return;
@@ -12869,6 +13241,22 @@
 
   batchDoneBtn.addEventListener('click', batchComplete);
   batchSnoozeBtn.addEventListener('click', batchSnoozeSel);
+  batchDue.addEventListener('change', () => {
+    const v = batchDue.value;
+    batchDue.value = '';
+    if (!v) return;
+    if (!isDay(v)) {
+      backupMsg('日期不对，换一天再试', true);
+      return;
+    }
+    batchDueSel(v);
+  });
+  batchDueClear.addEventListener('click', () => batchDueSel(''));
+  batchPrioEl.addEventListener('change', () => {
+    const v = batchPrioEl.value;
+    batchPrioEl.value = '';
+    if (v) batchPrioApply(v);
+  });
   batchReopen.addEventListener('click', batchReopenSel);
   batchPurge.addEventListener('click', batchPurgeSel);
   batchDel.addEventListener('click', batchDelete);
