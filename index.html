@@ -2142,6 +2142,11 @@
   html[data-off~="command"] #cmdk-btn,
   html[data-off~="command"] #cmdk,
   html[data-off~="ics"] #ics-wrap,
+  html[data-off~="export"] #exp-wrap,
+  html[data-off~="deps"] .dep-row,
+  html[data-off~="deps"] .tg.dep,
+  html[data-off~="estimate"] .est-row,
+  html[data-off~="estimate"] .tg.es,
   html[data-off~="command"][data-off~="explore"] .foot-links,
   html[data-off~="explore"][data-off~="review"] #view-bar { display: none !important; }
 
@@ -3109,6 +3114,102 @@
   .print-pop .pp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
   .print-pop .pp-go { flex: none; margin-top: 10px; width: 100%; }
+
+  /* 导出弹层多一组「范围」开关，比打印/日历那两个宽一点，三颗能排一行 */
+  #exp-pop { width: min(288px, calc(100vw - 32px)); }
+
+  /* ---------- 任务依赖 / 预估用时 / 清单导出 ---------- */
+  .dep-row,
+  .est-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .dep-row > .d-label,
+  .est-row > .d-label {
+    flex-basis: 100%;
+    margin: 0 0 2px;
+  }
+
+  .dep-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 4px 6px 4px 8px;
+    font-size: 12px;
+    color: var(--yellow-800);
+    background: color-mix(in srgb, var(--yellow-500) 14%, var(--surface));
+    border-radius: 6px;
+  }
+
+  .dep-chip .dp-t {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dep-chip .dp-x { display: inline-flex; padding: 2px; color: var(--yellow-800); }
+  .dep-chip .dp-x:hover { color: var(--red-600); }
+
+  .dep-pick {
+    min-height: 44px;
+    max-width: 100%;
+    padding: 0 10px;
+    font-size: 12px;
+    color: var(--gray-700);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+  }
+
+  .dep-hint,
+  .est-hint { font-size: 12px; color: var(--text-muted); }
+
+  .est-chip {
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+  }
+
+  .est-chip:hover { color: var(--teal-800); border-color: var(--teal-600); }
+  .est-chip.on { color: var(--on-accent); background: var(--teal-700); border-color: transparent; }
+
+  .est-num {
+    width: 92px;
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--surface);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+  }
+
+  .tg.dep { --tg: var(--yellow-800); }
+  .tg.es { --tg: var(--teal-700); color: var(--teal-800); font-variant-numeric: tabular-nums; }
+  .tg.es.over { --tg: var(--red-700); color: var(--red-800); }
+
+  .tick.lk { color: var(--yellow-800); }
+  .tick.lk:hover { color: var(--yellow-800); background: var(--yellow-50); }
+
+  li.lk-flash > .row { animation: lk-flash .9s ease-out; }
+
+  @keyframes lk-flash {
+    0%, 100% { background: transparent; }
+    30% { background: var(--yellow-50); }
+  }
+
+  .exp-scope { margin-top: 6px; }
 
   /* ---------- 智能清单：把一套筛选存成一颗胶囊 ---------- */
   .smart-bar {
@@ -4234,7 +4335,7 @@
     /* 打印时可能正撞上进场半途，强制落到终态 */
     .head, .input-card, .list-card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
     .head, .input-card, .log-card, .toolbar, #calendar-card, #history, #stats, .side,
-    #kbd-btn, .foot-links, .backup-row, #undo-bar, #batch-bar, .backdrop, #ics-wrap,
+    #kbd-btn, .foot-links, .backup-row, #undo-bar, #batch-bar, .backdrop, #ics-wrap, #exp-wrap,
     .search-bar, .filter-bar, .smart-bar, .remind-strip, .alarm-strip, .today-strip, .list-tabs,
     .grip, .acts, .detail, .empty, #total,
     .att-viewer, .board, .matrix, .view-bar, .row-thumbs { display: none !important; }
@@ -4566,6 +4667,23 @@
           <button id="ics-go" class="pp-go" type="button">导出</button>
         </div>
       </span>
+      <span id="exp-wrap" class="print-wrap">
+        <button id="exp-btn" class="bbtn" type="button" aria-expanded="false" aria-controls="exp-pop">📝 导出清单</button>
+        <div id="exp-pop" class="print-pop" hidden>
+          <div class="pt-t">导出当前清单</div>
+          <div class="pp-chips">
+            <button id="exp-md" class="fbtn" type="button" aria-pressed="true">Markdown</button>
+            <button id="exp-csv" class="fbtn" type="button" aria-pressed="false">CSV 表格</button>
+          </div>
+          <div class="pp-chips exp-scope">
+            <button id="exp-scope-filter" class="fbtn" type="button" aria-pressed="true">当前筛选</button>
+            <button id="exp-scope-open" class="fbtn" type="button" aria-pressed="false">全部未完成</button>
+            <button id="exp-scope-all" class="fbtn" type="button" aria-pressed="false">含已完成</button>
+          </div>
+          <button id="exp-copy" class="pp-no" type="button">复制到剪贴板</button>
+          <button id="exp-go" class="pp-go" type="button">下载文件</button>
+        </div>
+      </span>
       <input type="file" id="import-file" accept=".json,application/json">
       <span id="backup-msg" class="bmsg"></span>
     </div>
@@ -4875,10 +4993,13 @@
     { id: 'explore', name: '查找与聚焦', icon: 'search', desc: '搜索、日期 / 分类 / 优先级筛选、排序、看板 / 矩阵、日历与快捷键' },
     { id: 'smart', name: '智能清单', icon: 'filter', desc: '把当前一套筛选存成一颗胶囊，下次一键回到同一个视图' },
     { id: 'detail', name: '任务详情与扩展', icon: 'note', desc: '备注、子任务、附件、任务模板、置顶、拖动排序与逾期顺延' },
+    { id: 'deps', name: '任务依赖', icon: 'lock', desc: '给任务设前置任务，前置没完成时先锁住，理清先后顺序' },
     { id: 'remind', name: '提醒与专注', icon: 'bell', desc: '到期横幅、精确提醒、今日专注与番茄钟' },
     { id: 'timer', name: '时间追踪', icon: 'timer', desc: '给任务计时：开始 / 结束累计实际耗时，统计今日与本周投入' },
+    { id: 'estimate', name: '预估时长', icon: 'clock', desc: '给任务填预估用时，和实际计时对照，统计今日与本周的时间预算' },
     { id: 'command', name: '命令面板', icon: 'command', desc: 'Ctrl / ⌘ + K 搜命令、搜任务，全键盘操作' },
     { id: 'ics', name: '日历导出', icon: 'download', desc: '把带到期日的任务导出成 .ics，导进手机或电脑日历' },
+    { id: 'export', name: '清单导出', icon: 'copy', desc: '把当前筛选导出成 Markdown 或 CSV，可复制也可下载' },
     { id: 'dispose', name: '处置与回收', icon: 'checkCircle', core: true, desc: '勾选完成、编辑删除、批量整理、已完成历史、回收站与撤销' },
     { id: 'review', name: '复盘与保障', icon: 'book', desc: '今日流水、复盘、数据统计、导出导入、打印、主题与背景' },
   ];
@@ -5033,6 +5154,15 @@
   const icsUndoneBtn = $('ics-undone');
   const icsAllBtn = $('ics-all');
   const icsGo = $('ics-go');
+  const expBtn = $('exp-btn');
+  const expPop = $('exp-pop');
+  const expMd = $('exp-md');
+  const expCsv = $('exp-csv');
+  const expScopeFilter = $('exp-scope-filter');
+  const expScopeOpen = $('exp-scope-open');
+  const expScopeAll = $('exp-scope-all');
+  const expCopy = $('exp-copy');
+  const expGo = $('exp-go');
   const cmdkBtn = $('cmdk-btn');
   const cmdk = $('cmdk');
   const cmdkIco = $('cmdk-ico');
@@ -5104,6 +5234,10 @@
   const reviewAi = $('review-ai');
   const reviewDownload = $('review-download');
   const sideToggle = $('side-toggle');
+
+  // 前置任务最多挂 3 条；预估用时按分钟记，0 = 没填（要在下面 loadList 之前就位）
+  const DEP_MAX = 3;
+  const EST_MAX = 1440;
 
   let lists = loadLists();
   let tasks = loadList(lists.active);
@@ -5273,6 +5407,67 @@
       }));
   }
 
+  // 前置任务最多挂 3 条；预估用时按分钟记，0 = 没填
+  function normDeps(value) {
+    if (!Array.isArray(value)) return [];
+    return [...new Set(value.filter(x => typeof x === 'string' && x))].slice(0, DEP_MAX);
+  }
+
+  function clampEst(v) {
+    const n = Math.round(Number(v));
+    return Number.isFinite(n) && n > 0 ? Math.min(n, EST_MAX) : 0;
+  }
+
+  // 前置任务只认同清单：对不上的 id 当不存在，绝不跨清单抓数据
+  function depTasks(task) {
+    const ids = new Set(tasks.map(t => t.id));
+    return normDeps(task.deps)
+      .filter(id => id !== task.id && ids.has(id))
+      .map(id => tasks.find(t => t.id === id))
+      .filter(Boolean);
+  }
+
+  function waitTasks(task) {
+    if (!pluginOn('deps')) return [];
+    return depTasks(task).filter(t => !t.done);
+  }
+
+  function isBlocked(task) {
+    return waitTasks(task).length > 0;
+  }
+
+  // 顺着前置链往上走一圈，用来挡「A 等 B、B 又等 A」这种环
+  function depChain(fromId) {
+    const seen = new Set();
+    const stack = [fromId];
+    while (stack.length) {
+      const cur = stack.pop();
+      const t = tasks.find(x => x.id === cur);
+      if (!t) continue;
+      for (const id of normDeps(t.deps)) {
+        if (seen.has(id)) continue;
+        seen.add(id);
+        stack.push(id);
+      }
+    }
+    return seen;
+  }
+
+  // 任务被删掉或搬走之后，别再留着指不到人的前置 id
+  function pruneDeps() {
+    const ids = new Set(tasks.map(t => t.id));
+    for (const t of tasks) {
+      if (Array.isArray(t.deps) && t.deps.length) t.deps = t.deps.filter(id => id !== t.id && ids.has(id));
+    }
+  }
+
+  function fmtMin(n) {
+    const mins = Math.max(0, Math.round(Number(n) || 0));
+    if (!mins) return '0 分';
+    const h = Math.floor(mins / 60), m = mins % 60;
+    return h ? h + ' 时' + (m ? ' ' + m + ' 分' : '') : mins + ' 分';
+  }
+
   function loadList(id) {
     let raw;
     try {
@@ -5281,8 +5476,8 @@
       return [];
     }
     if (!Array.isArray(raw)) return [];
-    return raw.map(t => {
-      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], goal: '', startAt: 0, ...t };
+    const arr = raw.map(t => {
+      const o = { priority: 'mid', completedAt: null, due: '', tags: [], repeat: '', note: '', subs: [], pin: false, att: [], goal: '', startAt: 0, deps: [], est: 0, ...t };
       if (!(o.repeat in REPEAT_LABEL)) o.repeat = '';
       if (typeof o.note !== 'string') o.note = '';
       o.pin = !!o.pin;
@@ -5291,6 +5486,8 @@
       o.focus = clampFocus(o.focus);
       o.remind = clampRemind(o.remind);
       o.spent = clampSpent(o.spent);
+      o.est = clampEst(o.est);
+      o.deps = normDeps(o.deps);
       o.timerAt = clampStart(o.timerAt);
       // 上次忘了停的表：超过单次上限就当没在计时，别把这次打开的时间也算进去
       if (o.timerAt && Date.now() - o.timerAt > SESSION_MAX) o.timerAt = 0;
@@ -5300,6 +5497,10 @@
       o.subs = normSubs(o.subs);
       return o;
     });
+    // 删掉的任务、从别的清单搬走的任务：留下悬空的前置 id 只会让这行永远锁着
+    const ids = new Set(arr.map(t => t.id));
+    for (const t of arr) t.deps = t.deps.filter(id => id !== t.id && ids.has(id));
+    return arr;
   }
 
   // 清单列表：{ active, items: [{id,name}] }。没有 todo.lists 这个键时就是一个默认清单，
@@ -5524,6 +5725,7 @@
       return;
     }
     tasks = tasks.filter(t => t.id !== id);
+    pruneDeps();
     dropTransient(id);
     save();
     render();
@@ -5542,6 +5744,7 @@
       return;
     }
     tasks = tasks.filter(t => !ids.has(t.id));
+    pruneDeps();
     for (const id of ids) dropTransient(id);
     save();
     render();
@@ -5967,7 +6170,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter' };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -5977,6 +6180,8 @@
       p.printToday = !!p.printToday;
       p.icsUndone = p.icsUndone !== false;
       p.icsAll = p.icsAll !== false;
+      if (p.expFmt !== 'csv') p.expFmt = 'md';
+      if (!['filter', 'open', 'all'].includes(p.expScope)) p.expScope = 'filter';
       // 智能清单：名字去重、字段逐项校验；日期筛选只认这五个字面量（FILTERS 还没初始化）
       p.smart = normSmart(p.smart);
       if (p.view !== 'board' && p.view !== 'matrix') p.view = 'list';
@@ -7515,6 +7720,7 @@
     if (!pluginOn('smart')) smartForm.hidden = true;
     if (!pluginOn('command')) closeCmdk();
     if (!pluginOn('ics')) openIcsPop(false);
+    if (!pluginOn('export')) openExpPop(false);
 
     let switched = false;
     if (!pluginOn('lists') && lists.active !== DEFAULT_LIST) {
@@ -8667,9 +8873,13 @@
       tick.setAttribute('aria-label', (batchSel.has(task.id) ? '取消选中「' : '选中「') + clip(task.text) + '」');
       tick.addEventListener('click', () => batchToggleSel(task.id));
     } else {
-      tick.className = 'tick';
-      tick.innerHTML = icon(task.done ? 'checkCircle' : 'circle', 22);
-      tick.setAttribute('aria-label', task.done ? '标记为未完成' : '标记为已完成');
+      // 前置任务没做完时勾不动：锁形按钮点一下只解释原因，不改数据
+      const blocked = !task.done && isBlocked(task);
+      tick.className = 'tick' + (blocked ? ' lk' : '');
+      tick.innerHTML = icon(blocked ? 'lock' : task.done ? 'checkCircle' : 'circle', 22);
+      tick.setAttribute('aria-label', blocked
+        ? '被前置任务锁住「' + clip(task.text) + '」'
+        : task.done ? '标记为未完成' : '标记为已完成');
       tick.addEventListener('click', () => toggle(task.id));
     }
     row.append(tick);
@@ -8703,6 +8913,17 @@
         line.append(due);
       }
 
+      // 依赖：全部前置完成就收起，只在还锁着的时候占一行位置
+      const waits = task.done ? [] : waitTasks(task);
+      if (waits.length) {
+        const dp = document.createElement('span');
+        dp.className = 'tg dep';
+        dp.innerHTML = icon('lock', 12);
+        dp.append(waits.length > 1 ? '等 ' + waits.length + ' 项' : '等「' + clip(waits[0].text) + '」');
+        dp.title = '前置任务还没完成：' + waits.map(t => t.text).join('、');
+        line.append(dp);
+      }
+
       const stAt = clampStart(task.startAt);
       if (stAt) {
         const sc = document.createElement('span');
@@ -8731,6 +8952,19 @@
         tt.append(fmtSpanShort(spent));
         tt.title = '累计实际用时：' + fmtSpan(spent);
         line.append(tt);
+      }
+
+      // 预估 vs 实际：没填预估就不显示，实际超了变红
+      const est = clampEst(task.est);
+      if (est) {
+        const ec = document.createElement('span');
+        const over = spent > est * 60000;
+        ec.className = 'tg es' + (over ? ' over' : '');
+        ec.innerHTML = icon('clock', 12);
+        ec.append(over ? fmtMin(Math.round(spent / 60000)) + ' / ' + fmtMin(est) : fmtMin(est));
+        ec.title = '预估 ' + fmtMin(est) + (spent ? '，实际 ' + fmtSpan(spent)
+          + (over ? '（超出 ' + fmtMin(Math.round((spent - est * 60000) / 60000)) + '）' : '') : '（还没有实际计时）');
+        line.append(ec);
       }
 
       const tags = tagsOf(task);
@@ -9081,6 +9315,129 @@
       }
       box.append(foRow);
     }
+
+    // 前置任务：只认同清单里还没完成的任务，加进来就开始锁
+    if (!task.done) {
+      const dpRow = document.createElement('div');
+      dpRow.className = 'dep-row';
+      const dpLabel = document.createElement('span');
+      dpLabel.className = 'd-label';
+      dpLabel.textContent = '前置任务（最多 ' + DEP_MAX + ' 个）';
+      dpRow.append(dpLabel);
+
+      const curDeps = depTasks(task);
+      for (const dt of curDeps) {
+        const chip = document.createElement('span');
+        chip.className = 'dep-chip';
+        chip.innerHTML = icon(dt.done ? 'checkCircle' : 'lock', 12);
+        const nm = document.createElement('span');
+        nm.className = 'dp-t';
+        nm.textContent = dt.text;
+        nm.title = (dt.done ? '前置已完成：' : '还在等：') + dt.text;
+        const x = document.createElement('button');
+        x.type = 'button';
+        x.className = 'dp-x';
+        x.setAttribute('aria-label', '移除前置「' + dt.text + '」');
+        x.innerHTML = icon('close', 12);
+        x.addEventListener('click', () => {
+          task.deps = normDeps(task.deps).filter(id => id !== dt.id);
+          save();
+          render();
+          backupMsg('已移除这条前置');
+        });
+        chip.append(nm, x);
+        dpRow.append(chip);
+      }
+
+      if (curDeps.length < DEP_MAX) {
+        const have = new Set(curDeps.map(t => t.id));
+        // 会成环的不能选：已经（间接）在等本任务的任务，以及本任务已经间接等着的前置
+        const upstream = depChain(task.id);
+        const cands = tasks.filter(c => c.id !== task.id && !c.done && !have.has(c.id)
+          && !upstream.has(c.id) && !depChain(c.id).has(task.id));
+        if (cands.length) {
+          const pick = document.createElement('select');
+          pick.className = 'dep-pick';
+          pick.setAttribute('aria-label', '选一个任务作为前置');
+          const opt0 = document.createElement('option');
+          opt0.value = '';
+          opt0.textContent = '＋ 添加前置';
+          pick.append(opt0);
+          for (const c of cands) {
+            const o = document.createElement('option');
+            o.value = c.id;
+            o.textContent = clip(c.text);
+            pick.append(o);
+          }
+          pick.addEventListener('change', () => {
+            if (!pick.value) return;
+            task.deps = normDeps([...normDeps(task.deps), pick.value]);
+            save();
+            render();
+            backupMsg('已加前置：它没完成前，这项会被锁住');
+          });
+          dpRow.append(pick);
+        } else if (!curDeps.length) {
+          const none = document.createElement('span');
+          none.className = 'dep-hint';
+          none.textContent = '清单里还没有别的未完成任务可以当前置';
+          dpRow.append(none);
+        }
+      }
+      box.append(dpRow);
+    }
+
+    // 预估用时：快选 + 自定义分钟数，和实际计时对照
+    const estRow = document.createElement('div');
+    estRow.className = 'est-row';
+    const estLabel = document.createElement('span');
+    estLabel.className = 'd-label';
+    estLabel.textContent = '预估用时';
+    estRow.append(estLabel);
+    const estVal = clampEst(task.est);
+    const setEst = (m) => {
+      const next = clampEst(m);
+      if (next === clampEst(task.est)) return;
+      task.est = next;
+      save();
+      render();
+      backupMsg(next ? '已记下预估 ' + fmtMin(next) : '已清掉预估用时');
+    };
+    for (const m of [15, 30, 45, 60, 120]) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'est-chip' + (estVal === m ? ' on' : '');
+      b.textContent = fmtMin(m);
+      b.title = estVal === m ? '再点一次取消预估' : '按 ' + fmtMin(m) + ' 估';
+      b.setAttribute('aria-pressed', String(estVal === m));
+      b.addEventListener('click', () => setEst(estVal === m ? 0 : m));
+      estRow.append(b);
+    }
+    const estNum = document.createElement('input');
+    estNum.type = 'number';
+    estNum.className = 'est-num';
+    estNum.min = '1';
+    estNum.max = String(EST_MAX);
+    estNum.step = '5';
+    estNum.value = estVal || '';
+    estNum.placeholder = '分钟';
+    estNum.setAttribute('aria-label', '自定义预估分钟数');
+    estNum.addEventListener('change', () => setEst(estNum.value));
+    estRow.append(estNum);
+    const estSpent = clampSpent(task.spent);
+    if (pluginOn('timer') && (estVal || estSpent)) {
+      const eh = document.createElement('span');
+      eh.className = 'est-hint';
+      eh.textContent = estVal
+        ? (estSpent
+          ? '实际 ' + fmtSpan(estSpent) + (estSpent > estVal * 60000
+            ? ' · 超出 ' + fmtMin(Math.round((estSpent - estVal * 60000) / 60000))
+            : ' · 还剩 ' + fmtMin(Math.round((estVal * 60000 - estSpent) / 60000)))
+          : '还没开始计时')
+        : '已用 ' + fmtSpan(estSpent) + '，还没填预估';
+      estRow.append(eh);
+    }
+    box.append(estRow);
 
     // 精确提醒：定到某一刻，到点在这页顶上弹出处置条
     if (!task.done) {
@@ -10276,6 +10633,41 @@
       }
     }
 
+    // 时间预算：只算还没完成、填了预估的任务；今日/本周按到期日归属，不受筛选影响
+    if (pluginOn('estimate')) {
+      const estTasks = tasks.filter(t => !t.done && clampEst(t.est) > 0);
+      if (estTasks.length) {
+        const todayK = dayKey(Date.now());
+        const wkFrom = weekStartTs(Date.now());
+        const wkTo = wkFrom + 7 * 86400000;
+        let dMin = 0, wMin = 0, allMin = 0, used = 0;
+        for (const t of estTasks) {
+          const e = clampEst(t.est);
+          allMin += e;
+          used += clampSpent(t.spent);
+          if (!t.due) continue;
+          if (t.due === todayK) dMin += e;
+          const dd = parseDay(t.due);
+          const ts = dd ? dd.getTime() : 0;
+          if (ts >= wkFrom && ts < wkTo) wMin += e;
+        }
+        const sec = stSection('时间预算');
+        const g2 = document.createElement('div');
+        g2.className = 'st-grid tt2';
+        g2.append(
+          statCell('今日预估', dMin ? fmtMin(dMin) : '0 分'),
+          statCell('本周预估', wMin ? fmtMin(wMin) : '0 分'),
+        );
+        sec.append(g2);
+        const hint = document.createElement('p');
+        hint.className = 'st-hint';
+        hint.textContent = estTasks.length + ' 个未完成任务填了预估 · 合计 ' + fmtMin(allMin)
+          + (used ? ' · 已用 ' + fmtSpan(used) : '') + ' · 不受上方筛选影响';
+        sec.append(hint);
+        statsBody.append(sec);
+      }
+    }
+
     const tags = pluginOn('tags') ? usedTags() : [];
     if (tags.length) {
       const sec = stSection('按分类完成率');
@@ -10729,6 +11121,7 @@
       note: task.note || '',
       goal: task.goal || '',
       startAt: 0,   // 下一轮还没排期，开始时间不跟着复制
+      est: clampEst(task.est),   // 预估跟着走；前置不复制，上一轮的前置跟这一轮无关
       subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false, due: '' })),
       pin: !!task.pin,
       done: false,
@@ -10824,6 +11217,20 @@
   function toggle(id) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
+    // 只有「勾完成」要挡；取消完成永远放行
+    if (!task.done) {
+      const waits = waitTasks(task);
+      if (waits.length) {
+        backupMsg('先完成前置：' + waits.map(t => clip(t.text)).join('、'), true);
+        const li = list.querySelector('li[data-id="' + id + '"]');
+        if (li) {
+          li.classList.remove('lk-flash');
+          void li.offsetWidth;
+          li.classList.add('lk-flash');
+        }
+        return;
+      }
+    }
     task.done = !task.done;
     task.completedAt = task.done ? Date.now() : null;
     // 重复任务：完成的那条留在历史里（统计要用），紧跟着排出一条新的
@@ -10873,6 +11280,7 @@
       trashPush(gone);   // 进回收站保留 30 天，6 秒内也可撤销
     }
     tasks = tasks.filter(t => t.id !== id);
+    pruneDeps();
     if (editingId === id) editingId = null;
     expanded.delete(id);
     save();
@@ -11035,8 +11443,15 @@
   }
 
   function batchComplete() {
-    const ids = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
-    if (!ids.length) return;
+    const picked = [...batchSel].filter(id => { const t = tasks.find(x => x.id === id); return t && !t.done; });
+    if (!picked.length) return;
+    // 前置没完成的留在选中里，别硬勾
+    const ids = picked.filter(id => !isBlocked(tasks.find(t => t.id === id)));
+    const skipped = picked.length - ids.length;
+    if (!ids.length) {
+      backupMsg('选中的都还等着前置任务，先完成前置再批量完成', true);
+      return;
+    }
     for (const id of ids) stopTimer(tasks.find(t => t.id === id));
     snapshot('已批量完成 ' + ids.length + ' 项任务', tasks);
     for (const id of ids) {
@@ -11047,6 +11462,7 @@
     }
     save();
     render();
+    if (skipped) backupMsg('完成了 ' + ids.length + ' 项，' + skipped + ' 项因前置未完成被跳过', true);
   }
 
   function batchReopenSel() {
@@ -11090,6 +11506,7 @@
         if (t) trashPush(t);
       }
       tasks = tasks.filter(t => !kill.has(t.id));
+      pruneDeps();
       if (editingId && kill.has(editingId)) editingId = null;
       for (const id of ids) expanded.delete(id);
       batchSel.clear();
@@ -11106,6 +11523,7 @@
       snapshot('已彻底删除 ' + ids.length + ' 项已完成任务', tasks);
       const kill = new Set(ids);
       tasks = tasks.filter(t => !kill.has(t.id));
+      pruneDeps();
       if (editingId && kill.has(editingId)) editingId = null;
       if (kbId && kill.has(kbId)) kbId = null;
       for (const id of ids) expanded.delete(id);
@@ -12657,6 +13075,190 @@
   });
   syncIcsOptions();
 
+  // ---------- 清单导出：Markdown / CSV ----------
+  const EXP_SCOPE_LABEL = { filter: '当前筛选', open: '全部未完成', all: '含已完成' };
+
+  function expRows() {
+    if (prefs.expScope === 'open') return listOrder(tasks.filter(t => !t.done));
+    if (prefs.expScope === 'all') return listOrder(tasks);
+    return listOrder(visibleTasks());
+  }
+
+  function expMeta(task) {
+    const bits = [];
+    if (task.due) bits.push('到期 ' + dueText(task));
+    bits.push(LEVELS[level(task)].label);
+    if (pluginOn('tags') && tagsOf(task).length) bits.push(tagsOf(task).join(' / '));
+    const est = clampEst(task.est);
+    if (pluginOn('estimate') && est) bits.push('预估 ' + fmtMin(est));
+    const spent = clampSpent(task.spent);
+    if (pluginOn('timer') && spent) bits.push('已用 ' + fmtSpan(spent));
+    const subs = task.subs || [];
+    if (subs.length) bits.push('子任务 ' + subs.filter(s => s.done).length + '/' + subs.length);
+    if (pluginOn('deps')) {
+      const deps = depTasks(task);
+      if (deps.length) bits.push('前置 ' + deps.map(d => (d.done ? '✓' : '·') + d.text).join('、'));
+    }
+    if (task.repeat) bits.push('重复' + REPEAT_LABEL[task.repeat]);
+    return bits.join(' · ');
+  }
+
+  function buildMarkdown(rows) {
+    const stamp = new Date().toLocaleString('zh-CN', { hour12: false });
+    const undone = rows.filter(t => !t.done).length;
+    const out = [
+      '# ' + currentList().name + ' · 待办清单',
+      '',
+      '导出时间：' + stamp + ' ｜ 共 ' + rows.length + ' 项，未完成 ' + undone + ' 项',
+      '',
+    ];
+    if (!rows.length) out.push('_这个范围里没有任务。_');
+    for (const t of rows) {
+      const meta = expMeta(t);
+      out.push('- ' + (t.done ? '[x]' : '[ ]') + ' ' + t.text + (meta ? ' · ' + meta : ''));
+      if (normGoal(t.goal)) out.push('  - 目标：' + normGoal(t.goal));
+      if (t.note) out.push('  - 备注：' + String(t.note).replace(/\r?\n/g, ' '));
+    }
+    return out.join('\n') + '\n';
+  }
+
+  function csvCell(v) {
+    const s = String(v == null ? '' : v);
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  function buildCsv(rows) {
+    const head = ['状态', '任务', '优先级', '到期', '分类', '预估分钟', '实际分钟', '前置任务', '目标', '备注'];
+    const lines = [head.map(csvCell).join(',')];
+    for (const t of rows) {
+      const spentMin = Math.round(clampSpent(t.spent) / 60000);
+      lines.push([
+        t.done ? '已完成' : (isBlocked(t) ? '被前置锁住' : '未完成'),
+        t.text,
+        LEVELS[level(t)].label,
+        t.due || '',
+        pluginOn('tags') ? tagsOf(t).join(' / ') : '',
+        clampEst(t.est) || '',
+        pluginOn('timer') && spentMin ? spentMin : '',
+        pluginOn('deps') ? depTasks(t).map(d => d.text).join(' / ') : '',
+        normGoal(t.goal),
+        t.note || '',
+      ].map(csvCell).join(','));
+    }
+    return '\uFEFF' + lines.join('\r\n') + '\r\n';
+  }
+
+  function expPick() {
+    const rows = expRows();
+    const csv = prefs.expFmt === 'csv';
+    const safeName = currentList().name.replace(/[\\/:*?"<>|\s]+/g, '-') || 'list';
+    return {
+      rows,
+      text: csv ? buildCsv(rows) : buildMarkdown(rows),
+      ext: csv ? 'csv' : 'md',
+      mime: csv ? 'text/csv;charset=utf-8' : 'text/markdown;charset=utf-8',
+      name: 'todo-' + safeName + '-' + dayKey(Date.now()).replace(/-/g, '') + '.' + (csv ? 'csv' : 'md'),
+    };
+  }
+
+  // file:// 下 navigator.clipboard 有时被拒，退回 textarea + execCommand
+  function fallbackCopy(txt) {
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.append(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch { ok = false; }
+    ta.remove();
+    return ok;
+  }
+
+  function copyPlainText(txt) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(txt).then(() => true, () => fallbackCopy(txt));
+    }
+    return Promise.resolve(fallbackCopy(txt));
+  }
+
+  function syncExpOptions() {
+    for (const [b, key] of [[expMd, 'md'], [expCsv, 'csv']]) {
+      b.classList.toggle('on', prefs.expFmt === key);
+      b.setAttribute('aria-pressed', String(prefs.expFmt === key));
+    }
+    for (const [b, key] of [[expScopeFilter, 'filter'], [expScopeOpen, 'open'], [expScopeAll, 'all']]) {
+      b.classList.toggle('on', prefs.expScope === key);
+      b.setAttribute('aria-pressed', String(prefs.expScope === key));
+    }
+  }
+
+  // 弹层默认贴按钮右缘，窄屏下会顶出左边（360 宽实测 -2px）；左右各留 8px 重新夹一次
+  function placeExpPop() {
+    if (expPop.hidden) return;
+    expPop.style.left = '';
+    expPop.style.right = '';
+    const host = expPop.parentElement.getBoundingClientRect();
+    const w = expPop.offsetWidth;
+    const pad = 8;
+    const left = Math.min(Math.max(host.right - w, pad), window.innerWidth - w - pad);
+    expPop.style.left = (left - host.left) + 'px';
+    expPop.style.right = 'auto';
+  }
+
+  function openExpPop(open) {
+    expPop.hidden = !open;
+    expBtn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      syncExpOptions();
+      placeExpPop();
+      expMd.focus();
+    }
+  }
+
+  window.addEventListener('resize', placeExpPop);
+
+  expBtn.addEventListener('click', () => openExpPop(expPop.hidden));
+  expMd.addEventListener('click', () => { prefs.expFmt = 'md'; save(); syncExpOptions(); });
+  expCsv.addEventListener('click', () => { prefs.expFmt = 'csv'; save(); syncExpOptions(); });
+  expScopeFilter.addEventListener('click', () => { prefs.expScope = 'filter'; save(); syncExpOptions(); });
+  expScopeOpen.addEventListener('click', () => { prefs.expScope = 'open'; save(); syncExpOptions(); });
+  expScopeAll.addEventListener('click', () => { prefs.expScope = 'all'; save(); syncExpOptions(); });
+
+  expCopy.addEventListener('click', () => {
+    const picked = expPick();
+    if (!picked.rows.length) {
+      backupMsg('「' + EXP_SCOPE_LABEL[prefs.expScope] + '」下没有任务可导出', true);
+      return;
+    }
+    copyPlainText(picked.text).then(ok => {
+      backupMsg(ok
+        ? '已复制 ' + picked.rows.length + ' 项（' + (prefs.expFmt === 'csv' ? 'CSV' : 'Markdown') + '）'
+        : '复制失败，浏览器没放行剪贴板，改用「下载文件」', !ok);
+    });
+  });
+
+  expGo.addEventListener('click', () => {
+    const picked = expPick();
+    if (!picked.rows.length) {
+      backupMsg('「' + EXP_SCOPE_LABEL[prefs.expScope] + '」下没有任务可导出', true);
+      return;
+    }
+    openExpPop(false);
+    expBtn.focus();
+    saveAsBlob(new Blob([picked.text], { type: picked.mime }), picked.name);
+    backupMsg('已导出 ' + picked.rows.length + ' 项（' + EXP_SCOPE_LABEL[prefs.expScope] + '）');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!expPop.hidden && !expPop.contains(e.target) && !expBtn.contains(e.target)) openExpPop(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !expPop.hidden) openExpPop(false);
+  });
+  syncExpOptions();
+
   // ---------- 命令面板：Ctrl / ⌘ + K ----------
   // 两块内容：所有能点的命令，加上跨清单的任务搜索。只管「去哪个界面」，
   // 不直接删数据，所以不需要撤销条。
@@ -13434,6 +14036,7 @@
       snapshot('已清空 ' + n + ' 条已完成任务', tasks);
       tasks.filter(t => t.done).forEach(trashPush);
       tasks = tasks.filter(t => !t.done);
+      pruneDeps();
     });
   });
 
