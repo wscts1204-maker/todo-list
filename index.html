@@ -102,6 +102,10 @@
     /* 粒子层沿用点阵的 hot 档：它是 AA 探针已经验过的最暗/最亮那个点，
        粒子再怎么叠也只会落在底色与这颗点之间，不会造出新的最坏层 */
     --fx-ink: var(--dot-hot);
+    /* 星云墨色：两主题都比 --dot-hot 更深，压在点阵下面只会把玻璃底再压暗一点，
+       AA 的最差点仍是 --dot-hot 本身，不会因为星云造出新的下限 */
+    --neb-ink: #0d9488;
+    --neb-deep: #115e59;
   }
 
   [data-theme="dark"] {
@@ -173,6 +177,9 @@
     /* 深色点阵：文字是浅色，点只能往更亮的灰走（数值待 AA 复测） */
     --dot-base: #27272a;
     --dot-hot: #4a4a52;
+    /* 深色星云用比点阵 hot 更深的墨绿，叠上去只会让底更暗（浅色字更清楚） */
+    --neb-ink: #134e4a;
+    --neb-deep: #0b3b37;
   }
 
   /* ---------- 背景配色：每套配浅色 / 深色列两个版本，跟随主题走。光斑色取各套主色，基础渐变与旧版亮度一致 ---------- */
@@ -245,6 +252,19 @@
   .fx-layer canvas { display: block; width: 100%; height: 100%; }
 
   html[data-fx="0"] .fx-layer { display: none; }
+
+  /* ---------- 星云层：垫在点阵下面的一层雾，手势只改它的转角和缩放 ---------- */
+  .neb-layer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .neb-layer canvas { display: block; width: 100%; height: 100%; }
+
+  html[data-neb="0"] .neb-layer { display: none; }
 
   /* ---------- 进场与滚动揭示：一条曲线、只播一次、不回退 ---------- */
   @keyframes fade-up {
@@ -399,7 +419,8 @@
     color: var(--gray-800);
   }
 
-  .head p { font-size: 14px; color: var(--gray-600); letter-spacing: .02em; }
+  /* 只认页头直属的副标题；面板挂在 .head 里，写成 .head p 会把面板内的 p 也放大 */
+  .head > p { font-size: 14px; color: var(--gray-600); letter-spacing: .02em; }
 
   .head-clock {
     display: flex;
@@ -1886,7 +1907,7 @@
     right: 0;
     z-index: 40;
     /* 定位包含块是只有两个按钮宽的 .head-tools，所以宽度按视口算，不能写 max-width:100% */
-    width: min(268px, calc(100vw - 32px));
+    width: min(320px, calc(100vw - 32px));
     padding: 14px;
     text-align: left;
     background: var(--surface);
@@ -1936,7 +1957,7 @@
 
   .bp-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
 
-  .bp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px; margin-bottom: 14px; }
+  .bp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px; margin-bottom: 12px; }
 
   .sw { padding: 0; background: none; border: 0; border-radius: 10px; cursor: pointer; }
 
@@ -2026,7 +2047,7 @@
     display: flex;
     align-items: flex-start;
     gap: 6px;
-    margin-top: 12px;
+    margin-top: 10px;
     padding: 8px 10px;
     font-size: 11px;
     line-height: 1.5;
@@ -4826,7 +4847,7 @@
     body { padding: 40px max(24px, env(safe-area-inset-left, 0px)) calc(64px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-right, 0px)); }
     .head { margin-bottom: 32px; padding-top: 20px; }
     .head h1 { font-size: 36px; }
-    .head p { font-size: 16px; }
+    .head > p { font-size: 16px; }
     .input-card { padding: 24px; margin-bottom: 24px; }
     .input-row { flex-direction: row; gap: 12px; }
     #add { min-height: 44px; }
@@ -4914,7 +4935,7 @@
   @media print {
     body { background: #fff !important; padding: 0; }
     body::before { display: none !important; }
-    .dot-grid, .fx-layer { display: none !important; }
+    .dot-grid, .fx-layer, .neb-layer { display: none !important; }
     /* 打印时可能正撞上进场半途，强制落到终态 */
     .head, .input-card, .list-card, .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
     .head, .input-card, .log-card, .toolbar, #calendar-card, #history, #stats, .side,
@@ -4967,6 +4988,7 @@
 </script>
 </head>
 <body>
+  <div id="neb-layer" class="neb-layer" aria-hidden="true"></div>
   <div id="dot-grid" class="dot-grid" aria-hidden="true"></div>
   <div id="fx-layer" class="fx-layer" aria-hidden="true"></div>
   <div class="wrap">
@@ -5008,6 +5030,14 @@
                 <p class="pl-desc">缓慢漂移的细光点，靠近时连成细线；减弱动效时静止。</p>
               </div>
               <button type="button" class="pl-sw on" id="fx-sw" aria-pressed="true">已开启</button>
+            </div>
+            <div class="pl-row">
+              <span class="pl-ic" id="neb-ico" aria-hidden="true"></span>
+              <div class="pl-main">
+                <div class="pl-name">手势星云</div>
+                <p class="pl-desc">青色雾团缓慢自转；拖动旋转、捏合缩放、双击闪光。</p>
+              </div>
+              <button type="button" class="pl-sw on" id="neb-sw" aria-pressed="true">已开启</button>
             </div>
           </div>
           <p class="bp-title">背景图片</p>
@@ -5633,6 +5663,7 @@
     image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
     palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
     sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+    nebula: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.6a9.4 9.4 0 1 0 9.4 9.4"/><path d="M12 7.2a4.8 4.8 0 1 0 4.8 4.8"/><circle cx="19.3" cy="5.4" r=".9" fill="currentColor" stroke="none"/><circle cx="4.4" cy="17.6" r=".9" fill="currentColor" stroke="none"/>',
     lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     timer: '<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>',
     play: '<path d="m6 3 14 9-14 9z" fill="currentColor" stroke="none"/>',
@@ -5761,6 +5792,8 @@
   const bgClose = $('bg-close');
   const fxSw = $('fx-sw');
   const fxIco = $('fx-ico');
+  const nebSw = $('neb-sw');
+  const nebIco = $('neb-ico');
   const filters = $('filters');
   const tagFilters = $('tag-filters');
   const list = $('list');
@@ -6908,7 +6941,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', fx: true, focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '', weekShift: 0, planBudget: 60, plan: null, focusId: '' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', fx: true, neb: true, focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '', weekShift: 0, planBudget: 60, plan: null, focusId: '' };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -6925,6 +6958,7 @@
       p.impSkipDup = p.impSkipDup !== false;
       // 粒子背景是外观开关：缺省开、只认显式 false，旧数据没有这个键就当作开
       p.fx = p.fx !== false;
+      p.neb = p.neb !== false;
       const lb = Number(p.lastBackupAt);
       p.lastBackupAt = Number.isFinite(lb) && lb > 0 ? lb : 0;
       if (typeof p.lastBackupSig !== 'string') p.lastBackupSig = '';
@@ -16093,6 +16127,15 @@
     fxSw.textContent = on ? '已开启' : '已关闭';
   }
 
+  // 星云层自己监听 html[data-neb]，这里的活和 applyFx 一样：只落属性 + 按钮文案
+  function applyNeb() {
+    const on = prefs.neb !== false;
+    document.documentElement.dataset.neb = on ? '1' : '0';
+    nebSw.classList.toggle('on', on);
+    nebSw.setAttribute('aria-pressed', String(on));
+    nebSw.textContent = on ? '已开启' : '已关闭';
+  }
+
   function bgMsg(text, isErr) {
     bgNoteText.textContent = text;
     bgNote.classList.toggle('err', !!isErr);
@@ -16183,6 +16226,12 @@
     applyFx();
   });
 
+  nebSw.addEventListener('click', () => {
+    prefs.neb = !(prefs.neb !== false);
+    save();
+    applyNeb();
+  });
+
   function openBgPanel(open) {
     bgPanel.hidden = !open;
     bgBtn.setAttribute('aria-expanded', String(open));
@@ -16256,6 +16305,7 @@
   bgPick.innerHTML = icon('image', 16) + '上传图片';
   bgClear.innerHTML = icon('trash', 16) + '清除图片';
   fxIco.innerHTML = icon('sparkles', 16);
+  nebIco.innerHTML = icon('nebula', 16);
   try {
     const stored = localStorage.getItem(BGIMG);
     if (stored && /^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(stored)) bgImg = stored;
@@ -16265,6 +16315,7 @@
   applyTheme();
   applyBgImg();
   applyFx();
+  applyNeb();
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -16908,6 +16959,237 @@
   }
 
   readInk();
+  build();
+  sync();
+})();
+
+/* ---- 手势星云：垫在点阵下面的一层雾团；移动跟随 / 拖动旋转 / 捏合缩放 / 双击闪光 ---- */
+(function () {
+  const host = document.getElementById('neb-layer');
+  if (!host) return;
+  const cvs = document.createElement('canvas');
+  host.appendChild(cvs);
+  const ctx = cvs.getContext && cvs.getContext('2d');
+  if (!ctx) { host.remove(); return; }
+
+  const de = document.documentElement;
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const N_WISP = 7;
+  const SPIN = 0.03;            // rad/s：不碰它的时候自己慢慢转
+  let w = 0, h = 0, dpr = 1, raf = 0, last = 0, wisps = [];
+  // 读不到 CSS 变量时按主题退回对应的两档墨绿（都和点阵 hot 同色系、更暗）
+  const dark0 = de.dataset.theme === 'dark';
+  let ink = dark0 ? [19, 78, 74] : [13, 148, 136];
+  let deep = dark0 ? [11, 59, 55] : [17, 94, 89];
+  // mx/my 是指针目标位置（-0.5..0.5），px/py 是缓动后的实际值
+  const st = { ang: 0.6, spin: SPIN, scale: 1, want: 1, mx: 0, my: 0, px: 0, py: 0, burst: 0 };
+
+  const rgbOf = (v) => {
+    const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec((v || '').trim());
+    return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
+  };
+  function readColors() {
+    const cs = getComputedStyle(de);
+    ink = rgbOf(cs.getPropertyValue('--neb-ink')) || ink;
+    deep = rgbOf(cs.getPropertyValue('--neb-deep')) || deep;
+  }
+
+  function build() {
+    dpr = window.devicePixelRatio || 1;
+    w = host.clientWidth; h = host.clientHeight;
+    cvs.width = Math.round(w * dpr);
+    cvs.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    wisps = [];
+    for (let i = 0; i < N_WISP; i++) {
+      wisps.push({
+        a: i / N_WISP * Math.PI * 2 + Math.random() * 0.6,   // 在轨道上的方位
+        orb: 0.1 + Math.random() * 0.2,                      // 轨道半径（相对短边）
+        size: 0.24 + Math.random() * 0.2,                    // 雾团半径（相对短边）
+        alpha: 0.045 + Math.random() * 0.04,
+        ph: Math.random() * Math.PI * 2,
+        light: i % 2 === 0,                                  // 深浅交替，团与团才有层次
+      });
+    }
+  }
+
+  function paint(now) {
+    if (!w || !h) return;
+    ctx.clearRect(0, 0, w, h);
+    const m = Math.min(w, h);
+    const cx = w / 2 + st.px * m * 0.05;
+    const cy = h * 0.46 + st.py * m * 0.04;
+    const sc = st.scale * (1 + st.burst * 0.06);
+    for (const s of wisps) {
+      const breathe = 0.75 + Math.sin(now / 5200 + s.ph) * 0.25;
+      const a = Math.min(0.13, s.alpha * breathe * (1 + st.burst * 1.5));
+      const ang = st.ang + s.a + Math.sin(now / 9000 + s.ph) * 0.06;
+      const ox = cx + Math.cos(ang) * s.orb * m;
+      const oy = cy + Math.sin(ang) * s.orb * m * 0.62;
+      const r = s.size * m * sc;
+      const c = s.light ? ink : deep;
+      const base = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',';
+      const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, r);
+      g.addColorStop(0, base + a.toFixed(3) + ')');
+      g.addColorStop(0.55, base + (a * 0.45).toFixed(3) + ')');
+      g.addColorStop(1, base + '0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(ox, oy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function step(dt) {
+    st.px += (st.mx - st.px) * 0.06;
+    st.py += (st.my - st.py) * 0.06;
+    st.scale += (st.want - st.scale) * 0.1;
+    st.ang += st.spin * dt;
+    st.spin += (SPIN - st.spin) * 0.05;     // 松手后带一点惯性回到自转
+    if (st.burst > 0) st.burst = Math.max(0, st.burst - dt * 1.6);
+  }
+
+  const enabled = () => de.dataset.neb !== '0';
+
+  function stop() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    last = 0;
+  }
+
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    if (!last) last = now;
+    const dt = now - last;
+    if (dt < 33) return;                   // 30fps 够了，雾团不需要跟手
+    last = now;
+    step(Math.min(0.08, dt / 1000));
+    paint(now);
+  }
+
+  function wake() {
+    if (raf || !w || mq.matches || document.hidden || !enabled()) return;
+    last = 0;
+    raf = requestAnimationFrame(frame);
+  }
+
+  function sync() {
+    if (!enabled() || document.hidden) { stop(); return; }
+    if (!w || !h || host.clientWidth !== w) build();
+    readColors();
+    if (mq.matches) { stop(); paint(performance.now()); return; }
+    if (!raf) { last = 0; raf = requestAnimationFrame(frame); }
+  }
+
+  // 按钮 / 输入框 / 文字上的手势照旧交给控件和选字，星云只接「空白处」
+  const BLOCK = 'p, li, h1, h2, h3, h4, h5, h6, span, code, pre, blockquote, td, th, dt, dd, time, small, strong, em, b, i, a, button, input, textarea, select, label, summary, [contenteditable=""], [contenteditable="true"]';
+  const isBlocked = (el) => !!(el && el.closest && el.closest(BLOCK));
+  const pts = new Map();
+  let drag = null, pinch = null, tapAt = 0, tapX = 0, tapY = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    st.mx = e.clientX / Math.max(1, window.innerWidth) - 0.5;
+    st.my = e.clientY / Math.max(1, window.innerHeight) - 0.5;
+  }, { passive: true });
+
+  // 拖动旋转：只接没被别处 preventDefault 的按下（看板 / 周视图 / 计划条自己有拖拽）
+  document.addEventListener('pointerdown', (e) => {
+    if (!enabled() || mq.matches || e.defaultPrevented) return;
+    if (e.pointerType === 'touch') {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        pinch = { d: Math.max(24, Math.hypot(a.x - b.x, a.y - b.y)), base: st.want };
+      } else if (pts.size === 1 && !isBlocked(e.target)) {
+        const now = performance.now();
+        if (now - tapAt < 320 && Math.hypot(e.clientX - tapX, e.clientY - tapY) < 28) {
+          st.burst = 1;
+          tapAt = 0;
+        } else {
+          tapAt = now; tapX = e.clientX; tapY = e.clientY;
+        }
+      }
+      return;
+    }
+    if (e.pointerType !== 'mouse' || e.button !== 0 || isBlocked(e.target)) return;
+    drag = { x: e.clientX, y: e.clientY, ang: st.ang, moved: false };
+  });
+
+  document.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        const d = Math.max(24, Math.hypot(a.x - b.x, a.y - b.y));
+        st.want = Math.min(1.9, Math.max(0.6, pinch.base * d / pinch.d));
+        wake();
+      }
+      return;
+    }
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.moved) {
+      if (Math.abs(dx) + Math.abs(e.clientY - drag.y) < 6) return;
+      // 从空白处按下来也可能顺着扫出一段选区：清掉它，拖完再恢复选字
+      const sel = window.getSelection && window.getSelection();
+      if (sel) sel.removeAllRanges();
+      de.style.userSelect = 'none';
+      drag.moved = true;
+    }
+    st.ang = drag.ang + dx * 0.004;
+    st.spin = Math.max(-2.4, Math.min(2.4, dx * 0.02));
+    wake();
+  }, { passive: true });
+
+  const endPtr = (e) => {
+    if (e.pointerType === 'touch') {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      return;
+    }
+    if (drag && drag.moved) de.style.userSelect = '';
+    drag = null;
+  };
+  document.addEventListener('pointerup', endPtr);
+  document.addEventListener('pointercancel', endPtr);
+  window.addEventListener('blur', () => { if (drag && drag.moved) de.style.userSelect = ''; drag = null; });
+
+  document.addEventListener('dblclick', (e) => {
+    if (!enabled() || mq.matches || isBlocked(e.target)) return;
+    st.burst = 1;
+    wake();
+  });
+
+  // 触控板的两指捏合就是带 ctrl 的滚轮；普通滚轮不接，页面照常滚
+  window.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey || !enabled() || mq.matches) return;
+    e.preventDefault();
+    st.want = Math.min(1.9, Math.max(0.6, st.want * Math.exp(-e.deltaY * 0.0018)));
+    wake();
+  }, { passive: false });
+
+  let rt = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { build(); sync(); }, 150);
+  });
+
+  document.addEventListener('visibilitychange', sync);
+  if (mq.addEventListener) mq.addEventListener('change', sync);
+
+  // 关掉时这层是 display:none，clientWidth 会是 0；等样式落定再量
+  if (window.MutationObserver) {
+    new MutationObserver(() => {
+      requestAnimationFrame(() => {
+        if (!enabled()) { stop(); return; }
+        if (!host.clientWidth || host.clientWidth !== w) build();
+        sync();
+      });
+    }).observe(de, { attributes: true, attributeFilter: ['data-neb', 'data-theme'] });
+  }
+
+  readColors();
   build();
   sync();
 })();
