@@ -2764,6 +2764,62 @@
     font-weight: 500;
   }
 
+  /* ---------- 更多选项：高级录入项折叠 ---------- */
+  .adv-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .adv-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 7px 11px 7px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    box-shadow: inset 0 0 0 1px var(--gray-200);
+    transition: background-color .16s ease, color .16s ease, box-shadow .16s ease;
+  }
+
+  .adv-toggle:hover { background: var(--gray-200); color: var(--gray-800); }
+
+  .adv-toggle[aria-expanded="true"] {
+    color: var(--teal-700);
+    background: var(--teal-50);
+    box-shadow: inset 0 0 0 1px rgba(13, 148, 136, .35);
+  }
+
+  .adv-ico, .adv-chev { display: flex; align-items: center; }
+  .adv-chev { transition: transform .2s ease; }
+  .adv-toggle[aria-expanded="true"] .adv-chev { transform: rotate(180deg); }
+
+  .adv-sum { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+
+  .adv-chip {
+    font-size: 12px;
+    line-height: 20px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    color: var(--teal-700);
+    background: var(--teal-50);
+  }
+
+  .adv-chip.muted { color: var(--text-muted); background: var(--gray-100); }
+
+  /* 展开时逐项落进来，方向与卡片进场一致；减弱动效由全站那条规则统一关掉 */
+  .adv-fields { animation: adv-in .18s var(--ease-enter); }
+
+  @keyframes adv-in {
+    from { opacity: 0; transform: translateY(-4px); }
+  }
+
   /* ---------- 批量粘贴 ---------- */
   .bulk-bar {
     display: flex;
@@ -4834,6 +4890,29 @@
 
   .undo-bar .u-btn:hover { background: var(--gray-100); }
 
+  @media (max-width: 639px) {
+    /* 窄屏：整理按钮两列排布，筛选条改成单行横滑，把纵向空间让给任务 */
+    .tool-actions { display: grid; grid-template-columns: 1fr 1fr; }
+    .tool-actions > * { min-width: 0; }
+    .tool-actions .tbtn, .tool-actions .plan-wrap { width: 100%; }
+    .plan-wrap > .tbtn { width: 100%; }
+    /* 计划按钮横跨两列：弹层按 right:0 展开时也留在视口内 */
+    #plan-wrap { grid-column: 1 / -1; }
+
+    .filter-bar,
+    .view-bar {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filter-bar::-webkit-scrollbar,
+    .view-bar::-webkit-scrollbar { display: none; }
+    .filter-bar > *,
+    .view-bar > * { flex: none; }
+  }
+
   @media (min-width: 640px) {
     .detail { padding-left: 60px; margin: 0 16px; }
     .today-strip { margin: 16px 16px 0; font-size: 14px; }
@@ -5090,35 +5169,45 @@
         </div>
       </div>
       <div id="quick-hint" class="quick-hint" role="status" aria-live="polite"></div>
-      <div class="due-row goal-row">
-        <span class="prio-label">目标：</span>
-        <input id="new-goal" class="goal-input" type="text" maxlength="120" placeholder="做到什么程度算完成（可空）" aria-label="目标要求">
+      <div class="adv-bar">
+        <button type="button" class="adv-toggle" id="adv-toggle" aria-expanded="false" aria-controls="adv-fields">
+          <span class="adv-ico" id="adv-ico" aria-hidden="true"></span>
+          <span id="adv-lbl">更多选项</span>
+          <span class="adv-chev" id="adv-chev" aria-hidden="true"></span>
+        </button>
+        <span class="adv-sum" id="adv-sum"></span>
       </div>
-      <div class="prio-row">
-        <span class="prio-label">优先级：</span>
-        <div class="prio-btns" id="prio-btns"></div>
-      </div>
-      <div class="due-row">
-        <span class="prio-label">到期日：</span>
-        <input type="date" id="new-due" class="date-input">
-        <button type="button" id="new-due-clear" class="due-clear">清除</button>
-        <span class="prio-label" style="margin-left:auto" id="drag-hint">提示：拖动左侧把手可排序</span>
-      </div>
-      <div class="due-row">
-        <span class="prio-label">开始：</span>
-        <input type="datetime-local" id="new-start" class="date-input start-input" aria-label="开始时间（可空）">
-        <span class="tag-hint">只记排期，不影响到期筛选</span>
-      </div>
-      <div class="due-row tag-row">
-        <span class="prio-label">分类：</span>
-        <input type="text" id="new-tag" class="tag-input" list="tag-list" maxlength="12" placeholder="学习 / 生活">
-        <datalist id="tag-list"></datalist>
-        <span class="tag-hint">输入新名字即可新建分类</span>
-      </div>
-      <div class="prio-row">
-        <span class="prio-label">重复：</span>
-        <div class="prio-btns" id="rep-btns"></div>
-        <span class="tag-hint">勾选完成后自动排下一次</span>
+      <div class="adv-fields" id="adv-fields" hidden>
+        <div class="due-row goal-row">
+          <span class="prio-label">目标：</span>
+          <input id="new-goal" class="goal-input" type="text" maxlength="120" placeholder="做到什么程度算完成（可空）" aria-label="目标要求">
+        </div>
+        <div class="prio-row">
+          <span class="prio-label">优先级：</span>
+          <div class="prio-btns" id="prio-btns"></div>
+        </div>
+        <div class="due-row">
+          <span class="prio-label">到期日：</span>
+          <input type="date" id="new-due" class="date-input">
+          <button type="button" id="new-due-clear" class="due-clear">清除</button>
+          <span class="prio-label" style="margin-left:auto" id="drag-hint">提示：拖动左侧把手可排序</span>
+        </div>
+        <div class="due-row">
+          <span class="prio-label">开始：</span>
+          <input type="datetime-local" id="new-start" class="date-input start-input" aria-label="开始时间（可空）">
+          <span class="tag-hint">只记排期，不影响到期筛选</span>
+        </div>
+        <div class="due-row tag-row">
+          <span class="prio-label">分类：</span>
+          <input type="text" id="new-tag" class="tag-input" list="tag-list" maxlength="12" placeholder="学习 / 生活">
+          <datalist id="tag-list"></datalist>
+          <span class="tag-hint">输入新名字即可新建分类</span>
+        </div>
+        <div class="prio-row">
+          <span class="prio-label">重复：</span>
+          <div class="prio-btns" id="rep-btns"></div>
+          <span class="tag-hint">勾选完成后自动排下一次</span>
+        </div>
       </div>
     </section>
 
@@ -5755,6 +5844,12 @@
   const newStart = $('new-start');
   const newGoal = $('new-goal');
   const newTag = $('new-tag');
+  const advToggle = $('adv-toggle');
+  const advFields = $('adv-fields');
+  const advSum = $('adv-sum');
+  const advIco = $('adv-ico');
+  const advChev = $('adv-chev');
+  const advLbl = $('adv-lbl');
   const logCard = $('log-card');
   const logForm = $('log-form');
   const logBody = $('log-body');
@@ -6941,7 +7036,7 @@
   }
 
   function loadPrefs() {
-    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', fx: true, neb: true, focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '', weekShift: 0, planBudget: 60, plan: null, focusId: '' };
+    const fallback = { hideCompleted: false, historyOpen: true, dateFilter: '', listFilter: 'all', tagFilter: 'all', statsOpen: true, theme: '', bg: 'mint', fx: true, neb: true, focusToday: false, calOpen: true, dayFilter: '', pomoMin: 25, prioFilter: '', printUndone: false, printToday: false, tagColors: {}, view: 'list', sideCollapsed: false, sort: 'manual', reviewPeriod: 'day', logOpen: true, mxClosed: [], pluginsOff: [], smart: [], icsUndone: true, icsAll: true, expFmt: 'md', expScope: 'filter', ovOpen: true, hlOpen: true, impSkipDup: true, lastBackupAt: 0, lastBackupSig: '', weekShift: 0, planBudget: 60, plan: null, focusId: '', advOpen: false };
     try {
       const p = { ...fallback, ...(JSON.parse(localStorage.getItem(PREF)) || {}) };
       // 番茄钟时长 / 优先级筛选是后加的偏好，旧数据或被改坏的值在这里归一
@@ -6959,6 +7054,8 @@
       // 粒子背景是外观开关：缺省开、只认显式 false，旧数据没有这个键就当作开
       p.fx = p.fx !== false;
       p.neb = p.neb !== false;
+      // 更多选项默认收起：只认显式 true，旧数据没有这个键就留在收起状态
+      p.advOpen = p.advOpen === true;
       const lb = Number(p.lastBackupAt);
       p.lastBackupAt = Number.isFinite(lb) && lb > 0 ? lb : 0;
       if (typeof p.lastBackupSig !== 'string') p.lastBackupSig = '';
@@ -7826,6 +7923,55 @@
     }
   }
 
+  // ---------- 更多选项：高级字段折叠 ----------
+  function shortDay(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v || ''));
+    return m ? (+m[2]) + '/' + (+m[3]) : '';
+  }
+
+  function advBits() {
+    const bits = [];
+    const goal = newGoal.value.trim();
+    if (goal) bits.push('目标 ' + (goal.length > 8 ? goal.slice(0, 8) + '…' : goal));
+    if (newPriority !== 'mid') bits.push(LEVELS[newPriority].label + '优先');
+    if (newDue.value) bits.push('到期 ' + shortDay(newDue.value));
+    if (newStart.value) {
+      const d = shortDay(newStart.value.slice(0, 10));
+      const t = newStart.value.slice(11, 16);
+      bits.push('开始 ' + (d ? (t ? d + ' ' + t : d) : '已设'));
+    }
+    if (newTag.value.trim()) bits.push('#' + newTag.value.trim());
+    if (newRepeat) bits.push(REPEAT_LABEL[newRepeat]);
+    return bits;
+  }
+
+  function renderAdvSum() {
+    const open = !advFields.hidden;
+    advLbl.textContent = open ? '收起选项' : '更多选项';
+    advToggle.setAttribute('aria-expanded', String(open));
+    advSum.textContent = '';
+    if (open) return;
+    const bits = advBits();
+    if (!bits.length) {
+      const tip = document.createElement('span');
+      tip.className = 'adv-chip muted';
+      tip.textContent = '目标、优先级、到期、分类、重复';
+      advSum.append(tip);
+      return;
+    }
+    for (const b of bits) {
+      const chip = document.createElement('span');
+      chip.className = 'adv-chip';
+      chip.textContent = b;
+      advSum.append(chip);
+    }
+  }
+
+  function applyAdv() {
+    advFields.hidden = !prefs.advOpen;
+    renderAdvSum();
+  }
+
   function renderFilters() {
     filters.hidden = tasks.length === 0;    filters.textContent = '';
     if (!tasks.length) return;
@@ -7931,6 +8077,7 @@
       b.addEventListener('click', () => {
         prefs.tagFilter = it.key;
         if (it.key !== 'all' && it.key !== '') newTag.value = it.key;   // 只有真分类名才预填进输入框
+        renderAdvSum();
         save();
         render();
       });
@@ -13715,6 +13862,7 @@
     newGoal.value = '';
     newStart.value = '';
     renderQuickHint();
+    renderAdvSum();
     input.focus();
   }
 
@@ -14417,6 +14565,7 @@
   // 从日历跳过来添加：填好日期、高亮输入卡片、聚焦输入框
   function openAddFor(day) {
     newDue.value = day;
+    renderAdvSum();
     const card = document.querySelector('.input-card');
     card.classList.add('flash');
     setTimeout(() => card.classList.remove('flash'), 1300);
@@ -16465,8 +16614,20 @@
 
   $('new-due-clear').addEventListener('click', () => {
     newDue.value = '';
+    renderAdvSum();
     input.focus();
   });
+
+  advToggle.addEventListener('click', () => {
+    prefs.advOpen = advFields.hidden;
+    save();
+    applyAdv();
+  });
+
+  for (const el of [newGoal, newDue, newStart, newTag]) {
+    el.addEventListener('input', renderAdvSum);
+    el.addEventListener('change', renderAdvSum);
+  }
 
   histDate.addEventListener('change', () => {
     prefs.dateFilter = histDate.value;
@@ -16543,6 +16704,9 @@
     if (e.key === 'Escape' && !tplBox.hidden) closeTpl();
   });
 
+  advIco.innerHTML = icon('filter', 16);
+  advChev.innerHTML = icon('chevronDown', 16);
+  applyAdv();
   renderPrioPicker();
   renderRepPicker();
   renderQuickHint();
